@@ -1,4 +1,4 @@
-# Getting Started with React App
+# Getting Started Grapher App
 
 
 In the project directory, you can run:
