@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Plot from 'react-plotly.js';
+import MathKeyboard from './MathKeyboard';
 
 function App() {
     const [functions, setFunctions] = useState([]);
@@ -96,54 +97,14 @@ function App() {
     };
 
     return (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <div style={{ position: 'absolute', left: '10px' }}>
-                {functions.map(({ func, color }, index) => (
-                    <div key={index} style={{ marginBottom: '10px', display: 'flex', alignItems: 'center' }}>
-                        <div
-                            style={{
-                                width: '20px',
-                                height: '20px',
-                                borderRadius: '50%',
-                                backgroundColor: color,
-                                marginRight: '10px'
-                            }}
-                        />
-                        <input
-                            type="text"
-                            placeholder="Введите функцию"
-                            value={func}
-                            onChange={(e) => {
-                                const newFunctions = [...functions];
-                                newFunctions[index].func = e.target.value;
-                                setFunctions(newFunctions);
-                            }}
-                            style={{ marginRight: '10px' }}
-                        />
-                    </div>
-                ))}
-            </div>
-            <div style={{ width: '800px', height: '600px' }}>
-                <Plot
-                    data={plotData}
-                    layout={layout}
-                    onRelayout={(event) => {
-                        if (event['xaxis.range[0]'] && event['xaxis.range[1]']) {
-                            setXRange([event['xaxis.range[0]'], event['xaxis.range[1]']]);
-                        }
-                        if (event['yaxis.range[0]'] && event['yaxis.range[1]']) {
-                            setYRange([event['yaxis.range[0]'], event['yaxis.range[1]']]);
-                        }
-                    }}
-                />
-            </div>
-            <div style={{ position: 'absolute', bottom: '10px', left: '10px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+            <div style={{ marginBottom: '20px' }}>
                 <input
                     type="text"
                     placeholder="Введите функцию"
                     value={functionInput}
                     onChange={(e) => setFunctionInput(e.target.value)}
-                    style={{ marginRight: '10px' }}
+                    style={{ marginRight: '10px', padding: '10px' }}
                 />
                 <button
                     onClick={() => {
@@ -163,6 +124,22 @@ function App() {
                     Добавить функцию
                 </button>
             </div>
+            <div style={{ width: '800px', height: '600px', marginBottom: '20px' }}>
+                <Plot
+                    data={plotData}
+                    layout={layout}
+                    onRelayout={(event) => {
+                        if (event['xaxis.range[0]'] && event['xaxis.range[1]']) {
+                            setXRange([event['xaxis.range[0]'], event['xaxis.range[1]']]);
+                        }
+                        if (event['yaxis.range[0]'] && event['yaxis.range[1]']) {
+                            setYRange([event['yaxis.range[0]'], event['yaxis.range[1]']]);
+                        }
+                    }}
+                />
+            </div>
+            <MathKeyboard onKeyClick={(key) => setFunctionInput(functionInput + key)} />
+            {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
         </div>
     );
 }
