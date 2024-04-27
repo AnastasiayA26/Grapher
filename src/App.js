@@ -190,7 +190,7 @@ function App() {
 
 const FunctionList = ({ functions, hiddenFunctions, onFunctionToggle }) => (
     <div style={{ position: 'relative', marginTop: '20px' }}>
-        <div style={{ backgroundColor: '#fff', border: '1px solid #ddd', borderRadius: '5px', padding: '10px', width: 'calc(100% - 22px)', maxHeight: '200px', overflowY: 'auto' }}>
+        <div style={{ backgroundColor: '#fff', border: '1px solid #ddd', borderRadius: '5px', padding: '10px', width: 'auto', maxHeight: '200px', overflowY: 'auto' }}>
             {functions.map((func, index) => (
                 <div key={index} style={{ padding: '5px', display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
                     <div
