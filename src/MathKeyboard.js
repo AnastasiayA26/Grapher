@@ -5,13 +5,21 @@ const MathKeyboard = ({ onKeyClick }) => {
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
     const handleKeyClick = (key) => {
-        let expression = '';
-        if (['sqrt', 'sin', 'cos', 'tan', 'ctg', 'ln', 'log'].includes(key)) {
-            expression = `${key}(`;
+        if (key === '\u232b') { // символ "⌫" (значок клавиатуры для удаления)
+            onKeyClick('delete');
         } else {
-            expression = key;
+            let expression = '';
+            if (key === 'delete') { // если нажата кнопка удаления, то удаляем последний символ
+                expression = key;
+            } else {
+                if (['sqrt', 'sin', 'cos', 'tan', 'ctg', 'ln', 'log'].includes(key)) {
+                    expression = `${key}(`;
+                } else {
+                    expression = key;
+                }
+            }
+            onKeyClick(expression);
         }
-        onKeyClick(expression);
     };
 
     const toggleExpand = () => {
@@ -46,79 +54,94 @@ const MathKeyboard = ({ onKeyClick }) => {
         width: `${buttonWidth}px` // Set the width dynamically
     };
 
-    return (
-        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', height: '100%' }}>
-            <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '5px',
-                padding: '10px',
-                backgroundColor: '#f2f2f2',
-                borderRadius: '10px',
-                flex: expanded ? '1' : '0'
-            }}>
-                <div style={{display: 'flex', flexWrap: 'wrap'}}>
-                    <button style={buttonStyle} onClick={() => handleKeyClick('x')}>x</button>
-                    <button style={buttonStyle} onClick={() => handleKeyClick('y')}>y</button>
-                    <button style={buttonStyle} onClick={() => handleKeyClick('ln( )')}>ln</button>
-                    <button style={buttonStyle} onClick={() => handleKeyClick('log( )')}>log</button>
-                    <button style={buttonStyle} onClick={() => handleKeyClick('cos( )')}>cos</button>
-                </div>
-                <div style={{display: 'flex', flexWrap: 'wrap'}}>
-                    <button style={buttonStyle} onClick={() => handleKeyClick('(')}>(</button>
-                    <button style={buttonStyle} onClick={() => handleKeyClick(')')}>)</button>
-                    <button style={buttonStyle} onClick={() => handleKeyClick('<')}>{"<"}</button>
-                    <button style={buttonStyle} onClick={() => handleKeyClick('>')}>{">"}</button>
-                    <button style={buttonStyle} onClick={() => handleKeyClick('sin( )')}>sin</button>
-                </div>
-                <div style={{display: 'flex', flexWrap: 'wrap'}}>
-                    <button style={buttonStyle} onClick={() => handleKeyClick('| |')}>|x|</button>
-                    <button style={buttonStyle} onClick={() => handleKeyClick('<=')}>≤</button>
-                    <button style={buttonStyle} onClick={() => handleKeyClick('>=')}>≥</button>
-                    <button style={buttonStyle} onClick={() => handleKeyClick('=')}>=</button>
-                    <button style={buttonStyle} onClick={() => handleKeyClick('tan( )')}>tan</button>
-                </div>
-                <div style={{display: 'flex', flexWrap: 'wrap'}}>
-                    <button style={buttonStyle} onClick={() => handleKeyClick('sqrt( )')}>√</button>
-                    <button style={buttonStyle} onClick={() => handleKeyClick('^')}>^</button>
-                    <button style={buttonStyle} onClick={() => handleKeyClick('e')}>e</button>
-                    <button style={buttonStyle} onClick={() => handleKeyClick('π')}>π</button>
-                    <button style={buttonStyle} onClick={() => handleKeyClick('.')}>,</button>
-                </div>
-            </div>
+    const keyboardIconStyle = {
+        position: 'fixed',
+        top: '0',
+        left: '0',
+        fontSize: '24px',
+        cursor: 'pointer'
+    };
 
+    return (
+        <div style={{ position: 'relative' }}>
             <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '5px',
-                padding: '10px',
-                backgroundColor: '#f2f2f2',
-                borderRadius: '10px',
-                flex: expanded ? '1' : '0'
+                display: expanded ? 'flex' : 'none',
+                flexDirection: 'row',
+                justifyContent: 'center',
+                height: '100%'
             }}>
-                <div style={{display: 'flex', flexWrap: 'wrap'}}>
-                    <button style={buttonStyle} onClick={() => handleKeyClick('7')}>7</button>
-                    <button style={buttonStyle} onClick={() => handleKeyClick('8')}>8</button>
-                    <button style={buttonStyle} onClick={() => handleKeyClick('9')}>9</button>
-                    <button style={buttonStyle} onClick={() => handleKeyClick('delete')}>del</button>
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '5px',
+                    padding: '10px',
+                    backgroundColor: '#f2f2f2',
+                    borderRadius: '10px',
+                    flex: '1'
+                }}>
+                    <div style={{display: 'flex', flexWrap: 'wrap'}}>
+                        <button style={buttonStyle} onClick={() => handleKeyClick('x')}>x</button>
+                        <button style={buttonStyle} onClick={() => handleKeyClick('y')}>y</button>
+                        <button style={buttonStyle} onClick={() => handleKeyClick('ln( )')}>ln</button>
+                        <button style={buttonStyle} onClick={() => handleKeyClick('log(a, x)')}>log</button>
+                        <button style={buttonStyle} onClick={() => handleKeyClick('cos( )')}>cos</button>
+                    </div>
+                    <div style={{display: 'flex', flexWrap: 'wrap'}}>
+                        <button style={buttonStyle} onClick={() => handleKeyClick('(')}>(</button>
+                        <button style={buttonStyle} onClick={() => handleKeyClick(')')}>)</button>
+                        <button style={buttonStyle} onClick={() => handleKeyClick('<')}>{"<"}</button>
+                        <button style={buttonStyle} onClick={() => handleKeyClick('>')}>{">"}</button>
+                        <button style={buttonStyle} onClick={() => handleKeyClick('sin( )')}>sin</button>
+                    </div>
+                    <div style={{display: 'flex', flexWrap: 'wrap'}}>
+                        <button style={buttonStyle} onClick={() => handleKeyClick('| |')}>|x|</button>
+                        <button style={buttonStyle} onClick={() => handleKeyClick('≤')}>≤</button>
+                        <button style={buttonStyle} onClick={() => handleKeyClick('≥')}>≥</button>
+                        <button style={buttonStyle} onClick={() => handleKeyClick('=')}>=</button>
+                        <button style={buttonStyle} onClick={() => handleKeyClick('tan( )')}>tan</button>
+                    </div>
+                    <div style={{display: 'flex', flexWrap: 'wrap'}}>
+                        <button style={buttonStyle} onClick={() => handleKeyClick('√')}>√</button>
+                        <button style={buttonStyle} onClick={() => handleKeyClick('^')}>^</button>
+                        <button style={buttonStyle} onClick={() => handleKeyClick('e')}>e</button>
+                        <button style={buttonStyle} onClick={() => handleKeyClick('π')}>π</button>
+                        <button style={buttonStyle} onClick={() => handleKeyClick('.')}>,</button>
+                    </div>
                 </div>
-                <div style={{display: 'flex', flexWrap: 'wrap'}}>
-                    <button style={buttonStyle} onClick={() => handleKeyClick('4')}>4</button>
-                    <button style={buttonStyle} onClick={() => handleKeyClick('5')}>5</button>
-                    <button style={buttonStyle} onClick={() => handleKeyClick('6')}>6</button>
-                    <button style={buttonStyle} onClick={() => handleKeyClick('*')}>*</button>
-                </div>
-                <div style={{display: 'flex', flexWrap: 'wrap'}}>
-                    <button style={buttonStyle} onClick={() => handleKeyClick('1')}>1</button>
-                    <button style={buttonStyle} onClick={() => handleKeyClick('2')}>2</button>
-                    <button style={buttonStyle} onClick={() => handleKeyClick('3')}>3</button>
-                    <button style={buttonStyle} onClick={() => handleKeyClick('-')}>-</button>
-                </div>
-                <div style={{display: 'flex', flexWrap: 'wrap'}}>
-                    <button style={buttonStyle} onClick={() => handleKeyClick('0')}>0</button>
-                    <button style={buttonStyle} onClick={() => handleKeyClick('=')}>=</button>
-                    <button style={buttonStyle} onClick={() => handleKeyClick('+')}>+</button>
-                    <button style={buttonStyle} onClick={() => handleKeyClick('/')}>/</button>
+
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '5px',
+                    padding: '10px',
+                    backgroundColor: '#f2f2f2',
+                    borderRadius: '10px',
+                    flex: expanded ? '1' : '0'
+                }}>
+                    <div style={{display: 'flex', flexWrap: 'wrap'}}>
+                        <button style={buttonStyle} onClick={() => handleKeyClick('7')}>7</button>
+                        <button style={buttonStyle} onClick={() => handleKeyClick('8')}>8</button>
+                        <button style={buttonStyle} onClick={() => handleKeyClick('9')}>9</button>
+                        <button style={buttonStyle} onClick={() => handleKeyClick('\u232b')}>⌫</button> {/* Изменение на значок клавиатуры */}
+                    </div>
+                    <div style={{display: 'flex', flexWrap: 'wrap'}}>
+                        <button style={buttonStyle} onClick={() => handleKeyClick('4')}>4</button>
+                        <button style={buttonStyle} onClick={() => handleKeyClick('5')}>5</button>
+                        <button style={buttonStyle} onClick={() => handleKeyClick('6')}>6</button>
+                        <button style={buttonStyle} onClick={() => handleKeyClick('*')}>*</button>
+                    </div>
+                    <div style={{display: 'flex', flexWrap: 'wrap'}}>
+                        <button style={buttonStyle} onClick={() => handleKeyClick('1')}>1</button>
+                        <button style={buttonStyle} onClick={() => handleKeyClick('2')}>2</button>
+                        <button style={buttonStyle} onClick={() => handleKeyClick('3')}>3</button>
+                        <button style={buttonStyle} onClick={() => handleKeyClick('-')}>-</button>
+                    </div>
+                    <div style={{display: 'flex', flexWrap: 'wrap'}}>
+                        <button style={buttonStyle} onClick={() => handleKeyClick('0')}>0</button>
+                        <button style={buttonStyle} onClick={() => handleKeyClick('=')}>=</button>
+                        <button style={buttonStyle} onClick={() => handleKeyClick('+')}>+</button>
+                        <button style={buttonStyle} onClick={() => handleKeyClick('/')}>/</button>
+                    </div>
                 </div>
             </div>
         </div>
