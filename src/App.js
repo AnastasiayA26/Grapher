@@ -9,24 +9,21 @@ function App() {
     const [errorMessage, setErrorMessage] = useState('');
     const [xRange, setXRange] = useState([-100, 100]);
     const [yRange, setYRange] = useState([-100, 100]);
+    const [isKeyboardExpanded, setIsKeyboardExpanded] = useState(false);
+    const [isFunctionListVisible, setIsFunctionListVisible] = useState(false);
+    const [hiddenFunctions, setHiddenFunctions] = useState([]);
 
     const calculatePlotData = () => {
-        try {
-            if (functionInput.trim() === '') {
-                setErrorMessage('Введите функцию');
-                return;
-            }
-
-            const newFunctions = [...functions, { func: functionInput, color: getRandomColor() }];
-            setFunctions(newFunctions);
-
-            const traces = newFunctions.map(({ func, color }, index) => {
+        const traces = functions
+            .filter((func, index) => !hiddenFunctions.includes(index)) // Исключаем скрытые функции из данных графика
+            .map(({ func, color }, index) => {
                 const xValues = [];
                 const yValues = [];
-                const step = 0.01; // Уменьшаем шаг для более плотного распределения точек
+                const step = 0.01;
 
                 for (let x = xRange[0]; x <= xRange[1]; x += step) {
-                    const y = eval(func.replace('x', x));
+                    const replacedFunc = func.replace(/x/g, x).replace(/y/g, x);
+                    const y = eval(replacedFunc);
                     xValues.push(x);
                     yValues.push(y);
                 }
@@ -44,13 +41,17 @@ function App() {
                 };
             });
 
-            setPlotData(traces);
-            setErrorMessage('');
-        } catch (error) {
-            setErrorMessage('Неверная функция');
-        }
+        setPlotData(traces);
+        setErrorMessage('');
     };
 
+    const addFunction = () => {
+        const newFunction = { func: functionInput, color: getRandomColor() };
+        setFunctions([...functions, newFunction]);
+        setFunctionInput('');
+        setIsFunctionListVisible(true); // Показываем список функций при добавлении новой функции
+        calculatePlotData();
+    };
 
     const getRandomColor = () => {
         const letters = '0123456789ABCDEF';
@@ -63,7 +64,7 @@ function App() {
 
     useEffect(() => {
         calculatePlotData();
-    }, [functions]); // Пересчитываем графики при изменении списка функций
+    }, [functions, xRange, yRange, hiddenFunctions]); // Обновляем график при изменении состояния скрытых функций
 
     const layout = {
         width: 800,
@@ -76,7 +77,7 @@ function App() {
             zerolinewidth: 2,
             gridcolor: '#ddd',
             gridwidth: 1,
-            tickangle: 0 // Устанавливаем угол подписей делений по оси X
+            tickangle: 0
         },
         yaxis: {
             title: '',
@@ -97,22 +98,36 @@ function App() {
     };
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-            <div style={{ marginBottom: '20px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', position: 'relative' }}>
+            <div style={{ marginBottom: '20px', marginLeft: '10px' }}>
                 <input
                     type="text"
                     placeholder="Введите функцию"
                     value={functionInput}
                     onChange={(e) => setFunctionInput(e.target.value)}
-                    style={{ marginRight: '10px', padding: '10px' }}
+                    style={{ marginRight: '10px', padding: '10px', width: 'calc(100% - 120px)'}}
                 />
                 <button
-                    onClick={() => {
-                        setFunctionInput('');
-                        calculatePlotData();
-                    }}
+                    onClick={addFunction}
                     style={{
                         padding: '10px 20px',
+                        fontSize: '16px',
+                        backgroundColor: '#1a73e8',
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: '8px',
+                        cursor: 'pointer'
+                    }}
+                >
+                    add
+                </button>
+                <button
+                    onClick={() => setIsKeyboardExpanded(!isKeyboardExpanded)}
+                    style={{
+                        position: 'absolute',
+                        bottom: 0,
+                        left: 0,
+                        padding: '10px',
                         fontSize: '16px',
                         backgroundColor: '#1a73e8',
                         color: '#fff',
@@ -121,9 +136,39 @@ function App() {
                         cursor: 'pointer'
                     }}
                 >
-                    Добавить функцию
+                <span role="img" aria-label="keyboard-icon">
+                    ⌨️
+                </span>
                 </button>
             </div>
+            {isKeyboardExpanded &&
+                <div style={{ position: 'absolute', bottom: 0, left: 0, zIndex: 999 }}>
+                    <MathKeyboard onKeyClick={(key) => setFunctionInput(functionInput + key)} />
+                    <div style={{ textAlign: 'center', paddingTop: '5px' }}>
+            <span onClick={() => setIsKeyboardExpanded(false)} style={{ cursor: 'pointer' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                    <path fill="none" d="M0 0h24v24H0z"/>
+                    <path d="M7 10l5 5 5-5H7z"/>
+                </svg>
+            </span>
+                    </div>
+                </div>
+            }
+
+
+            <FunctionList
+                functions={functions}
+                hiddenFunctions={hiddenFunctions}
+                onFunctionToggle={(index) => {
+                    const updatedFunctions = [...hiddenFunctions];
+                    if (updatedFunctions.includes(index)) {
+                        updatedFunctions.splice(updatedFunctions.indexOf(index), 1); // Удаляем из скрытых
+                    } else {
+                        updatedFunctions.push(index); // Добавляем в скрытые
+                    }
+                    setHiddenFunctions(updatedFunctions);
+                }}
+            />
             <div style={{ width: '800px', height: '600px', marginBottom: '20px' }}>
                 <Plot
                     data={plotData}
@@ -138,10 +183,38 @@ function App() {
                     }}
                 />
             </div>
-            <MathKeyboard onKeyClick={(key) => setFunctionInput(functionInput + key)} />
             {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
         </div>
     );
 }
+
+const FunctionList = ({ functions, hiddenFunctions, onFunctionToggle }) => (
+    <div style={{ position: 'relative', marginTop: '20px' }}>
+        <div style={{ backgroundColor: '#fff', border: '1px solid #ddd', borderRadius: '5px', padding: '10px', width: 'calc(100% - 22px)', maxHeight: '200px', overflowY: 'auto' }}>
+            {functions.map((func, index) => (
+                <div key={index} style={{ padding: '5px', display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                    <div
+                        style={{
+                            width: '20px',
+                            height: '20px',
+                            borderRadius: '50%',
+                            backgroundColor: func.color,
+                            marginRight: '5px',
+                            cursor: 'pointer',
+                            border: '1px solid #ddd',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                        }}
+                        onClick={() => onFunctionToggle(index)}
+                    >
+                        {hiddenFunctions.includes(index) && <span style={{ color: '#ddd', fontSize: '12px' }}>•</span>}
+                    </div>
+                    <span style={{ textDecoration: hiddenFunctions.includes(index) ? 'line-through' : 'none' }}>{func.func}</span>
+                </div>
+            ))}
+        </div>
+    </div>
+);
 
 export default App;
