@@ -53,6 +53,13 @@ function App() {
         calculatePlotData();
     };
 
+    const editFunction = (index, editedFunction) => {
+        const updatedFunctions = [...functions];
+        updatedFunctions[index] = editedFunction;
+        setFunctions(updatedFunctions);
+        calculatePlotData();
+    };
+
     const getRandomColor = () => {
         const letters = '0123456789ABCDEF';
         let color = '#';
@@ -152,6 +159,23 @@ function App() {
                 </div>
             }
 
+            <div style={{ position: 'absolute', top: 0, right: 0 }}>
+                <div style={{ width: '400px', height: '300px' }}>
+                    <Plot
+                        data={plotData}
+                        layout={layout}
+                        onRelayout={(event) => {
+                            if (event['xaxis.range[0]'] && event['xaxis.range[1]']) {
+                                setXRange([event['xaxis.range[0]'], event['xaxis.range[1]']]);
+                            }
+                            if (event['yaxis.range[0]'] && event['yaxis.range[1]']) {
+                                setYRange([event['yaxis.range[0]'], event['yaxis.range[1]']]);
+                            }
+                        }}
+                    />
+                </div>
+            </div>
+
             <FunctionList
                 functions={functions}
                 hiddenFunctions={hiddenFunctions}
@@ -164,31 +188,16 @@ function App() {
                     }
                     setHiddenFunctions(updatedFunctions);
                 }}
+                onFunctionEdit={editFunction}
             />
-            <div style={{ width: '800px', height: 'calc(80vh - 80px)', marginBottom: '20px' }}>
-                <Plot
-                    data={plotData}
-                    layout={layout}
-                    onRelayout={(event) => {
-                        if (event['xaxis.range[0]'] && event['xaxis.range[1]']) {
-                            setXRange([event['xaxis.range[0]'], event['xaxis.range[1]']]);
-                        }
-                        if (event['yaxis.range[0]'] && event['yaxis.range[1]']) {
-                            setYRange([event['yaxis.range[0]'], event['yaxis.range[1]']]);
-                        }
-                    }}
-                />
-            </div>
             {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
         </div>
     );
 }
 
-const FunctionList = ({ functions, hiddenFunctions, onFunctionToggle }) => (
+const FunctionList = ({ functions, hiddenFunctions, onFunctionToggle, onFunctionEdit }) => (
     <div style={{ marginTop: '20px' }}>
-        <div style
-
-={{ backgroundColor: '#fff', border: '1px solid #ddd', borderRadius: '5px', padding: '10px', width: 'auto', maxHeight: '200px', overflowY: 'auto' }}>
+        <div style={{ backgroundColor: '#fff', border: '1px solid #ddd', borderRadius: '5px', padding: '10px', width: 'auto', maxHeight: '200px', overflowY: 'auto' }}>
             {functions.map((func, index) => (
                 <div key={index} style={{ padding: '5px', display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
                     <div
@@ -208,7 +217,17 @@ const FunctionList = ({ functions, hiddenFunctions, onFunctionToggle }) => (
                     >
                         {hiddenFunctions.includes(index) && <span style={{ color: '#ddd', fontSize: '12px' }}>•</span>}
                     </div>
-                    <span style={{ textDecoration: hiddenFunctions.includes(index) ? 'line-through' : 'none' }}>{func.func}</span>
+                    <span
+                        style={{
+                            fontStyle: hiddenFunctions.includes(index) ? 'italic' : 'normal',
+                            textDecoration: hiddenFunctions.includes(index) ? 'line-through' : 'none'
+                        }}
+                        contentEditable={!hiddenFunctions.includes(index)}
+                        suppressContentEditableWarning={true}
+                        onBlur={(e) => onFunctionEdit(index, { ...func, func: e.target.textContent })}
+                    >
+                        {func.func}
+                    </span>
                 </div>
             ))}
         </div>
@@ -216,3 +235,4 @@ const FunctionList = ({ functions, hiddenFunctions, onFunctionToggle }) => (
 );
 
 export default App;
+
