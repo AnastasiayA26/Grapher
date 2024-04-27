@@ -15,7 +15,7 @@ function App() {
 
     const calculatePlotData = () => {
         const traces = functions
-            .filter((func, index) => !hiddenFunctions.includes(index)) // Исключаем скрытые функции из данных графика
+            .filter((func, index) => !hiddenFunctions.includes(index))
             .map(({ func, color }, index) => {
                 const xValues = [];
                 const yValues = [];
@@ -49,7 +49,7 @@ function App() {
         const newFunction = { func: functionInput, color: getRandomColor() };
         setFunctions([...functions, newFunction]);
         setFunctionInput('');
-        setIsFunctionListVisible(true); // Показываем список функций при добавлении новой функции
+        setIsFunctionListVisible(true);
         calculatePlotData();
     };
 
@@ -64,11 +64,11 @@ function App() {
 
     useEffect(() => {
         calculatePlotData();
-    }, [functions, xRange, yRange, hiddenFunctions]); // Обновляем график при изменении состояния скрытых функций
+    }, [functions, xRange, yRange, hiddenFunctions]);
 
     const layout = {
         width: 800,
-        height: 600,
+        height: '80vh',
         xaxis: {
             title: '',
             range: xRange,
@@ -98,7 +98,7 @@ function App() {
     };
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', position: 'relative' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
             <div style={{ marginBottom: '20px', marginLeft: '10px' }}>
                 <input
                     type="text"
@@ -124,9 +124,6 @@ function App() {
                 <button
                     onClick={() => setIsKeyboardExpanded(!isKeyboardExpanded)}
                     style={{
-                        position: 'absolute',
-                        bottom: 0,
-                        left: 0,
                         padding: '10px',
                         fontSize: '16px',
                         backgroundColor: '#1a73e8',
@@ -136,25 +133,24 @@ function App() {
                         cursor: 'pointer'
                     }}
                 >
-                <span role="img" aria-label="keyboard-icon">
-                    ⌨️
-                </span>
+                    <span role="img" aria-label="keyboard-icon">
+                        ⌨️
+                    </span>
                 </button>
             </div>
             {isKeyboardExpanded &&
-                <div style={{ position: 'absolute', bottom: 0, left: 0, zIndex: 999 }}>
+                <div style={{ position: 'fixed', bottom: '20px', left: '20px' }}>
                     <MathKeyboard onKeyClick={(key) => setFunctionInput(functionInput + key)} />
                     <div style={{ textAlign: 'center', paddingTop: '5px' }}>
-            <span onClick={() => setIsKeyboardExpanded(false)} style={{ cursor: 'pointer' }}>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-                    <path fill="none" d="M0 0h24v24H0z"/>
-                    <path d="M7 10l5 5 5-5H7z"/>
-                </svg>
-            </span>
+                        <span onClick={() => setIsKeyboardExpanded(false)} style={{ cursor: 'pointer' }}>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                                <path fill="none" d="M0 0h24v24H0z"/>
+                                <path d="M7 10l5 5 5-5H7z"/>
+                            </svg>
+                        </span>
                     </div>
                 </div>
             }
-
 
             <FunctionList
                 functions={functions}
@@ -162,14 +158,14 @@ function App() {
                 onFunctionToggle={(index) => {
                     const updatedFunctions = [...hiddenFunctions];
                     if (updatedFunctions.includes(index)) {
-                        updatedFunctions.splice(updatedFunctions.indexOf(index), 1); // Удаляем из скрытых
+                        updatedFunctions.splice(updatedFunctions.indexOf(index), 1);
                     } else {
-                        updatedFunctions.push(index); // Добавляем в скрытые
+                        updatedFunctions.push(index);
                     }
                     setHiddenFunctions(updatedFunctions);
                 }}
             />
-            <div style={{ width: '800px', height: '600px', marginBottom: '20px' }}>
+            <div style={{ width: '800px', height: 'calc(80vh - 80px)', marginBottom: '20px' }}>
                 <Plot
                     data={plotData}
                     layout={layout}
@@ -189,8 +185,10 @@ function App() {
 }
 
 const FunctionList = ({ functions, hiddenFunctions, onFunctionToggle }) => (
-    <div style={{ position: 'relative', marginTop: '20px' }}>
-        <div style={{ backgroundColor: '#fff', border: '1px solid #ddd', borderRadius: '5px', padding: '10px', width: 'auto', maxHeight: '200px', overflowY: 'auto' }}>
+    <div style={{ marginTop: '20px' }}>
+        <div style
+
+={{ backgroundColor: '#fff', border: '1px solid #ddd', borderRadius: '5px', padding: '10px', width: 'auto', maxHeight: '200px', overflowY: 'auto' }}>
             {functions.map((func, index) => (
                 <div key={index} style={{ padding: '5px', display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
                     <div
