@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Plot from 'react-plotly.js';
 import MathKeyboard from './MathKeyboard';
+import {make_function} from './math_parser.js';
 
 function App() {
     const [functions, setFunctions] = useState([]);
@@ -17,15 +18,15 @@ function App() {
         const traces = functions
             .filter((func, index) => !hiddenFunctions.includes(index))
             .map(({ func, color }, index) => {
+                let f = make_function(func);
+
                 const xValues = [];
                 const yValues = [];
                 const step = 0.01;
 
                 for (let x = xRange[0]; x <= xRange[1]; x += step) {
-                    const replacedFunc = func.replace(/x/g, x).replace(/y/g, x);
-                    const y = eval(replacedFunc);
                     xValues.push(x);
-                    yValues.push(y);
+                    yValues.push(f(x));
                 }
 
                 return {
