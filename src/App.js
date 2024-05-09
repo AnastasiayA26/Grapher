@@ -2,6 +2,10 @@ import React, { useState, useEffect } from 'react';
 import Plot from 'react-plotly.js';
 import MathKeyboard from './MathKeyboard';
 import {make_function} from './math_parser.js';
+import { evaluate } from 'mathjs';
+import './styles.css'
+import './index.css';
+import ZoomControls, { handleZoomInX, handleZoomOutX, handleZoomInY, handleZoomOutY, handleResetZoom } from './components/ZoomControls';
 
 function App() {
     const [functions, setFunctions] = useState([]);
@@ -19,14 +23,15 @@ function App() {
             .filter((func, index) => !hiddenFunctions.includes(index))
             .map(({ func, color }, index) => {
                 let f = make_function(func);
-
                 const xValues = [];
                 const yValues = [];
                 const step = 0.01;
 
                 for (let x = xRange[0]; x <= xRange[1]; x += step) {
+                    const replacedFunc = func.replace(/x/g, x).replace(/y/g, x);
+                    const y = eval(replacedFunc);
                     xValues.push(x);
-                    yValues.push(f(x));
+                    yValues.push(y);
                 }
 
                 return {
@@ -75,7 +80,7 @@ function App() {
     }, [functions, xRange, yRange, hiddenFunctions]);
 
     const layout = {
-        width: 800,
+        width: '80%',
         height: '80vh',
         xaxis: {
             title: '',
@@ -83,7 +88,7 @@ function App() {
             zeroline: true,
             zerolinecolor: '#000',
             zerolinewidth: 2,
-            gridcolor: '#ddd',
+            gridcolor: 'rgba(0, 0, 0, 0.1)',
             gridwidth: 1,
             tickangle: 0
         },
@@ -93,7 +98,7 @@ function App() {
             zeroline: true,
             zerolinecolor: '#000',
             zerolinewidth: 2,
-            gridcolor: '#ddd',
+            gridcolor: 'rgba(0, 0, 0, 0.1)',
             gridwidth: 1
         },
         autosize: true,
@@ -106,14 +111,14 @@ function App() {
     };
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-            <div style={{ marginBottom: '20px', marginLeft: '10px' }}>
+        <div style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-start', zIndex: '2'}}>
+            <div style={{marginBottom: '20px', marginLeft: '10px'}}>
                 <input
                     type="text"
                     placeholder="Введите функцию"
                     value={functionInput}
                     onChange={(e) => setFunctionInput(e.target.value)}
-                    style={{ marginRight: '10px', padding: '10px', width: 'calc(100% - 120px)'}}
+                    style={{marginRight: '10px', padding: '10px', width: '100%'}}
                 />
                 <button
                     onClick={addFunction}
@@ -121,6 +126,7 @@ function App() {
                         padding: '10px 20px',
                         fontSize: '16px',
                         backgroundColor: '#1a73e8',
+
                         color: '#fff',
                         border: 'none',
                         borderRadius: '8px',
@@ -147,10 +153,10 @@ function App() {
                 </button>
             </div>
             {isKeyboardExpanded &&
-                <div style={{ position: 'fixed', bottom: '20px', left: '20px' }}>
-                    <MathKeyboard onKeyClick={(key) => setFunctionInput(functionInput + key)} />
-                    <div style={{ textAlign: 'center', paddingTop: '5px' }}>
-                        <span onClick={() => setIsKeyboardExpanded(false)} style={{ cursor: 'pointer' }}>
+                <div style={{position: 'fixed', bottom: '20px', left: '20px', zIndex: '1'}}>
+                    <MathKeyboard onKeyClick={(key) => setFunctionInput(functionInput + key)}/>
+                    <div style={{textAlign: 'center', paddingTop: '5px'}}>
+                        <span onClick={() => setIsKeyboardExpanded(false)} style={{cursor: 'pointer'}}>
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
                                 <path fill="none" d="M0 0h24v24H0z"/>
                                 <path d="M7 10l5 5 5-5H7z"/>
@@ -159,22 +165,27 @@ function App() {
                     </div>
                 </div>
             }
-
-            <div style={{ position: 'absolute', top: 0, right: 0 }}>
-                <div style={{ width: '400px', height: '300px' }}>
-                    <Plot
-                        data={plotData}
-                        layout={layout}
-                        onRelayout={(event) => {
-                            if (event['xaxis.range[0]'] && event['xaxis.range[1]']) {
-                                setXRange([event['xaxis.range[0]'], event['xaxis.range[1]']]);
-                            }
-                            if (event['yaxis.range[0]'] && event['yaxis.range[1]']) {
-                                setYRange([event['yaxis.range[0]'], event['yaxis.range[1]']]);
-                            }
-                        }}
-                    />
-                </div>
+            <div style={{
+                position: 'fixed',
+                left: '80%',
+                top: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: '80%',
+                height: '100vh',
+                zIndex: '0'
+            }}>
+                <Plot
+                    data={plotData}
+                    layout={layout}
+                    onRelayout={(event) => {
+                        if (event['xaxis.range[0]'] && event['xaxis.range[1]']) {
+                            setXRange([event['xaxis.range[0]'], event['xaxis.range[1]']]);
+                        }
+                        if (event['yaxis.range[0]'] && event['yaxis.range[1]']) {
+                            setYRange([event['yaxis.range[0]'], event['yaxis.range[1]']]);
+                        }
+                    }}
+                />
             </div>
 
             <FunctionList
@@ -191,16 +202,24 @@ function App() {
                 }}
                 onFunctionEdit={editFunction}
             />
-            {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+            {errorMessage && <p style={{color: 'red'}}>{errorMessage}</p>}
         </div>
     );
 }
 
-const FunctionList = ({ functions, hiddenFunctions, onFunctionToggle, onFunctionEdit }) => (
-    <div style={{ marginTop: '20px' }}>
-        <div style={{ backgroundColor: '#fff', border: '1px solid #ddd', borderRadius: '5px', padding: '10px', width: 'auto', maxHeight: '200px', overflowY: 'auto' }}>
+const FunctionList = ({functions, hiddenFunctions, onFunctionToggle, onFunctionEdit}) => (
+    <div style={{marginTop: '20px'}}>
+        <div style={{
+            backgroundColor: '#fff',
+            border: '1px solid #ddd',
+            borderRadius: '5px',
+            padding: '10px',
+            width: 'auto',
+            maxHeight: '200px',
+            overflowY: 'auto'
+        }}>
             {functions.map((func, index) => (
-                <div key={index} style={{ padding: '5px', display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                <div key={index} style={{padding: '5px', display: 'flex', alignItems: 'center', cursor: 'pointer'}}>
                     <div
                         style={{
                             width: '20px',
@@ -236,4 +255,5 @@ const FunctionList = ({ functions, hiddenFunctions, onFunctionToggle, onFunction
 );
 
 export default App;
+
 
