@@ -105,25 +105,25 @@ const MathKeyboard = ({ onKeyClick }) => {
                     </div>
                     <div style={{display: 'flex', flexWrap: 'wrap'}}>
                         <button style={{ ...buttonStyle, backgroundColor: clickedButtonIndex === 10 ? '#d3d1d1' : '#ffffff'}}
-                                onClick={() => handleKeyClick('| |', 10)}>|x|</button>
+                                onClick={() => handleKeyClick('abs()', 10)}>|x|</button>
                         <button style={{ ...buttonStyle, backgroundColor: clickedButtonIndex === 11 ? '#d3d1d1' : '#ffffff'}}
-                                onClick={() => handleKeyClick('≤', 11)}>≤</button>
+                                onClick={() => handleKeyClick('<=', 11)}>≤</button>
                         <button style={{ ...buttonStyle, backgroundColor: clickedButtonIndex === 12 ? '#d3d1d1' : '#ffffff'}}
-                                onClick={() => handleKeyClick('≥', 12)}>≥</button>
+                                onClick={() => handleKeyClick('>=', 12)}>≥</button>
                         <button style={{ ...buttonStyle, backgroundColor: clickedButtonIndex === 13 ? '#d3d1d1' : '#ffffff'}}
-                                onClick={() => handleKeyClick('=', 13)}>=</button>
+                                onClick={() => handleKeyClick('ctg()', 13)}>ctg</button>
                         <button style={{ ...buttonStyle, backgroundColor: clickedButtonIndex === 14 ? '#d3d1d1' : '#ffffff'}}
                                 onClick={() => handleKeyClick('tan( )', 14)}>tan</button>
                     </div>
                     <div style={{display: 'flex', flexWrap: 'wrap'}}>
                         <button style={{ ...buttonStyle, backgroundColor: clickedButtonIndex === 15 ? '#d3d1d1' : '#ffffff'}}
-                                onClick={() => handleKeyClick('√', 15)}>√</button>
+                                onClick={() => handleKeyClick('sqrt()', 15)}>√</button>
                         <button style={{ ...buttonStyle, backgroundColor: clickedButtonIndex === 16 ? '#d3d1d1' : '#ffffff'}}
                                 onClick={() => handleKeyClick('^', 16)}>^</button>
                         <button style={{ ...buttonStyle, backgroundColor: clickedButtonIndex === 17 ? '#d3d1d1' : '#ffffff'}}
                                 onClick={() => handleKeyClick('e', 17)}>e</button>
                         <button style={{ ...buttonStyle, backgroundColor: clickedButtonIndex === 18 ? '#d3d1d1' : '#ffffff'}}
-                                onClick={() => handleKeyClick('π', 18)}>π</button>
+                                onClick={() => handleKeyClick('pi', 18)}>π</button>
                         <button style={{ ...buttonStyle, backgroundColor: clickedButtonIndex === 19 ? '#d3d1d1' : '#ffffff'}}
                                 onClick={() => handleKeyClick('.', 19)}>,</button>
                     </div>
