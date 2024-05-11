@@ -12,18 +12,13 @@ code {
   monospace;
 }
 
-/* Общие стили для контейнера графика */
-.plot-container {
-  width: 400px;
-  height: 300px;
+.container {
+  width: 100%;
+  height: 100vh;
   position: relative;
 }
 
-/* Стили для сетки */
 .plot-container .grid-container {
-  display: grid;
-  grid-template-columns: repeat(10, 1fr);
-  grid-template-rows: repeat(10, 1fr);
   width: 100%;
   height: 100%;
   position: absolute;
@@ -37,3 +32,4 @@ code {
   height: 0;
   padding-bottom: 100%;
 }
+
