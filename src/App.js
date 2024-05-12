@@ -36,6 +36,7 @@ const App = () => {
                     const replacedFunc = func.replace(/x/g, x).replace(/y/g, x);
                     const y = evaluate(replacedFunc);
                     xValues.push(x);
+                    yValues.push(f(x));
                     yValues.push(y);
                 }
 
