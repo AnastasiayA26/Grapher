@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Plot from 'react-plotly.js';
-import MathKeyboard from './MathKeyboard';
+import MathKeyboard from './MathKeyboard.js';
 import { evaluate } from 'mathjs';
 import './styles.css';
 import './index.css';
 import {make_function} from './math_parser.js';
+import {createSmartappDebugger, createAssistant} from '@salutejs/client';
 
 const App = () => {
     const [functions, setFunctions] = useState([]);
@@ -22,6 +23,56 @@ const App = () => {
     useEffect(() => {
         calculatePlotData();
     }, [functions, hiddenFunctions, xRange]);
+
+    const getState = () => ({
+        functions,
+        hiddenFunctions,
+        xRange,
+        yRange,
+    });
+
+    const handleFunctionInputChange = (e) => {
+        setFunctionInput(e.target.value);
+    };
+
+    const addFunction = (func) => {
+        if (func) {
+            const parsedFunction = make_function(func);
+            if (parsedFunction) {
+                console.log('Adding function:', func);
+                setFunctions(prevFunctions => [...prevFunctions, { func, color: getRandomColor(), parsedFunc: parsedFunction }]);
+                setIsFunctionListVisible(true);
+            } else {
+                console.error('Invalid function:', func);
+            }
+        } else {
+            console.error('Function parameter is missing.');
+        }
+    };
+
+    const handleAddFunction = () => {
+        if (functionInput.trim() !== '') {
+            addFunction(functionInput); // Вызов функции для добавления новой функции
+            setFunctionInput('');
+            setIsFunctionListVisible(true);
+        } else {
+            setErrorMessage('Введите функцию.');
+        }
+    };
+    
+    const deleteFunction = (func) => {
+        if (func) {
+            console.log('Deleting function:', func);
+            const updatedFunctions = functions.filter(f => f.func !== func);
+            setFunctions(updatedFunctions);
+        } else {
+            console.error('Function parameter is missing.');
+        }
+    };
+
+    const handleDeleteFunction = (func) => {
+        deleteFunction(func); // Вызов функции для удаления функции
+    };
 
     const calculatePlotData = () => {
         const traces = functions
@@ -74,20 +125,6 @@ const App = () => {
         });
     };
 
-    const handleFunctionInputChange = (e) => {
-        setFunctionInput(e.target.value);
-    };
-
-    const handleAddFunction = () => {
-        if (functionInput.trim() !== '') {
-            setFunctions([...functions, { func: functionInput, color: getRandomColor() }]);
-            setFunctionInput('');
-            setIsFunctionListVisible(true);
-        } else {
-            setErrorMessage('Введите функцию.');
-        }
-    };
-
     const FunctionList = ({ functions, hiddenFunctions }) => (
         <div style={{ marginTop: '10px' }}>
             <div style={{
@@ -129,6 +166,9 @@ const App = () => {
                         >
                             {func.func}
                         </span>
+                        <button onClick={() => handleDeleteFunction(func.func)} style={{ marginLeft: '10px', cursor: 'pointer' }}>
+                            🗑️
+                        </button>
                     </div>
                 ))}
             </div>
@@ -169,6 +209,50 @@ const App = () => {
             inputRef.current.focus();
         }
     }, [isKeyboardExpanded]);
+
+    // Добавляем эти строки в `useEffect` для инициализации ассистента
+    useEffect(() => {
+        window.addFunction = addFunction;
+        window.deleteFunction = deleteFunction;
+        window.getFunctions = () => functions;
+    
+        // Инициализация ассистента
+        const handleAssistantData = (event) => {
+            console.log('handleAssistantData:', event);
+            const { action } = event;
+            if (action) {
+                switch (action.type) {
+                    case 'add_math_function':
+                        return addFunction(action.parameters.function);
+                    case 'delete_math_function':
+                        return deleteFunction(action.parameters.function);
+                    case 'build_graph':
+                        // Доступ к сущностям: action.parameters.trigonometric_functions, action.parameters.exponential_and_logarithmic_functions
+                        // Реализация построения графика выбранной функции
+                        return buildGraph(action.parameters.exponential_and_logarithmic_functions);
+                    default:
+                        console.error('Unknown action type:', action.type);
+                }
+            }
+        };
+    
+        if (process.env.NODE_ENV === 'development') {
+            const smartappDebuggerInstance = createSmartappDebugger({
+                token: process.env.REACT_APP_TOKEN || '',
+                initPhrase: `Запусти ${process.env.REACT_APP_SMARTAPP}`,
+                getState,
+                nativePanel: {
+                    defaultText: 'ччччччч',
+                    screenshotMode: false,
+                    tabIndex: -1,
+                },
+            });
+            smartappDebuggerInstance.on('data', handleAssistantData);
+        } else {
+            const assistantInstance = createAssistant({ getState });
+            assistantInstance.on('data', handleAssistantData);
+        }
+    }, [functions, addFunction, deleteFunction]);
 
     return (
         <div style={{ display: 'flex', height: '100vh' }} onKeyDown={handleKeyDown} onKeyUp={handleKeyUp} tabIndex={-1}>
@@ -260,5 +344,6 @@ function getRandomColor() {
 }
 
 export default App;
+
 
 
