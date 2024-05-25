@@ -7,7 +7,7 @@ import './styles.css';
 import './index.css';
 import { make_function } from './math_parser.js';
 
-const App = () => {
+   const App = () => {
     const [functions, setFunctions] = useState([]);
     const [functionInput, setFunctionInput] = useState('');
     const [plotData, setPlotData] = useState([]);
@@ -19,7 +19,7 @@ const App = () => {
     const [isKeyboardExpanded, setIsKeyboardExpanded] = useState(false);
     const [keyboardButtonColor, setKeyboardButtonColor] = useState('#1a73e8');
     const inputRef = useRef(null);
-
+       
     useEffect(() => {
         calculatePlotData();
     }, [functions, hiddenFunctions, xRange, yRange]);
@@ -64,6 +64,7 @@ const App = () => {
 //     } else {
 //         const assistantInstance = createAssistant({ getState });
 //         assistantInstance.on('data', handleAssistantData);
+
     const calculatePlotData = () => {
         const traces = functions
             .filter((func, index) => !hiddenFunctions.includes(index))
@@ -117,10 +118,12 @@ const App = () => {
             setFunctions([...functions, { func: functionInput, color: getRandomColor() }]);
             setFunctionInput('');
             setIsFunctionListVisible(true);
+            setErrorMessage('');
         } else {
             setErrorMessage('Введите функцию.');
         }
     };
+
 
     const handleFunctionRemove = (index) => {
         setFunctions(prevFunctions => prevFunctions.filter((_, i) => i !== index));
@@ -207,12 +210,18 @@ const App = () => {
     const handleKeyDown = (event) => {
         if (event.key === "ArrowDown") {
             setIsKeyboardExpanded(true);
+            if (inputRef.current) {
+                inputRef.current.focus();
+            }
         }
     };
 
     const handleKeyUp = (event) => {
         if (event.key === "ArrowDown") {
             setIsKeyboardExpanded(false);
+            if (inputRef.current) {
+                inputRef.current.focus();
+            }
         }
     };
 
@@ -234,22 +243,30 @@ const App = () => {
     return (
         <div style={{ display: 'flex', height: '100vh' }} onKeyDown={handleKeyDown} onKeyUp={handleKeyUp} tabIndex={-1}>
             <div style={{ flex: '1', height: '100%', borderRight: '1px solid #ccc' }}>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
+                <div style={{display: 'flex', alignItems: 'center'}}>
                     <input
                         ref={inputRef}
                         type="text"
                         placeholder="Введите функцию"
                         value={functionInput}
                         onChange={handleFunctionInputChange}
-                        style={{ marginRight: '10px', padding: '10px', width: '80%', margin: '0' }}
+                        autoFocus // добавьте этот атрибут
+                        onKeyDown={(e) => e.stopPropagation()}
+                        style={{marginRight: '10px', padding: '10px', width: '80%', margin: '0'}}
                     />
                     <button onClick={handleAddFunction}
-                            style={{ width: '20%', padding: '10px', backgroundColor: '#1a73e8', color: '#fff', margin: '0' }}>+
+                            style={{
+                                width: '20%',
+                                padding: '10px',
+                                backgroundColor: '#1a73e8',
+                                color: '#fff',
+                                margin: '0'
+                            }}>+
                     </button>
                 </div>
-                {isFunctionListVisible && <FunctionList functions={functions} hiddenFunctions={hiddenFunctions} />}
+                {isFunctionListVisible && <FunctionList functions={functions} hiddenFunctions={hiddenFunctions}/>}
             </div>
-            <div style={{ flex: '4', height: '100%', position: 'relative' }}>
+            <div style={{flex: '4', height: '100%', position: 'relative'}}>
                 <Plot
                     data={plotData}
                     layout={{
@@ -321,7 +338,3 @@ function getRandomColor() {
     return color;
 }
 export default App;
-
-
-
-
