@@ -23,47 +23,47 @@ import { make_function } from './math_parser.js';
     useEffect(() => {
         calculatePlotData();
     }, [functions, hiddenFunctions, xRange, yRange]);
-// Добавляем эти строки в `useEffect` для инициализации ассистента
-// useEffect(() => {
-//     window.addFunction = addFunction;
-//     window.deleteFunction = deleteFunction;
-//     window.getFunctions = () => functions;
-//
-//     // Инициализация ассистента
-//     const handleAssistantData = (event) => {
-//         console.log('handleAssistantData:', event);
-//         const { action } = event;
-//         if (action) {
-//             switch (action.type) {
-//                 case 'add_math_function':
-//                     return addFunction(action.parameters.function);
-//                 case 'delete_math_function':
-//                     return deleteFunction(action.parameters.function);
-//                 case 'build_graph':
-//                     // Доступ к сущностям: action.parameters.trigonometric_functions, action.parameters.exponential_and_logarithmic_functions
-//                     // Реализация построения графика выбранной функции
-//                     return buildGraph(action.parameters.exponential_and_logarithmic_functions);
-//                 default:
-//                     console.error('Unknown action type:', action.type);
-//             }
-//         }
-//     };
-//
-//     if (process.env.NODE_ENV === 'development') {
-//         const smartappDebuggerInstance = createSmartappDebugger({
-//             token: process.env.REACT_APP_TOKEN || '',
-//             initPhrase: `Запусти ${process.env.REACT_APP_SMARTAPP}`,
-//             getState,
-//             nativePanel: {
-//                 defaultText: 'ччччччч',
-//                 screenshotMode: false,
-//                 tabIndex: -1,
-//             },
-//         });
-//         smartappDebuggerInstance.on('data', handleAssistantData);
-//     } else {
-//         const assistantInstance = createAssistant({ getState });
-//         assistantInstance.on('data', handleAssistantData);
+
+   useEffect(() => {
+       window.addFunction = addFunction;
+       window.deleteFunction = deleteFunction;
+       window.getFunctions = () => functions;
+
+    // Инициализация ассистента
+       const handleAssistantData = (event) => {
+           console.log('handleAssistantData:', event);
+           const { action } = event;
+           if (action) {
+               switch (action.type) {
+                   case 'add_math_function':
+                       return addFunction(action.parameters.function);
+                   case 'delete_math_function':
+                       return deleteFunction(action.parameters.function);
+                   case 'build_graph':
+                    // Доступ к сущностям: action.parameters.trigonometric_functions, action.parameters.exponential_and_logarithmic_functions
+                    // Реализация построения графика выбранной функции
+                       return buildGraph(action.parameters.exponential_and_logarithmic_functions);
+                   default:
+                       console.error('Unknown action type:', action.type);
+               }
+           }
+       };
+
+    if (process.env.NODE_ENV === 'development') {
+           const smartappDebuggerInstance = createSmartappDebugger({
+               token: process.env.REACT_APP_TOKEN || '',
+               initPhrase: `Запусти ${process.env.REACT_APP_SMARTAPP}`,
+               getState,
+               nativePanel: {
+                   defaultText: 'ччччччч',
+                   screenshotMode: false,
+                   tabIndex: -1,
+               },
+           });
+           smartappDebuggerInstance.on('data', handleAssistantData);
+       } else {
+           const assistantInstance = createAssistant({ getState });
+           assistantInstance.on('data', handleAssistantData);
 
     const calculatePlotData = () => {
         const traces = functions
