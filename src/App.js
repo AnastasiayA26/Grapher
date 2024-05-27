@@ -1,13 +1,14 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import Plot from 'react-plotly.js';
 import MathKeyboard from './MathKeyboard.js';
-import {createSmartappDebugger, createAssistant} from '@salutejs/client';
+//import { createSmartappDebugger, createAssistant } from '@salutejs/client';
 import { evaluate } from 'mathjs';
 import './styles.css';
 import './index.css';
 import { make_function } from './math_parser.js';
 
-   const App = () => {
+const App = () => {
     const [functions, setFunctions] = useState([]);
     const [functionInput, setFunctionInput] = useState('');
     const [plotData, setPlotData] = useState([]);
@@ -19,51 +20,50 @@ import { make_function } from './math_parser.js';
     const [isKeyboardExpanded, setIsKeyboardExpanded] = useState(false);
     const [keyboardButtonColor, setKeyboardButtonColor] = useState('#1a73e8');
     const inputRef = useRef(null);
-       
+
     useEffect(() => {
         calculatePlotData();
     }, [functions, hiddenFunctions, xRange, yRange]);
 
-   useEffect(() => {
-       window.addFunction = addFunction;
-       window.deleteFunction = deleteFunction;
-       window.getFunctions = () => functions;
-
-    // Инициализация ассистента
-       const handleAssistantData = (event) => {
-           console.log('handleAssistantData:', event);
-           const { action } = event;
-           if (action) {
-               switch (action.type) {
-                   case 'add_math_function':
-                       return addFunction(action.parameters.function);
-                   case 'delete_math_function':
-                       return deleteFunction(action.parameters.function);
-                   case 'build_graph':
-                    // Доступ к сущностям: action.parameters.trigonometric_functions, action.parameters.exponential_and_logarithmic_functions
-                    // Реализация построения графика выбранной функции
-                       return buildGraph(action.parameters.exponential_and_logarithmic_functions);
-                   default:
-                       console.error('Unknown action type:', action.type);
-               }
-           }
-       };
-
-    if (process.env.NODE_ENV === 'development') {
-           const smartappDebuggerInstance = createSmartappDebugger({
-               token: process.env.REACT_APP_TOKEN || '',
-               initPhrase: `Запусти ${process.env.REACT_APP_SMARTAPP}`,
-               getState,
-               nativePanel: {
-                   defaultText: 'ччччччч',
-                   screenshotMode: false,
-                   tabIndex: -1,
-               },
-           });
-           smartappDebuggerInstance.on('data', handleAssistantData);
-       } else {
-           const assistantInstance = createAssistant({ getState });
-           assistantInstance.on('data', handleAssistantData);
+    // useEffect(() => {
+    //     window.addFunction = addFunction;
+    //     window.deleteFunction = deleteFunction;
+    //     window.getFunctions = () => functions;
+    //
+    //     const handleAssistantData = (event) => {
+    //         console.log('handleAssistantData:', event);
+    //         const { action } = event;
+    //         if (action) {
+    //             switch (action.type) {
+    //                 case 'add_math_function':
+    //                     return addFunction(action.parameters.function);
+    //                 case 'delete_math_function':
+    //                     return deleteFunction(action.parameters.function);
+    //                 case 'build_graph':
+    //                     return buildGraph(action.parameters.exponential_and_logarithmic_functions);
+    //                 default:
+    //                     console.error('Unknown action type:', action.type);
+    //             }
+    //         }
+    //     };
+    //
+    //     if (process.env.NODE_ENV === 'development') {
+    //         const smartappDebuggerInstance = createSmartappDebugger({
+    //             token: process.env.REACT_APP_TOKEN || '',
+    //             initPhrase: `Запусти ${process.env.REACT_APP_SMARTAPP}`,
+    //             getState,
+    //             nativePanel: {
+    //                 defaultText: 'ччччччч',
+    //                 screenshotMode: false,
+    //                 tabIndex: -1,
+    //             },
+    //         });
+    //         smartappDebuggerInstance.on('data', handleAssistantData);
+    //     } else {
+    //         const assistantInstance = createAssistant({ getState });
+    //         assistantInstance.on('data', handleAssistantData);
+    //     }
+    // }, [functions]);
 
     const calculatePlotData = () => {
         const traces = functions
@@ -91,9 +91,9 @@ import { make_function } from './math_parser.js';
                     type: 'scatter',
                     line: {
                         color: color,
-                        width: 2
+                        width: 2,
                     },
-                    name: `Функция ${index + 1}`
+                    name: `Функция ${index + 1}`,
                 };
             });
 
@@ -102,7 +102,7 @@ import { make_function } from './math_parser.js';
     };
 
     const handleFunctionEdit = (index, editedFunction) => {
-        setFunctions(prevFunctions => {
+        setFunctions((prevFunctions) => {
             const updatedFunctions = [...prevFunctions];
             updatedFunctions[index] = editedFunction;
             return updatedFunctions;
@@ -124,24 +124,28 @@ import { make_function } from './math_parser.js';
         }
     };
 
-
     const handleFunctionRemove = (index) => {
-        setFunctions(prevFunctions => prevFunctions.filter((_, i) => i !== index));
+        setFunctions((prevFunctions) => prevFunctions.filter((_, i) => i !== index));
     };
 
     const FunctionList = ({ functions, hiddenFunctions }) => (
         <div style={{ marginTop: '10px' }}>
-            <div style={{
-                backgroundColor: '#fff',
-                border: '1px solid #ddd',
-                borderRadius: '5px',
-                padding: '10px',
-                width: 'auto',
-                maxHeight: '200px',
-                overflowY: 'auto'
-            }}>
+            <div
+                style={{
+                    backgroundColor: '#fff',
+                    border: '1px solid #ddd',
+                    borderRadius: '5px',
+                    padding: '10px',
+                    width: 'auto',
+                    maxHeight: '200px',
+                    overflowY: 'auto',
+                }}
+            >
                 {functions.map((func, index) => (
-                    <div key={index} style={{ padding: '5px', display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                    <div
+                        key={index}
+                        style={{ padding: '5px', display: 'flex', alignItems: 'center', cursor: 'pointer' }}
+                    >
                         <div
                             style={{
                                 width: '20px',
@@ -153,21 +157,25 @@ import { make_function } from './math_parser.js';
                                 border: '1px solid #ddd',
                                 display: 'flex',
                                 alignItems: 'center',
-                                justifyContent: 'center'
+                                justifyContent: 'center',
                             }}
                             onClick={() => handleFunctionToggle(index)}
                         >
-                            {hiddenFunctions.includes(index) && <span style={{ color: '#ddd', fontSize: '12px' }}>•</span>}
+                            {hiddenFunctions.includes(index) && (
+                                <span style={{ color: '#ddd', fontSize: '12px' }}>•</span>
+                            )}
                         </div>
                         <span
                             style={{
                                 flex: 1,
                                 fontStyle: hiddenFunctions.includes(index) ? 'italic' : 'normal',
-                                textDecoration: hiddenFunctions.includes(index) ? 'line-through' : 'none'
+                                textDecoration: hiddenFunctions.includes(index) ? 'line-through' : 'none',
                             }}
                             contentEditable={!hiddenFunctions.includes(index)}
                             suppressContentEditableWarning={true}
-                            onBlur={(e) => handleFunctionEdit(index, { ...func, func: e.target.textContent })}
+                            onBlur={(e) =>
+                                handleFunctionEdit(index, { ...func, func: e.target.textContent })
+                            }
                         >
                             {func.func}
                         </span>
@@ -179,7 +187,7 @@ import { make_function } from './math_parser.js';
                                 color: 'red',
                                 cursor: 'pointer',
                                 fontSize: '16px',
-                                marginLeft: '5px'
+                                marginLeft: '5px',
                             }}
                         >
                             ✖
@@ -191,7 +199,7 @@ import { make_function } from './math_parser.js';
     );
 
     const handleFunctionToggle = (index) => {
-        setHiddenFunctions(prevHiddenFunctions => {
+        setHiddenFunctions((prevHiddenFunctions) => {
             const updatedHiddenFunctions = [...prevHiddenFunctions];
             const functionIndex = updatedHiddenFunctions.indexOf(index);
             if (functionIndex === -1) {
@@ -208,7 +216,7 @@ import { make_function } from './math_parser.js';
     };
 
     const handleKeyDown = (event) => {
-        if (event.key === "ArrowDown") {
+        if (event.key === 'ArrowDown') {
             setIsKeyboardExpanded(true);
             if (inputRef.current) {
                 inputRef.current.focus();
@@ -217,7 +225,7 @@ import { make_function } from './math_parser.js';
     };
 
     const handleKeyUp = (event) => {
-        if (event.key === "ArrowDown") {
+        if (event.key === 'ArrowDown') {
             setIsKeyboardExpanded(false);
             if (inputRef.current) {
                 inputRef.current.focus();
@@ -241,32 +249,44 @@ import { make_function } from './math_parser.js';
     };
 
     return (
-        <div style={{ display: 'flex', height: '100vh' }} onKeyDown={handleKeyDown} onKeyUp={handleKeyUp} tabIndex={-1}>
+        <div
+            style={{ display: 'flex', height: '100vh' }}
+            onKeyDown={handleKeyDown}
+            onKeyUp={handleKeyUp}
+            tabIndex={-1}
+        >
             <div style={{ flex: '1', height: '100%', borderRight: '1px solid #ccc' }}>
-                <div style={{display: 'flex', alignItems: 'center'}}>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
                     <input
                         ref={inputRef}
                         type="text"
                         placeholder="Введите функцию"
                         value={functionInput}
                         onChange={handleFunctionInputChange}
-                        autoFocus // добавьте этот атрибут
+                        autoFocus
                         onKeyDown={(e) => e.stopPropagation()}
-                        style={{marginRight: '10px', padding: '10px', width: '80%', margin: '0'}}
+                        style={{ marginRight: '10px', padding: '10px', width: '80%', margin: '0' }}
                     />
-                    <button onClick={handleAddFunction}
-                            style={{
-                                width: '20%',
-                                padding: '10px',
-                                backgroundColor: '#1a73e8',
-                                color: '#fff',
-                                margin: '0'
-                            }}>+
+                    <button
+                        onClick={handleAddFunction}
+                        style={{
+                            width: '20%',
+                            padding: '10px',
+                            backgroundColor: '#1a73e8',
+                            color: '#fff',
+                            margin: '0',
+                        }}
+                    >
+
+
+                        +
                     </button>
                 </div>
-                {isFunctionListVisible && <FunctionList functions={functions} hiddenFunctions={hiddenFunctions}/>}
+                {isFunctionListVisible && (
+                    <FunctionList functions={functions} hiddenFunctions={hiddenFunctions} />
+                )}
             </div>
-            <div style={{flex: '4', height: '100%', position: 'relative'}}>
+            <div style={{ flex: '4', height: '100%', position: 'relative' }}>
                 <Plot
                     data={plotData}
                     layout={{
@@ -284,13 +304,13 @@ import { make_function } from './math_parser.js';
                             zeroline: true,
                             zerolinecolor: '#000',
                             fixedrange: false,
-                        }
+                        },
                     }}
                     useResizeHandler={true}
                     style={{ width: '100%', height: '100%' }}
                     onRelayout={handleRelayout}
                 />
-                {!isKeyboardExpanded &&
+                {!isKeyboardExpanded && (
                     <button
                         onClick={handleKeyboardButtonClick}
                         style={{
@@ -303,18 +323,21 @@ import { make_function } from './math_parser.js';
                             color: '#fff',
                             border: 'none',
                             borderRadius: '5px',
-                            cursor: 'pointer'
+                            cursor: 'pointer',
                         }}
                     >
                         <span role="img" aria-label="keyboard-icon">
                             ⌨️
                         </span>
                     </button>
-                }
+                )}
             </div>
-            {isKeyboardExpanded &&
+            {isKeyboardExpanded && (
                 <div style={{ position: 'fixed', bottom: '20px', left: '20px', zIndex: '1' }}>
-                    <MathKeyboard inputRef={inputRef} onKeyClick={(key) => setFunctionInput(functionInput + key)} />
+                    <MathKeyboard
+                        inputRef={inputRef}
+                        onKeyClick={(key) => setFunctionInput(functionInput + key)}
+                    />
                     <div style={{ textAlign: 'center', paddingTop: '5px' }}>
                         <span onClick={() => setIsKeyboardExpanded(false)} style={{ cursor: 'pointer' }}>
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
@@ -324,7 +347,7 @@ import { make_function } from './math_parser.js';
                         </span>
                     </div>
                 </div>
-            }
+            )}
         </div>
     );
 };
@@ -337,4 +360,5 @@ function getRandomColor() {
     }
     return color;
 }
+
 export default App;
