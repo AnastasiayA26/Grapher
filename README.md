@@ -8,7 +8,6 @@ Grapher is an application designed for visualizing mathematical functions. Users
 - **Interactive Graph Plotting**: Visualize functions on a dynamic graph with adjustable ranges.
 - **Function Management**: Add and delete functions from the list.
 - **Visibility Toggle**: Show or hide functions on the graph.
-- **Responsive Design**: The application adapts to different screen sizes.
 
 ## Technologies Used
 
@@ -21,7 +20,7 @@ Grapher is an application designed for visualizing mathematical functions. Users
 Before you begin, ensure you have the following installed:
 
 - **Node.js**: Install Node.js from [nodejs.org](https://nodejs.org/)
-- **npm**: Node package manager, typically included with Node.js
+- **Yarn**: Install Yarn from [yarnpkg.com](https://yarnpkg.com/)
 
 ## Installation
 
@@ -39,7 +38,7 @@ To install and set up the project, follow these steps:
 
 3. **Install dependencies**:
    ```sh
-   npm install
+   yarn install
    ```
 
 ## Running the Application
@@ -47,7 +46,7 @@ To install and set up the project, follow these steps:
 To run the application locally, use the following command:
 
 ```sh
-npm start
+yarn start
 ```
 
 This command starts the development server. Open your web browser and go to `http://localhost:3000` to see the application.
@@ -57,9 +56,7 @@ This command starts the development server. Open your web browser and go to `htt
 To create a production build of the application, run:
 
 ```sh
-npm run build
+yarn build
 ```
 
 Optimized and minified files will be generated in the `build` directory, ready for deployment.
-
-
