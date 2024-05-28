@@ -12,16 +12,23 @@ const MathKeyboard = ({ onKeyClick, inputRef }) => {
 
         const input = inputRef.current;
         const selectionStart = input.selectionStart;
+        const selectionEnd = input.selectionEnd;
+
         if (selectionStart > 0) {
             const currentValue = input.value;
-            const newValue = currentValue.substring(0, selectionStart - 1) + currentValue.substring(selectionStart);
+            const newValue = currentValue.slice(0, selectionStart - 1) + currentValue.slice(selectionEnd);
             const newSelectionStart = selectionStart - 1;
 
             input.value = newValue;
             input.setSelectionRange(newSelectionStart, newSelectionStart);
-            onKeyClick('');
+            onKeyClick(newValue); // Передаем новое значение, а не пустую строку
+        } else if (selectionStart === 0 && selectionEnd === currentValue.length) {
+            // Удаляем весь текст, если выделено всё поле
+            input.value = '';
+            onKeyClick(''); // Передаем пустую строку
         }
     }
+
 
     const handleKeyClick = (key, index) => {
         if (key === '\u232b') {
@@ -89,53 +96,53 @@ const MathKeyboard = ({ onKeyClick, inputRef }) => {
                 }}>
                     <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                         <button style={{ ...buttonStyle, backgroundColor: clickedButtonIndex === 0 ? '#d3d1d1' : '#ffffff' }}
-                            onClick={() => handleKeyClick('x', 0)} onFocus={() => inputRef.current.focus()}>x</button>
+                                onClick={() => handleKeyClick('x', 0)} onFocus={() => inputRef.current.focus()}>x</button>
                         <button style={{ ...buttonStyle, backgroundColor: clickedButtonIndex === 1 ? '#d3d1d1' : '#ffffff' }}
-                            onClick={() => handleKeyClick('y', 1)} onFocus={() => inputRef.current.focus()}>y</button>
+                                onClick={() => handleKeyClick('y', 1)} onFocus={() => inputRef.current.focus()}>y</button>
                         <button style={{ ...buttonStyle, backgroundColor: clickedButtonIndex === 2 ? '#d3d1d1' : '#ffffff' }}
-                            onClick={() => handleKeyClick('ln( )', 2)} onFocus={() => inputRef.current.focus()}>ln</button>
+                                onClick={() => handleKeyClick('ln(', 2)} onFocus={() => inputRef.current.focus()}>ln</button>
                         <button style={{ ...buttonStyle, backgroundColor: clickedButtonIndex === 3 ? '#d3d1d1' : '#ffffff' }}
-                            onClick={() => handleKeyClick('log(a, x)', 3)} onFocus={() => inputRef.current.focus()}>log</button>
+                                onClick={() => handleKeyClick('log(a, x', 3)} onFocus={() => inputRef.current.focus()}>log</button>
                         <button style={{ ...buttonStyle, backgroundColor: clickedButtonIndex === 4 ? '#d3d1d1' : '#ffffff' }}
-                            onClick={() => handleKeyClick('cos( )', 4)} onFocus={() => inputRef.current.focus()}>cos</button>
+                                onClick={() => handleKeyClick('cos(', 4)} onFocus={() => inputRef.current.focus()}>cos</button>
                     </div>
                     <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                         <button style={{ ...buttonStyle, backgroundColor: clickedButtonIndex === 5 ? '#d3d1d1' : '#ffffff' }}
-                            onClick={() => handleKeyClick('(', 5)} onFocus={() => inputRef.current.focus()}>(</button>
+                                onClick={() => handleKeyClick('(', 5)} onFocus={() => inputRef.current.focus()}>(</button>
                         <button style={{ ...buttonStyle, backgroundColor: clickedButtonIndex === 6 ? '#d3d1d1' : '#ffffff' }}
-                            onClick={() => handleKeyClick(')', 6)} onFocus={() => inputRef.current.focus()}>)
+                                onClick={() => handleKeyClick(')', 6)} onFocus={() => inputRef.current.focus()}>)
                         </button>
                         <button style={{ ...buttonStyle, backgroundColor: clickedButtonIndex === 7 ? '#d3d1d1' : '#ffffff' }}
-                            onClick={() => handleKeyClick('<', 7)} onFocus={() => inputRef.current.focus()}>{"<"}</button>
+                                onClick={() => handleKeyClick('<', 7)} onFocus={() => inputRef.current.focus()}>{"<"}</button>
                         <button style={{ ...buttonStyle, backgroundColor: clickedButtonIndex === 8 ? '#d3d1d1' : '#ffffff' }}
-                            onClick={() => handleKeyClick('>', 8)} onFocus={() => inputRef.current.focus()}>{">"}
+                                onClick={() => handleKeyClick('>', 8)} onFocus={() => inputRef.current.focus()}>{">"}
                         </button>
                         <button style={{ ...buttonStyle, backgroundColor: clickedButtonIndex === 9 ? '#d3d1d1' : '#ffffff' }}
-                            onClick={() => handleKeyClick('sin( )', 9)} onFocus={() => inputRef.current.focus()}>sin</button>
+                                onClick={() => handleKeyClick('sin(', 9)} onFocus={() => inputRef.current.focus()}>sin</button>
                     </div>
                     <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                         <button style={{ ...buttonStyle, backgroundColor: clickedButtonIndex === 10 ? '#d3d1d1' : '#ffffff' }}
-                            onClick={() => handleKeyClick('abs()', 10)} onFocus={() => inputRef.current.focus()}>|x|</button>
+                                onClick={() => handleKeyClick('abs(', 10)} onFocus={() => inputRef.current.focus()}>|x|</button>
                         <button style={{ ...buttonStyle, backgroundColor: clickedButtonIndex === 11 ? '#d3d1d1' : '#ffffff' }}
-                            onClick={() => handleKeyClick('<=', 11)} onFocus={() => inputRef.current.focus()}>≤</button>
+                                onClick={() => handleKeyClick('<=', 11)} onFocus={() => inputRef.current.focus()}>≤</button>
                         <button style={{ ...buttonStyle, backgroundColor: clickedButtonIndex === 12 ? '#d3d1d1' : '#ffffff' }}
-                            onClick={() => handleKeyClick('>=', 12)} onFocus={() => inputRef.current.focus()}>≥</button>
+                                onClick={() => handleKeyClick('>=', 12)} onFocus={() => inputRef.current.focus()}>≥</button>
                         <button style={{ ...buttonStyle, backgroundColor: clickedButtonIndex === 13 ? '#d3d1d1' : '#ffffff' }}
-                            onClick={() => handleKeyClick('ctg()', 13)} onFocus={() => inputRef.current.focus()}>ctg</button>
+                                onClick={() => handleKeyClick('ctg(', 13)} onFocus={() => inputRef.current.focus()}>ctg</button>
                         <button style={{ ...buttonStyle, backgroundColor: clickedButtonIndex === 14 ? '#d3d1d1' : '#ffffff' }}
-                            onClick={() => handleKeyClick('tan( )', 14)} onFocus={() => inputRef.current.focus()}>tan</button>
+                                onClick={() => handleKeyClick('tan(', 14)} onFocus={() => inputRef.current.focus()}>tan</button>
                     </div>
                     <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                         <button style={{ ...buttonStyle, backgroundColor: clickedButtonIndex === 15 ? '#d3d1d1' : '#ffffff' }}
-                            onClick={() => handleKeyClick('sqrt()', 15)} onFocus={() => inputRef.current.focus()}>√</button>
+                                onClick={() => handleKeyClick('sqrt(', 15)} onFocus={() => inputRef.current.focus()}>√</button>
                         <button style={{ ...buttonStyle, backgroundColor: clickedButtonIndex === 16 ? '#d3d1d1' : '#ffffff' }}
-                            onClick={() => handleKeyClick('^', 16)} onFocus={() => inputRef.current.focus()}>^</button>
+                                onClick={() => handleKeyClick('^', 16)} onFocus={() => inputRef.current.focus()}>^</button>
                         <button style={{ ...buttonStyle, backgroundColor: clickedButtonIndex === 17 ? '#d3d1d1' : '#ffffff' }}
-                            onClick={() => handleKeyClick('e', 17)} onFocus={() => inputRef.current.focus()}>e</button>
+                                onClick={() => handleKeyClick('e', 17)} onFocus={() => inputRef.current.focus()}>e</button>
                         <button style={{ ...buttonStyle, backgroundColor: clickedButtonIndex === 18 ? '#d3d1d1' : '#ffffff' }}
-                            onClick={() => handleKeyClick('pi', 18)} onFocus={() => inputRef.current.focus()}>π</button>
+                                onClick={() => handleKeyClick('pi', 18)} onFocus={() => inputRef.current.focus()}>π</button>
                         <button style={{ ...buttonStyle, backgroundColor: clickedButtonIndex === 19 ? '#d3d1d1' : '#ffffff' }}
-                            onClick={() => handleKeyClick('.', 19)} onFocus={() => inputRef.current.focus()}>,</button>
+                                onClick={() => handleKeyClick('.', 19)} onFocus={() => inputRef.current.focus()}>,</button>
                     </div>
                 </div>
 
@@ -228,5 +235,3 @@ const MathKeyboard = ({ onKeyClick, inputRef }) => {
 };
 
 export default MathKeyboard;
-
-
