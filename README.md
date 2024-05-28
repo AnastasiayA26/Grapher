@@ -1,17 +1,65 @@
-# Getting Started Grapher App
+# Grapher
 
+Grapher is an application designed for visualizing mathematical functions. Users can input mathematical expressions, and the application will create interactive graphs for these functions. A special mathematical keyboard is provided to facilitate the input of complex mathematical symbols and functions.
 
-In the project directory, you can run:
+## Features
 
-### `yarn start`
+- **Function Input**: Enter mathematical functions using a special keyboard.
+- **Interactive Graph Plotting**: Visualize functions on a dynamic graph with adjustable ranges.
+- **Function Management**: Add and delete functions from the list.
+- **Visibility Toggle**: Show or hide functions on the graph.
+- **Responsive Design**: The application adapts to different screen sizes.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Technologies Used
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- **React**: Library for building the user interface.
+- **Plotly.js**: Library for creating interactive graphs and charts.
+- **JavaScript**: The main programming language of the project.
 
-### `yarn test`
+## Prerequisites
 
-### `yarn build`
+Before you begin, ensure you have the following installed:
+
+- **Node.js**: Install Node.js from [nodejs.org](https://nodejs.org/)
+- **npm**: Node package manager, typically included with Node.js
+
+## Installation
+
+To install and set up the project, follow these steps:
+
+1. **Clone the repository**: 
+   ```sh
+   git clone https://github.com/AnastasiayA26/Grapher.git
+   ```
+
+2. **Navigate to the project directory**:
+   ```sh
+   cd Grapher
+   ```
+
+3. **Install dependencies**:
+   ```sh
+   npm install
+   ```
+
+## Running the Application
+
+To run the application locally, use the following command:
+
+```sh
+npm start
+```
+
+This command starts the development server. Open your web browser and go to `http://localhost:3000` to see the application.
+
+## Building for Production
+
+To create a production build of the application, run:
+
+```sh
+npm run build
+```
+
+Optimized and minified files will be generated in the `build` directory, ready for deployment.
+
 
