@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import Plot from 'react-plotly.js';
 import MathKeyboard from './MathKeyboard.js';
@@ -260,7 +259,7 @@ const App = () => {
                     <input
                         ref={inputRef}
                         type="text"
-                        placeholder="Введите функцию"
+                        placeholder="5*x + 1"
                         value={functionInput}
                         onChange={handleFunctionInputChange}
                         autoFocus
@@ -333,18 +332,18 @@ const App = () => {
                 )}
             </div>
             {isKeyboardExpanded && (
-                <div style={{ position: 'fixed', bottom: '20px', left: '20px', zIndex: '1' }}>
+                <div style={{ position: 'absolute', bottom: '0.05%', left: '1.5%', zIndex: '1'}}>
                     <MathKeyboard
                         inputRef={inputRef}
                         onKeyClick={(key) => setFunctionInput(functionInput + key)}
                     />
-                    <div style={{ textAlign: 'center', paddingTop: '5px' }}>
-                        <span onClick={() => setIsKeyboardExpanded(false)} style={{ cursor: 'pointer' }}>
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-                                <path fill="none" d="M0 0h24v24H0z" />
-                                <path d="M7 10l5 5 5-5H7z" />
-                            </svg>
-                        </span>
+                    <div style={{ textAlign: 'center', paddingTop: '0.25%' }}>
+            <span onClick={() => setIsKeyboardExpanded(false)} style={{ cursor: 'pointer' }}>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="1.5em" height="1.5em">
+                    <path fill="none" d="M0 0h24v24H0z" />
+                    <path d="M7 10l5 5 5-5H7z" />
+                </svg>
+            </span>
                     </div>
                 </div>
             )}
