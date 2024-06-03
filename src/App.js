@@ -38,28 +38,22 @@ const App = () => {
 
     useEffect(() => {
         window.addMathFunction = (func) => {
-            handleAddFunction(func);
+            setFunctionInput((prev) => prev + func);
         };
-
-        //window.editMathFunction = (index, editedFunction) => {
-            //handleFunctionEdit(index, editedFunction);
-        //};
 
         const getState = () => ({ functions });
 
         const assistant = initializeAssistant(getState);
         assistant.on('data', handleAssistantData);
-
     }, [functions]);
 
     const handleAssistantData = (event) => {
         console.log('handleAssistantData:', event);
         const { action } = event;
+
         if (action && action.parameters && action.parameters.function) {
-            // Получаем функцию из параметров действия
             const func = action.parameters.function;
-            // Обновляем значение введенной функции
-            setFunctionInput(prevFunctionInput => prevFunctionInput + func);
+            window.addMathFunction(func);
         } else {
             console.error('Action parameters or function is undefined:', action);
         }
@@ -115,6 +109,8 @@ const App = () => {
 
     const handleAddFunction = () => {
         if (functionInput.trim() !== '') {
+            // Добавляем функцию в строку ввода
+            setFunctionInput(prevFunctionInput => prevFunctionInput + functionInput.trim());
             setFunctions([...functions, { func: functionInput, color: getRandomColor() }]);
             setFunctionInput('');
             setIsFunctionListVisible(true);
@@ -123,6 +119,7 @@ const App = () => {
             setErrorMessage('Введите функцию.');
         }
     };
+    
 
     const handleFunctionRemove = (index) => {
         setFunctions((prevFunctions) => prevFunctions.filter((_, i) => i !== index));
@@ -359,6 +356,10 @@ function getRandomColor() {
         color += letters[Math.floor(Math.random() * 16)];
     }
     return color;
+}
+
+export default App;
+
 }
 
 export default App;
