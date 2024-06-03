@@ -6,29 +6,33 @@ const MathKeyboard = ({ onKeyClick, inputRef }) => {
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     const [buttonColor, setButtonColor] = useState(Array(20).fill('#ffffff')); // Assuming 20 buttons, adjust if needed
     const [clickedButtonIndex, setClickedButtonIndex] = useState(null);
-
-    function handleDelete() {
-        if (!inputRef) return;
+function handleDelete() {
+        if (!inputRef || !inputRef.current) return;
 
         const input = inputRef.current;
         const selectionStart = input.selectionStart;
         const selectionEnd = input.selectionEnd;
+        let newValue;
 
-        if (selectionStart > 0) {
+        if (selectionEnd > 0) {
             const currentValue = input.value;
-            const newValue = currentValue.slice(0, selectionStart - 1) + currentValue.slice(selectionEnd);
-            const newSelectionStart = selectionStart - 1;
+            newValue = currentValue.slice(0, selectionStart - 1) + currentValue.slice(selectionEnd);
+            const newSelectionEnd = selectionEnd - 1;
 
             input.value = newValue;
-            input.setSelectionRange(newSelectionStart, newSelectionStart);
-            onKeyClick(newValue); // Передаем новое значение, а не пустую строку
-        } else if (selectionStart === 0 && selectionEnd === currentValue.length) {
+            input.setSelectionRange(newSelectionEnd, newSelectionEnd);
+            // Обновляем inputRef.current после изменения значения поля ввода
+            inputRef.current = input;
+            onKeyClick(''); // Передаем новое значение, а не пустую строку
+        } else if (selectionEnd === 0 || selectionStart === input.value.length) {
             // Удаляем весь текст, если выделено всё поле
-            input.value = '';
+            newValue = '';
+            input.value = newValue;
+            // Обновляем inputRef.current после изменения значения поля ввода
+            inputRef.current = input;
             onKeyClick(''); // Передаем пустую строку
         }
     }
-
 
     const handleKeyClick = (key, index) => {
         if (key === '\u232b') {
