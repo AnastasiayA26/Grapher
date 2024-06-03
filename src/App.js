@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Plot from 'react-plotly.js';
 import MathKeyboard from './MathKeyboard.js';
-//import { createSmartappDebugger, createAssistant } from '@salutejs/client';
+import { createSmartappDebugger, createAssistant } from '@salutejs/client';
 import { evaluate } from 'mathjs';
 import './styles.css';
 import './index.css';
@@ -24,47 +24,51 @@ const App = () => {
         calculatePlotData();
     }, [functions, hiddenFunctions, xRange, yRange]);
 
-    // useEffect(() => {
-    //     window.addFunction = addFunction;
-    //     window.deleteFunction = deleteFunction;
-    //     window.getFunctions = () => functions;
-    //
-    //     const handleAssistantData = (event) => {
-    //         console.log('handleAssistantData:', event);
-    //         const { action } = event;
-    //         if (action) {
-    //             switch (action.type) {
-    //                 case 'add_math_function':
-    //                     return addFunction(action.parameters.function);
-    //                 case 'delete_math_function':
-    //                     return deleteFunction(action.parameters.function);
-    //                 case 'build_graph':
-    //                     return buildGraph(action.parameters.exponential_and_logarithmic_functions);
-    //                 default:
-    //                     console.error('Unknown action type:', action.type);
-    //             }
-    //         }
-    //     };
-    //
-    //     if (process.env.NODE_ENV === 'development') {
-    //         const smartappDebuggerInstance = createSmartappDebugger({
-    //             token: process.env.REACT_APP_TOKEN || '',
-    //             initPhrase: `Запусти ${process.env.REACT_APP_SMARTAPP}`,
-    //             getState,
-    //             nativePanel: {
-    //                 defaultText: 'ччччччч',
-    //                 screenshotMode: false,
-    //                 tabIndex: -1,
-    //             },
-    //         });
-    //         smartappDebuggerInstance.on('data', handleAssistantData);
-    //     } else {
-    //         const assistantInstance = createAssistant({ getState });
-    //         assistantInstance.on('data', handleAssistantData);
-    //     }
-    // }, [functions]);
+    useEffect(() => {
+        window.addMathFunction = (func) => {
+            handleAddFunction(func);
+        };
+        
+        window.editMathFunction = (index, editedFunction) => {
+            handleFunctionEdit(index, editedFunction);
+        };
+    
+        if (process.env.NODE_ENV === 'development') {
+            const smartappDebuggerInstance = createSmartappDebugger({
+                token: process.env.REACT_APP_TOKEN || '',
+                initPhrase: `Запусти ${process.env.REACT_APP_SMARTAPP}`,
+                getState,
+                nativePanel: {
+                    defaultText: 'ччччччч',
+                    screenshotMode: false,
+                    tabIndex: -1,
+                },
+            });
+            smartappDebuggerInstance.on('data', handleAssistantData);
+        } else {
+            const assistantInstance = createAssistant({ getState });
+            assistantInstance.on('data', handleAssistantData);
+        }
+    }, []);
 
-    const calculatePlotData = () => {
+    const handleAssistantData = (event) => {
+        console.log('handleAssistantData:', event);
+        const { action } = event;
+        if (action) {
+            switch (action.type) {
+                case 'add_math_function':
+                    addMathFunction(action.parameters.function);
+                    break;
+                case 'edit_math_function':
+                    editMathFunction(action.parameters.index, action.parameters.function);
+                    break;
+                default:
+                    console.error('Unknown action type:', action.type);
+            }
+        }
+    };
+
+    function calculatePlotData() {
         const traces = functions
             .filter((func, index) => !hiddenFunctions.includes(index))
             .map(({ func, color }, index) => {
@@ -98,7 +102,7 @@ const App = () => {
 
         setPlotData(traces);
         setErrorMessage('');
-    };
+    }
 
     const handleFunctionEdit = (index, editedFunction) => {
         setFunctions((prevFunctions) => {
@@ -361,3 +365,4 @@ function getRandomColor() {
 }
 
 export default App;
+
