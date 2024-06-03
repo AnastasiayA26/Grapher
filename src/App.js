@@ -38,7 +38,7 @@ const App = () => {
 
     useEffect(() => {
         window.addMathFunction = (func) => {
-            setFunctionInput((prev) => prev + func);
+            setFunctionInput(/*(prev) => prev + */func);
         };
 
         const getState = () => ({ functions });
@@ -359,8 +359,3 @@ function getRandomColor() {
 }
 
 export default App;
-
-}
-
-export default App;
-
