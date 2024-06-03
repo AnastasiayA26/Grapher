@@ -24,12 +24,19 @@ let transformer = {
         }
     },
     expr_binary:  function ([lhs, {value: op}, rhs]) {
-        console.log(lhs, op, rhs);
         switch (op) {
             case "+": return (x) => lhs(x) + rhs(x);
             case "-": return (x) => lhs(x) - rhs(x);
             case "*": return (x) => lhs(x) * rhs(x);
             case "/": return (x) => lhs(x) / rhs(x);
+
+            case "==": return (x) => lhs(x) == rhs(x);
+            case "!=": return (x) => lhs(x) != rhs(x);
+            case ">=": return (x) => lhs(x) >= rhs(x);
+            case "<=": return (x) => lhs(x) <= rhs(x);
+            case ">": return (x) => lhs(x) > rhs(x);
+            case "<": return (x) => lhs(x) < rhs(x);
+
             default: return (x) => NaN;
         }
     },
