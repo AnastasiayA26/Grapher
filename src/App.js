@@ -19,52 +19,49 @@ const App = () => {
     const [isKeyboardExpanded, setIsKeyboardExpanded] = useState(false);
     const [keyboardButtonColor, setKeyboardButtonColor] = useState('#1a73e8');
     const inputRef = useRef(null);
+    //const assistantRef = useRef(null);
 
     useEffect(() => {
         calculatePlotData();
     }, [functions, hiddenFunctions, xRange, yRange]);
 
+    const initializeAssistant = (getState) => {
+        if (process.env.NODE_ENV === 'development') {
+            return createSmartappDebugger({
+                token: process.env.REACT_APP_TOKEN ?? '',
+                initPhrase: `Запусти ${process.env.REACT_APP_SMARTAPP}`,
+                getState,
+            });
+        }
+        return createAssistant({ getState });
+    };
+
     useEffect(() => {
         window.addMathFunction = (func) => {
             handleAddFunction(func);
         };
-        
-        window.editMathFunction = (index, editedFunction) => {
-            handleFunctionEdit(index, editedFunction);
-        };
-    
-        if (process.env.NODE_ENV === 'development') {
-            const smartappDebuggerInstance = createSmartappDebugger({
-                token: process.env.REACT_APP_TOKEN || '',
-                initPhrase: `Запусти ${process.env.REACT_APP_SMARTAPP}`,
-                getState,
-                nativePanel: {
-                    defaultText: 'ччччччч',
-                    screenshotMode: false,
-                    tabIndex: -1,
-                },
-            });
-            smartappDebuggerInstance.on('data', handleAssistantData);
-        } else {
-            const assistantInstance = createAssistant({ getState });
-            assistantInstance.on('data', handleAssistantData);
-        }
-    }, []);
+
+        //window.editMathFunction = (index, editedFunction) => {
+            //handleFunctionEdit(index, editedFunction);
+        //};
+
+        const getState = () => ({ functions });
+
+        const assistant = initializeAssistant(getState);
+        assistant.on('data', handleAssistantData);
+
+    }, [functions]);
 
     const handleAssistantData = (event) => {
         console.log('handleAssistantData:', event);
         const { action } = event;
-        if (action) {
-            switch (action.type) {
-                case 'add_math_function':
-                    addMathFunction(action.parameters.function);
-                    break;
-                case 'edit_math_function':
-                    editMathFunction(action.parameters.index, action.parameters.function);
-                    break;
-                default:
-                    console.error('Unknown action type:', action.type);
-            }
+        if (action && action.parameters && action.parameters.function) {
+            // Получаем функцию из параметров действия
+            const func = action.parameters.function;
+            // Обновляем значение введенной функции
+            setFunctionInput(prevFunctionInput => prevFunctionInput + func);
+        } else {
+            console.error('Action parameters or function is undefined:', action);
         }
     };
 
