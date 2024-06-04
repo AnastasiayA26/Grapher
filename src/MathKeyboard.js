@@ -1,26 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import './MathKeyboard.css';
-
-const MathKeyboard = ({ onKeyClick, inputRef }) => {
-    const [expanded, setExpanded] = useState(true);
-    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-    const [buttonColor, setButtonColor] = useState(Array(20).fill('#ffffff')); // Assuming 20 buttons, adjust if needed
-    const [clickedButtonIndex, setClickedButtonIndex] = useState(null);
-function handleDelete() {
-        if (!inputRef || !inputRef.current) return;
-
-        const input = inputRef.current;
-        const selectionStart = input.selectionStart;
-        const selectionEnd = input.selectionEnd;
-        let newValue;
-
-        if (selectionEnd > 0) {
-            const currentValue = input.value;
-            newValue = currentValue.slice(0, selectionStart - 1) + currentValue.slice(selectionEnd);
-            const newSelectionEnd = selectionEnd - 1;
-
-            input.value = newValue;
-            input.setSelectionRange(newSelectionEnd, newSelectionEnd);
+       input.setSelectionRange(newSelectionEnd, newSelectionEnd);
             // Обновляем inputRef.current после изменения значения поля ввода
             inputRef.current = input;
             onKeyClick(''); // Передаем новое значение, а не пустую строку
@@ -86,9 +64,7 @@ function handleDelete() {
         margin: '2px',
         width: `${buttonWidth}px`
     };
-
-
-    return (
+     return (
         <div style={{ display: 'flex', height: keyboardHeightPercentage }}>
             <div className={expanded ? 'keyboard-expanded' : 'keyboard-collapsed'}>
                 <div style={{
@@ -116,10 +92,6 @@ function handleDelete() {
                         <button
                             style={{...buttonStyle, backgroundColor: clickedButtonIndex === 3 ? '#d3d1d1' : '#ffffff'}}
                             onClick={() => handleKeyClick('log(a, x', 3)} onFocus={() => inputRef.current.focus()}>log
-                        </button>
-                        <button
-                            style={{...buttonStyle, backgroundColor: clickedButtonIndex === 4 ? '#d3d1d1' : '#ffffff'}}
-                            onClick={() => handleKeyClick('cos(', 4)} onFocus={() => inputRef.current.focus()}>cos
                         </button>
                         <div style={{width: `${buttonWidth/4}px`}}/>
                         <button
@@ -149,12 +121,8 @@ function handleDelete() {
                             onClick={() => handleKeyClick(')', 6)} onFocus={() => inputRef.current.focus()}>)
                         </button>
                         <button
-                            style={{...buttonStyle, backgroundColor: clickedButtonIndex === 7 ? '#d3d1d1' : '#ffffff'}}
-                            onClick={() => handleKeyClick('<', 7)}
-                            onFocus={() => inputRef.current.focus()}>{"<"}</button>
-                        <button
-                            style={{...buttonStyle, backgroundColor: clickedButtonIndex === 8 ? '#d3d1d1' : '#ffffff'}}
-                            onClick={() => handleKeyClick('>', 8)} onFocus={() => inputRef.current.focus()}>{">"}
+                            style={{...buttonStyle, backgroundColor: clickedButtonIndex === 14 ? '#d3d1d1' : '#ffffff'}}
+                            onClick={() => handleKeyClick('tan(', 14)} onFocus={() => inputRef.current.focus()}>tan
                         </button>
                         <button
                             style={{...buttonStyle, backgroundColor: clickedButtonIndex === 9 ? '#d3d1d1' : '#ffffff'}}
@@ -184,20 +152,16 @@ function handleDelete() {
                             onClick={() => handleKeyClick('abs(', 10)} onFocus={() => inputRef.current.focus()}>|x|
                         </button>
                         <button
-                            style={{...buttonStyle, backgroundColor: clickedButtonIndex === 11 ? '#d3d1d1' : '#ffffff'}}
-                            onClick={() => handleKeyClick('<=', 11)} onFocus={() => inputRef.current.focus()}>≤
+                            style={{...buttonStyle, backgroundColor: clickedButtonIndex === 19 ? '#d3d1d1' : '#ffffff'}}
+                            onClick={() => handleKeyClick('.', 19)} onFocus={() => inputRef.current.focus()}>,
                         </button>
                         <button
-                            style={{...buttonStyle, backgroundColor: clickedButtonIndex === 12 ? '#d3d1d1' : '#ffffff'}}
-                            onClick={() => handleKeyClick('>=', 12)} onFocus={() => inputRef.current.focus()}>≥
+                            style={{...buttonStyle, backgroundColor: clickedButtonIndex === 4 ? '#d3d1d1' : '#ffffff'}}
+                            onClick={() => handleKeyClick('cos(', 4)} onFocus={() => inputRef.current.focus()}>cos
                         </button>
                         <button
                             style={{...buttonStyle, backgroundColor: clickedButtonIndex === 13 ? '#d3d1d1' : '#ffffff'}}
                             onClick={() => handleKeyClick('ctg(', 13)} onFocus={() => inputRef.current.focus()}>ctg
-                        </button>
-                        <button
-                            style={{...buttonStyle, backgroundColor: clickedButtonIndex === 14 ? '#d3d1d1' : '#ffffff'}}
-                            onClick={() => handleKeyClick('tan(', 14)} onFocus={() => inputRef.current.focus()}>tan
                         </button>
                         <div style={{width: `${buttonWidth / 4}px`}}/>
                         <button
@@ -234,10 +198,6 @@ function handleDelete() {
                             style={{...buttonStyle, backgroundColor: clickedButtonIndex === 18 ? '#d3d1d1' : '#ffffff'}}
                             onClick={() => handleKeyClick('pi', 18)} onFocus={() => inputRef.current.focus()}>π
                         </button>
-                        <button
-                            style={{...buttonStyle, backgroundColor: clickedButtonIndex === 19 ? '#d3d1d1' : '#ffffff'}}
-                            onClick={() => handleKeyClick('.', 19)} onFocus={() => inputRef.current.focus()}>,
-                        </button>
                         <div style={{width: `${buttonWidth / 4}px`}}/>
                         <button
                             style={{...buttonStyle, backgroundColor: clickedButtonIndex === 32 ? '#d3d1d1' : '#ffffff'}}
@@ -263,4 +223,3 @@ function handleDelete() {
 };
 
 export default MathKeyboard;
-
