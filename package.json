@@ -5,6 +5,7 @@
   "dependencies": {
     "@salutejs/client": "^1.34.1",
     "@salutejs/scenario": "^1.1.0",
+    "@salutejs/spatial": "^3.0.14",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
