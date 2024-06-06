@@ -1,0 +1,62 @@
+div .SuggestsSuggest {
+    background-color: rgba(255, 255, 255, 0.12);
+    border: 1px solid transparent;
+    @media (max-height: 900px) {
+        font-size: 1em;
+    }
+    @media (max-width: 900px) {
+        margin-left: 200px;
+    }
+}
+/*
+.focused {
+    outline: 1px solid blue;
+}*/
+/*
+table.sn-section-item:focus {
+    outline: none;
+  }*/
+
+:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.8);
+    border-radius: 5px;
+    transition: box-shadow 0.2s ease; /*Плавное появление */
+}
+
+div .Bubble {
+    background-color: rgba(0, 0, 0, 0);
+    padding: 12px 20px;
+    transform: translateX(-25%);
+    top: -10px;
+    font-size: 1.5em;
+    @media (max-height: 900px) {
+        font-size: 1.5em;
+        transform: translateY(50%);
+    }
+
+    @media (max-width: 900px) {
+        transform: translateY(50%) translateX(30%);
+    }
+
+    display: none;
+}
+
+div .NativePanel {
+    @media (max-height: 900px) {
+        padding: 5px 30px 5px
+    }
+}
+
+div .myText {
+    background-color: transparent;
+    color: white;
+    font-size: 0.5em;
+    @media (max-height: 900px) {
+        font-size: 1em;
+    }
+    border: none;
+    outline: none;
+    width: 100%;
+}
+
