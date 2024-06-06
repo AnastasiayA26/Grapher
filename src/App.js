@@ -2,10 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import Plot from 'react-plotly.js';
 import MathKeyboard from './MathKeyboard.js';
 import { createSmartappDebugger, createAssistant } from '@salutejs/client';
-import { evaluate } from 'mathjs';
 import './styles.css';
 import './index.css';
 import { make_function } from './math_parser.js';
+import { SpatialNavigation } from '@salutejs/spatial';
 
 const App = () => {
     const [functions, setFunctions] = useState([]);
@@ -19,7 +19,7 @@ const App = () => {
     const [isKeyboardExpanded, setIsKeyboardExpanded] = useState(false);
     const [keyboardButtonColor, setKeyboardButtonColor] = useState('#1a73e8');
     const inputRef = useRef(null);
-    //const assistantRef = useRef(null);
+    const assistantRef = useRef(null);
 
     useEffect(() => {
         calculatePlotData();
@@ -38,14 +38,60 @@ const App = () => {
 
     useEffect(() => {
         window.addMathFunction = (func) => {
-            setFunctionInput(/*(prev) => prev + */func);
+            setFunctionInput(prev => prev + func);
         };
+
+        // window.BuildMathFunction = (func, context) => {
+        //     context.functions.push({
+        //         func: func,
+        //         color: getRandomColor()
+        //     });
+        //     context.calculatePlotData();
+        // };
 
         const getState = () => ({ functions });
 
         const assistant = initializeAssistant(getState);
         assistant.on('data', handleAssistantData);
     }, [functions]);
+
+    useEffect(() => {
+        SpatialNavigation.init();
+        SpatialNavigation.add({
+            selector: '.focusable'
+        });
+
+        const handleKeyDown = (event) => {
+            switch (event.key) {
+                case 'ArrowUp':
+                    SpatialNavigation.move('up');
+                    break;
+                case 'ArrowDown':
+                    SpatialNavigation.move('down');
+                    break;
+                case 'ArrowLeft':
+                    SpatialNavigation.move('left');
+                    break;
+                case 'ArrowRight':
+                    SpatialNavigation.move('right');
+                    break;
+                case 'Enter':
+                    document.activeElement.click();
+                    break;
+                case 'Backspace':
+                    // Обработка кнопки Back
+                    break;
+                default:
+                    break;
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, []);
 
     const handleAssistantData = (event) => {
         console.log('handleAssistantData:', event);
@@ -141,6 +187,7 @@ const App = () => {
                 {functions.map((func, index) => (
                     <div
                         key={index}
+                        className="focusable"
                         style={{ padding: '5px', display: 'flex', alignItems: 'center', cursor: 'pointer' }}
                     >
                         <div
@@ -197,19 +244,17 @@ const App = () => {
 
     const handleFunctionToggle = (index) => {
         setHiddenFunctions((prevHiddenFunctions) => {
-            const updatedHiddenFunctions = [...prevHiddenFunctions];
-            const functionIndex = updatedHiddenFunctions.indexOf(index);
-            if (functionIndex === -1) {
-                updatedHiddenFunctions.push(index);
+            if (prevHiddenFunctions.includes(index)) {
+                return prevHiddenFunctions.filter((i) => i !== index);
             } else {
-                updatedHiddenFunctions.splice(functionIndex, 1);
+                return [...prevHiddenFunctions, index];
             }
-            return updatedHiddenFunctions;
         });
     };
 
     const handleKeyboardButtonClick = () => {
-        setIsKeyboardExpanded(!isKeyboardExpanded);
+        setIsKeyboardExpanded((prev) => !prev);
+        setKeyboardButtonColor((prev) => (prev === '#1a73e8' ? '#34a853' : '#1a73e8'));
     };
 
     const handleKeyDown = (event) => {
@@ -256,6 +301,7 @@ const App = () => {
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                     <input
                         ref={inputRef}
+                        className="focusable"
                         type="text"
                         placeholder="5*x + 1"
                         value={functionInput}
@@ -265,6 +311,7 @@ const App = () => {
                         style={{ marginRight: '10px', padding: '10px', width: '80%', margin: '0' }}
                     />
                     <button
+                        className="focusable"
                         onClick={handleAddFunction}
                         style={{
                             width: '20%',
@@ -309,6 +356,7 @@ const App = () => {
                 />
                 {!isKeyboardExpanded && (
                     <button
+                        className="focusable"
                         onClick={handleKeyboardButtonClick}
                         style={{
                             position: 'absolute',
