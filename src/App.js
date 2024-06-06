@@ -4,8 +4,9 @@ import MathKeyboard from './MathKeyboard.js';
 import { createSmartappDebugger, createAssistant } from '@salutejs/client';
 import './styles.css';
 import './index.css';
+import './voice.css';
 import { make_function } from './math_parser.js';
-import { spatnavInstance, useSection } from '@salutejs/spatial';
+import { spatnavInstance } from '@salutejs/spatial';
 
 const App = () => {
     const [functions, setFunctions] = useState([]);
@@ -41,14 +42,6 @@ const App = () => {
             setFunctionInput(prev => prev + func);
         };
 
-        // window.BuildMathFunction = (func, context) => {
-        //     context.functions.push({
-        //         func: func,
-        //         color: getRandomColor()
-        //     });
-        //     context.calculatePlotData();
-        // };
-
         const getState = () => ({ functions });
 
         const assistant = initializeAssistant(getState);
@@ -78,9 +71,6 @@ const App = () => {
                 case 'Enter':
                     document.activeElement.click();
                     break;
-                case 'Backspace':
-                    // Handle back button
-                    break;
                 default:
                     break;
             }
@@ -92,6 +82,7 @@ const App = () => {
             window.removeEventListener('keydown', handleKeyDown);
         };
     }, []);
+
     const handleAssistantData = (event) => {
         console.log('handleAssistantData:', event);
         const { action } = event;
@@ -108,7 +99,14 @@ const App = () => {
         const traces = functions
             .filter((func, index) => !hiddenFunctions.includes(index))
             .map(({ func, color }, index) => {
-                let f = make_function(func);
+                let f;
+                try {
+                    f = make_function(func);
+                } catch (error) {
+                    setErrorMessage(`Ошибка в функции: ${func}`);
+                    return null;
+                }
+
                 const xValues = [];
                 const yValues = [];
                 const step = (xRange[1] - xRange[0]) / 1000;
@@ -134,7 +132,7 @@ const App = () => {
                     },
                     name: `Функция ${index + 1}`,
                 };
-            });
+            }).filter(Boolean);
 
         setPlotData(traces);
         setErrorMessage('');
@@ -154,8 +152,6 @@ const App = () => {
 
     const handleAddFunction = () => {
         if (functionInput.trim() !== '') {
-            // Добавляем функцию в строку ввода
-            setFunctionInput(prevFunctionInput => prevFunctionInput + functionInput.trim());
             setFunctions([...functions, { func: functionInput, color: getRandomColor() }]);
             setFunctionInput('');
             setIsFunctionListVisible(true);
@@ -164,7 +160,6 @@ const App = () => {
             setErrorMessage('Введите функцию.');
         }
     };
-
 
     const handleFunctionRemove = (index) => {
         setFunctions((prevFunctions) => prevFunctions.filter((_, i) => i !== index));
@@ -253,7 +248,7 @@ const App = () => {
 
     const handleKeyboardButtonClick = () => {
         setIsKeyboardExpanded((prev) => !prev);
-        setKeyboardButtonColor((prev) => (prev === '#1a73e8' ? '#34a853' : '#1a73e8'));
+        setKeyboardButtonColor((prev) => (prev === '#1a73e8' ? '#1a73e8' : '#1a73e8'));
     };
 
     const handleKeyDown = (event) => {
@@ -320,8 +315,6 @@ const App = () => {
                             margin: '0',
                         }}
                     >
-
-
                         +
                     </button>
                 </div>
@@ -383,12 +376,12 @@ const App = () => {
                         onKeyClick={(key) => setFunctionInput(functionInput + key)}
                     />
                     <div style={{ textAlign: 'center', paddingTop: '0.25%' }}>
-            <span onClick={() => setIsKeyboardExpanded(false)} style={{ cursor: 'pointer' }}>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="1.5em" height="1.5em">
-                    <path fill="none" d="M0 0h24v24H0z" />
-                    <path d="M7 10l5 5 5-5H7z" />
-                </svg>
-            </span>
+                        <span onClick={() => setIsKeyboardExpanded(false)} style={{ cursor: 'pointer' }}>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 30 24 24" width="1.5em" height="4.5em">
+                                <path fill="none" d="M0 0h24v24H0z" />
+                                <path d="M7 10l5 5 5-5H7z" />
+                            </svg>
+                        </span>
                     </div>
                 </div>
             )}
