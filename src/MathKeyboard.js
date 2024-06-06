@@ -2,7 +2,7 @@
             // Обновляем inputRef.current после изменения значения поля ввода
             inputRef.current = input;
             onKeyClick(''); // Передаем новое значение, а не пустую строку
-        } else if (selectionEnd === 0 || selectionStart === input.value.length) {
+{ else if (selectionEnd === 0 || selectionStart === input.value.length) {
             // Удаляем весь текст, если выделено всё поле
             newValue = '';
             input.value = newValue;
