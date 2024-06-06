@@ -5,7 +5,7 @@ import { createSmartappDebugger, createAssistant } from '@salutejs/client';
 import './styles.css';
 import './index.css';
 import { make_function } from './math_parser.js';
-import { SpatialNavigation } from '@salutejs/spatial';
+import { spatnavInstance, useSection } from '@salutejs/spatial';
 
 const App = () => {
     const [functions, setFunctions] = useState([]);
@@ -56,30 +56,30 @@ const App = () => {
     }, [functions]);
 
     useEffect(() => {
-        SpatialNavigation.init();
-        SpatialNavigation.add({
-            selector: '.focusable'
+        spatnavInstance.init();
+        spatnavInstance.add({
+            selector: '.focusable',
         });
 
         const handleKeyDown = (event) => {
             switch (event.key) {
                 case 'ArrowUp':
-                    SpatialNavigation.move('up');
+                    spatnavInstance.move('up');
                     break;
                 case 'ArrowDown':
-                    SpatialNavigation.move('down');
+                    spatnavInstance.move('down');
                     break;
                 case 'ArrowLeft':
-                    SpatialNavigation.move('left');
+                    spatnavInstance.move('left');
                     break;
                 case 'ArrowRight':
-                    SpatialNavigation.move('right');
+                    spatnavInstance.move('right');
                     break;
                 case 'Enter':
                     document.activeElement.click();
                     break;
                 case 'Backspace':
-                    // Обработка кнопки Back
+                    // Handle back button
                     break;
                 default:
                     break;
@@ -92,7 +92,6 @@ const App = () => {
             window.removeEventListener('keydown', handleKeyDown);
         };
     }, []);
-
     const handleAssistantData = (event) => {
         console.log('handleAssistantData:', event);
         const { action } = event;
@@ -165,7 +164,7 @@ const App = () => {
             setErrorMessage('Введите функцию.');
         }
     };
-    
+
 
     const handleFunctionRemove = (index) => {
         setFunctions((prevFunctions) => prevFunctions.filter((_, i) => i !== index));
