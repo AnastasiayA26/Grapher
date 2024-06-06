@@ -6,7 +6,7 @@ import './styles.css';
 import './index.css';
 import './voice.css';
 import { make_function } from './math_parser.js';
-import { spatnavInstance } from '@salutejs/spatial';
+import { useSpatnavInitialization, useSection, getCurrentFocusedElement } from '@salutejs/spatial';
 
 const App = () => {
     const [functions, setFunctions] = useState([]);
@@ -21,6 +21,8 @@ const App = () => {
     const [keyboardButtonColor, setKeyboardButtonColor] = useState('#1a73e8');
     const inputRef = useRef(null);
     const assistantRef = useRef(null);
+    useSpatnavInitialization();
+
 
     useEffect(() => {
         calculatePlotData();
@@ -48,30 +50,41 @@ const App = () => {
         assistant.on('data', handleAssistantData);
     }, [functions]);
 
-    useEffect(() => {
-        spatnavInstance.init();
-        spatnavInstance.add({
-            selector: '.focusable',
-        });
 
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            const focusedElement = getCurrentFocusedElement();
+            console.log("Focused element:", focusedElement);
+        }, 5000); // 5000 миллисекунд = 5 секунд
+
+        // Очистка интервала при размонтировании компонента
+        return () => clearInterval(intervalId);
+    }, []);
+
+    useEffect(() => {
         const handleKeyDown = (event) => {
-            switch (event.key) {
-                case 'ArrowUp':
-                    spatnavInstance.move('up');
-                    break;
-                case 'ArrowDown':
-                    spatnavInstance.move('down');
-                    break;
+            switch (event.code) {
                 case 'ArrowLeft':
-                    spatnavInstance.move('left');
+                    event.preventDefault();
+                    const focusedElementLeft = getCurrentFocusedElement();
+                    if (focusedElementLeft && focusedElementLeft.id === "my-slider") {
+                        handleMaskChange(maskValue - 1);
+                    }
                     break;
                 case 'ArrowRight':
-                    spatnavInstance.move('right');
+                    event.preventDefault();
+                    const focusedElementRight = getCurrentFocusedElement();
+                    if (focusedElementRight && focusedElementRight.id === "my-slider") {
+                        handleMaskChange(maskValue + 1);
+                    }
                     break;
-                case 'Enter':
-                    document.activeElement.click();
+                case 'ArrowDown':
+                    // event.preventDefault();
+                    // window.scrollTo(0, window.scrollY + 50);
                     break;
-                default:
+                case 'ArrowUp':
+                    // event.preventDefault();
+                    // window.scrollTo(0, window.scrollY - 50);
                     break;
             }
         };
@@ -82,6 +95,7 @@ const App = () => {
             window.removeEventListener('keydown', handleKeyDown);
         };
     }, []);
+
 
     const handleAssistantData = (event) => {
         console.log('handleAssistantData:', event);
@@ -94,6 +108,7 @@ const App = () => {
             console.error('Action parameters or function is undefined:', action);
         }
     };
+
 
     function calculatePlotData() {
         const traces = functions
