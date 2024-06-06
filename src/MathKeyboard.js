@@ -1,16 +1,43 @@
-       input.setSelectionRange(newSelectionEnd, newSelectionEnd);
-            // Обновляем inputRef.current после изменения значения поля ввода
+import React, { useState, useEffect } from 'react';
+import './MathKeyboard.css';
+
+const MathKeyboard = ({ onKeyClick, inputRef }) => {
+    const [expanded, setExpanded] = useState(true);
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+    const [buttonColor, setButtonColor] = useState(Array(20).fill('#ffffff')); // Assuming 20 buttons, adjust if needed
+    const [clickedButtonIndex, setClickedButtonIndex] = useState(null);
+
+    function handleDelete() {
+        if (!inputRef || !inputRef.current) return;
+
+        const input = inputRef.current;
+        const selectionStart = input.selectionStart;
+        const selectionEnd = input.selectionEnd;
+        let newValue;
+
+        if (selectionEnd-1 > 0) {
+            const currentValue = input.value;
+            newValue = currentValue.slice(0, selectionStart - 1) + currentValue.slice(selectionEnd);
+            const newSelectionEnd = selectionEnd - 1;
+
+            input.value = newValue;
+            input.setSelectionRange(newSelectionEnd, newSelectionEnd);
             inputRef.current = input;
-            onKeyClick(''); // Передаем новое значение, а не пустую строку
-{ else if (selectionEnd === 0 || selectionStart === input.value.length) {
-            // Удаляем весь текст, если выделено всё поле
+            onKeyClick('');
+        } else if ( selectionStart === input.value.length || selectionEnd === 1) {
             newValue = '';
             input.value = newValue;
-            // Обновляем inputRef.current после изменения значения поля ввода
             inputRef.current = input;
-            onKeyClick(''); // Передаем пустую строку
+            onKeyClick('');
+            input.setSelectionRange(0, 0);
+            }
+        else {
+            return; // Do nothing if the cursor is at the beginning and there is no selection
         }
+
     }
+
+
 
     const handleKeyClick = (key, index) => {
         if (key === '\u232b') {
@@ -64,7 +91,9 @@
         margin: '2px',
         width: `${buttonWidth}px`
     };
-     return (
+
+
+    return (
         <div style={{ display: 'flex', height: keyboardHeightPercentage }}>
             <div className={expanded ? 'keyboard-expanded' : 'keyboard-collapsed'}>
                 <div style={{
