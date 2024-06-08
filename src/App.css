@@ -36,3 +36,11 @@
     transform: rotate(360deg);
   }
 }
+.salute-ball {
+  width: 20px; /* Установите желаемый размер шарика */
+  height: 20px;
+}
+.button {
+  cursor: pointer;
+}
+
