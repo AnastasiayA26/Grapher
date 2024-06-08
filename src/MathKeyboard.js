@@ -4,9 +4,15 @@ import './MathKeyboard.css';
 const MathKeyboard = ({ onKeyClick, inputRef }) => {
     const [expanded, setExpanded] = useState(true);
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+    const [buttonColor, setButtonColor] = useState(Array(20).fill('#ffffff')); // Assuming 20 buttons, adjust if needed
     const [clickedButtonIndex, setClickedButtonIndex] = useState(null);
-    const [currentFocusIndex, setCurrentFocusIndex] = useState(0); // Start with the first button focused
-    const buttonRefs = useRef(Array(32).fill(null));
+    const [currentFocusIndex, setCurrentFocusIndex] = useState(null);
+    const buttonRefs = useRef([]);
+
+    // Initialize buttonRefs
+    useEffect(() => {
+        buttonRefs.current = Array(32).fill(null).map((_, i) => buttonRefs.current[i] || React.createRef());
+    }, []);
 
     function handleDelete() {
         if (!inputRef || !inputRef.current) return;
@@ -32,7 +38,7 @@ const MathKeyboard = ({ onKeyClick, inputRef }) => {
             onKeyClick('');
             input.setSelectionRange(0, 0);
         } else {
-            return;
+            return; // Do nothing if the cursor is at the beginning and there is no selection
         }
     }
 
@@ -51,15 +57,46 @@ const MathKeyboard = ({ onKeyClick, inputRef }) => {
             onKeyClick(expression);
         }
         setClickedButtonIndex(index);
+        setButtonColor(prevState => prevState.map((color, i) => i === index ? '#d3d1d1' : '#ffffff'));
         setTimeout(() => {
             setClickedButtonIndex(null);
-        }, 200);
+            setButtonColor(prevState => prevState.map((color, i) => i === index ? '#ffffff' : color));
+        }, 200); // Change this value to adjust the duration of button lighting
         inputRef.current.focus();
     };
 
-    const toggleExpand = () => {
-        setExpanded(!expanded);
+    const handleKeyDown = (event) => {
+        const { key } = event;
+        if (key === 'ArrowLeft' || key === 'ArrowRight' || key === 'ArrowUp' || key === 'ArrowDown') {
+            event.preventDefault();
+            let newIndex = currentFocusIndex;
+            switch (key) {
+                case 'ArrowLeft':
+                    newIndex = (newIndex - 1 + 32) % 32; // Wrap around to end
+                    break;
+                case 'ArrowRight':
+                    newIndex = (newIndex + 1) % 32; // Wrap around to beginning
+                    break;
+                case 'ArrowUp':
+                    newIndex = (newIndex - 4 + 32) % 32; // Move up by one row, wrapping around
+                    break;
+                case 'ArrowDown':
+                    newIndex = (newIndex + 4) % 32; // Move down by one row, wrapping around
+                    break;
+                default:
+                    break;
+            }
+            setCurrentFocusIndex(newIndex);
+            buttonRefs.current[newIndex].current.focus();
+        }
     };
+
+    useEffect(() => {
+        document.addEventListener('keydown', handleKeyDown);
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [currentFocusIndex]);
 
     useEffect(() => {
         const handleResize = () => {
@@ -73,42 +110,12 @@ const MathKeyboard = ({ onKeyClick, inputRef }) => {
         };
     }, []);
 
-    useEffect(() => {
-        const handleKeyDown = (e) => {
-            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter', 'Space'].includes(e.code)) {
-                e.preventDefault();
-                let newIndex = currentFocusIndex;
-
-                if (e.code === 'ArrowUp') {
-                    newIndex = Math.max(currentFocusIndex - 4, 0);
-                } else if (e.code === 'ArrowDown') {
-                    newIndex = Math.min(currentFocusIndex + 4, buttonRefs.current.length - 1);
-                } else if (e.code === 'ArrowLeft') {
-                    newIndex = Math.max(currentFocusIndex - 1, 0);
-                } else if (e.code === 'ArrowRight') {
-                    newIndex = Math.min(currentFocusIndex + 1, buttonRefs.current.length - 1);
-                } else if (e.code === 'Enter' || e.code === 'Space') {
-                    handleKeyClick(buttonRefs.current[currentFocusIndex].innerText, currentFocusIndex);
-                }
-
-                setCurrentFocusIndex(newIndex);
-                buttonRefs.current[newIndex].focus();
-            }
-        };
-
-        window.addEventListener('keydown', handleKeyDown);
-
-        return () => {
-            window.removeEventListener('keydown', handleKeyDown);
-        };
-    }, [currentFocusIndex]);
-
     const buttonWidth = Math.floor(windowWidth / 9);
-    const keyboardHeightPercentage = '30%';
+    const keyboardHeightPercentage = '30%'; // Процентное значение высоты контейнера кнопок относительно высоты экрана
 
     const buttonStyle = {
         flex: '1',
-        padding: windowWidth <= 480 ? '1%' : '1%',
+        padding: windowWidth <= 480 ? '1%' : '1%', // Используем проценты для адаптивного padding
         fontSize: windowWidth <= 480 ? '12px' : '16px',
         backgroundColor: '#ffffff',
         color: '#333333',
@@ -118,6 +125,7 @@ const MathKeyboard = ({ onKeyClick, inputRef }) => {
         margin: '2px',
         width: `${buttonWidth}px`
     };
+
 
     return (
         <div style={{ display: 'flex', height: keyboardHeightPercentage }}>
@@ -342,4 +350,3 @@ const MathKeyboard = ({ onKeyClick, inputRef }) => {
 };
 
 export default MathKeyboard;
-
