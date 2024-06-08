@@ -2,22 +2,24 @@
 
 .keyboard-container {
     display: flex;
-    justify-content: center;
+    justify-content: center; /* Центрируем клавиатуру по горизонтали */
     width: 100%;
-    height: 30%;
+    height: 30%; /* Высота клавиатуры */
     background-color: #f2f2f2;
     border-radius: 10px;
     padding: 10px;
+    cursor: pointer;
 }
 
 .keyboard-buttons {
     display: flex;
     flex-wrap: wrap;
     width: 100%;
+    cursor: pointer;
 }
 
 .keyboard-button {
-    flex: 1 1 10%;
+    flex: 1 1 10%; /* Кнопки равномерно распределяются по ширине */
     margin: 2px;
     padding: 10px;
     font-size: 16px;
@@ -26,12 +28,11 @@
     border: 1px solid #cccccc;
     border-radius: 5px;
     cursor: pointer;
-    box-sizing: border-box;
-    text-align: center;
+    box-sizing: border-box; /* Включаем padding и border в размеры кнопки */
+    text-align: center; /* Центрируем текст в кнопках */
 }
-:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.8);
-    border-radius: 5px;
-    transition: box-shadow 0.2s ease; 
+
+
+.button {
+    cursor: pointer;
 }
