@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './MathKeyboard.css';
 
+
 const MathKeyboard = ({ onKeyClick, inputRef }) => {
     const [expanded, setExpanded] = useState(true);
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -66,28 +67,42 @@ const MathKeyboard = ({ onKeyClick, inputRef }) => {
     };
 
     const handleKeyDown = (event) => {
-        const { key } = event;
-        if (key === 'ArrowLeft' || key === 'ArrowRight' || key === 'ArrowUp' || key === 'ArrowDown') {
+        const { key, shiftKey } = event;
+
+        if (key === 'Tab') {
+            event.preventDefault(); // Prevent default tab behavior
+
+            let newIndex = currentFocusIndex !== null ? currentFocusIndex : 0; // Default to 0 if currentFocusIndex is null
+
+            // Calculate the next index based on whether the shift key is pressed
+            newIndex = shiftKey ? (newIndex - 1 + 32) % 32 : (newIndex + 1) % 32;
+
+            setCurrentFocusIndex(newIndex);
+            buttonRefs.current[newIndex]?.current && buttonRefs.current[newIndex].current.focus();
+        } else if (key === 'ArrowLeft' || key === 'ArrowRight' || key === 'ArrowUp' || key === 'ArrowDown') {
             event.preventDefault();
-            let newIndex = currentFocusIndex;
+
+            let newIndex = currentFocusIndex !== null ? currentFocusIndex : 0; // Default to 0 if currentFocusIndex is null
+
             switch (key) {
                 case 'ArrowLeft':
                     newIndex = (newIndex - 1 + 32) % 32; // Wrap around to end
                     break;
                 case 'ArrowRight':
-                    newIndex = (newIndex + 1) % 32; // Wrap around to beginning
+                    newIndex = (newIndex + 1 + 32) % 32; // Wrap around to beginning
                     break;
                 case 'ArrowUp':
-                    newIndex = (newIndex - 4 + 32) % 32; // Move up by one row, wrapping around
+                    newIndex = (newIndex - 8 + 32) % 32; // Move up by one row, wrapping around
                     break;
                 case 'ArrowDown':
-                    newIndex = (newIndex + 4) % 32; // Move down by one row, wrapping around
+                    newIndex = (newIndex + 8) % 32; // Move down by one row, wrapping around
                     break;
                 default:
                     break;
             }
+
             setCurrentFocusIndex(newIndex);
-            buttonRefs.current[newIndex].current.focus();
+            buttonRefs.current[newIndex]?.current && buttonRefs.current[newIndex].current.focus();
         }
     };
 
@@ -141,212 +156,247 @@ const MathKeyboard = ({ onKeyClick, inputRef }) => {
                 }}>
                     <div style={{display: 'flex', flexWrap: 'wrap'}}>
                         <button
+                            ref={buttonRefs.current[0]}
                             className="focusable"
                             tabIndex="0"
                             style={{...buttonStyle, backgroundColor: clickedButtonIndex === 0 ? '#d3d1d1' : '#ffffff'}}
-                            onClick={() => handleKeyClick('x', 0)} onFocus={() => inputRef.current.focus()}>x
-                        </button>
+                            onClick={() => handleKeyClick('x', 0)}> x</button>
+
                         <button
+                            ref={buttonRefs.current[1]}
                             className="focusable"
                             tabIndex="1"
                             style={{...buttonStyle, backgroundColor: clickedButtonIndex === 1 ? '#d3d1d1' : '#ffffff'}}
-                            onClick={() => handleKeyClick('y', 1)} onFocus={() => inputRef.current.focus()}>y
+                            onClick={() => handleKeyClick('y', 1)} >y
                         </button>
                         <button
+                            ref={buttonRefs.current[2]}
                             className="focusable"
                             tabIndex="2"
                             style={{...buttonStyle, backgroundColor: clickedButtonIndex === 2 ? '#d3d1d1' : '#ffffff'}}
-                            onClick={() => handleKeyClick('ln(', 2)} onFocus={() => inputRef.current.focus()}>ln
+                            onClick={() => handleKeyClick('ln(', 2)} >ln
                         </button>
                         <button
+                            ref={buttonRefs.current[3]}
                             className="focusable"
                             tabIndex="3"
                             style={{...buttonStyle, backgroundColor: clickedButtonIndex === 3 ? '#d3d1d1' : '#ffffff'}}
-                            onClick={() => handleKeyClick('log(a, x', 3)} onFocus={() => inputRef.current.focus()}>log
+                            onClick={() => handleKeyClick('log(a, x', 3)} >log
                         </button>
                         <div style={{width: `${buttonWidth / 4}px`}}/>
                         <button
+                            ref={buttonRefs.current[4]}
                             className="focusable"
                             tabIndex="4"
                             style={{...buttonStyle, backgroundColor: clickedButtonIndex === 4 ? '#d3d1d1' : '#ffffff'}}
-                            onClick={() => handleKeyClick('7', 4)} onFocus={() => inputRef.current.focus()}>7
+                            onClick={() => handleKeyClick('7', 4)}>7
                         </button>
                         <button
+                            ref={buttonRefs.current[5]}
                             className="focusable"
                             tabIndex="5"
                             style={{...buttonStyle, backgroundColor: clickedButtonIndex === 5 ? '#d3d1d1' : '#ffffff'}}
-                            onClick={() => handleKeyClick('8', 5)} onFocus={() => inputRef.current.focus()}>8
+                            onClick={() => handleKeyClick('8', 5)} >8
                         </button>
                         <button
+                            ref={buttonRefs.current[6]}
                             className="focusable"
                             tabIndex="6"
                             style={{...buttonStyle, backgroundColor: clickedButtonIndex === 6 ? '#d3d1d1' : '#ffffff'}}
-                            onClick={() => handleKeyClick('9', 6)} onFocus={() => inputRef.current.focus()}>9
+                            onClick={() => handleKeyClick('9', 6)} >9
                         </button>
                         <button
+                            ref={buttonRefs.current[7]}
                             className="focusable"
                             tabIndex="7"
                             style={{...buttonStyle, backgroundColor: clickedButtonIndex === 7 ? '#d3d1d1' : '#ffffff'}}
-                            onClick={handleDelete} onFocus={() => inputRef.current.focus()}>⌫
+                            onClick={handleDelete} >⌫
                         </button>
                     </div>
                     <div style={{display: 'flex', flexWrap: 'wrap'}}>
                         <button
+                            ref={buttonRefs.current[8]}
                             className="focusable"
                             tabIndex="8"
                             style={{...buttonStyle, backgroundColor: clickedButtonIndex === 8 ? '#d3d1d1' : '#ffffff'}}
-                            onClick={() => handleKeyClick('(', 8)} onFocus={() => inputRef.current.focus()}>(
+                            onClick={() => handleKeyClick('(', 8)} >(
                         </button>
                         <button
+                            ref={buttonRefs.current[9]}
                             className="focusable"
                             tabIndex="9"
                             style={{...buttonStyle, backgroundColor: clickedButtonIndex === 9 ? '#d3d1d1' : '#ffffff'}}
-                            onClick={() => handleKeyClick(')', 9)} onFocus={() => inputRef.current.focus()}>)
+                            onClick={() => handleKeyClick(')', 9)}>)
                         </button>
                         <button
+                            ref={buttonRefs.current[10]}
                             className="focusable"
                             tabIndex="10"
                             style={{...buttonStyle, backgroundColor: clickedButtonIndex === 10 ? '#d3d1d1' : '#ffffff'}}
-                            onClick={() => handleKeyClick('tan(', 10)} onFocus={() => inputRef.current.focus()}>tan
+                            onClick={() => handleKeyClick('tan(', 10)}>tan
                         </button>
                         <button
+                            ref={buttonRefs.current[11]}
                             className="focusable"
                             tabIndex="11"
                             style={{...buttonStyle, backgroundColor: clickedButtonIndex === 11 ? '#d3d1d1' : '#ffffff'}}
-                            onClick={() => handleKeyClick('sin(', 11)} onFocus={() => inputRef.current.focus()}>sin
+                            onClick={() => handleKeyClick('sin(', 11)} >sin
                         </button>
                         <div style={{width: `${buttonWidth / 4}px`}}/>
                         <button
+                            ref={buttonRefs.current[12]}
                             className="focusable"
                             tabIndex="12"
                             style={{...buttonStyle, backgroundColor: clickedButtonIndex === 12 ? '#d3d1d1' : '#ffffff'}}
-                            onClick={() => handleKeyClick('4', 12)} onFocus={() => inputRef.current.focus()}>4
+                            onClick={() => handleKeyClick('4', 12)}>4
                         </button>
                         <button
+                            ref={buttonRefs.current[13]}
                             className="focusable"
                             tabIndex="13"
                             style={{...buttonStyle, backgroundColor: clickedButtonIndex === 13 ? '#d3d1d1' : '#ffffff'}}
-                            onClick={() => handleKeyClick('5', 13)} onFocus={() => inputRef.current.focus()}>5
+                            onClick={() => handleKeyClick('5', 13)}>5
                         </button>
                         <button
+                            ref={buttonRefs.current[14]}
                             className="focusable"
                             tabIndex="14"
                             style={{...buttonStyle, backgroundColor: clickedButtonIndex === 14 ? '#d3d1d1' : '#ffffff'}}
-                            onClick={() => handleKeyClick('6', 14)} onFocus={() => inputRef.current.focus()}>6
+                            onClick={() => handleKeyClick('6', 14)} >6
                         </button>
                         <button
+                            ref={buttonRefs.current[15]}
                             className="focusable"
                             tabIndex="15"
                             style={{...buttonStyle, backgroundColor: clickedButtonIndex === 15 ? '#d3d1d1' : '#ffffff'}}
-                            onClick={() => handleKeyClick('*', 15)} onFocus={() => inputRef.current.focus()}>*
+                            onClick={() => handleKeyClick('*', 15)}>*
                         </button>
                     </div>
                     <div style={{display: 'flex', flexWrap: 'wrap'}}>
                         <button
+                            ref={buttonRefs.current[16]}
                             className="focusable"
                             tabIndex="16"
                             style={{...buttonStyle, backgroundColor: clickedButtonIndex === 16 ? '#d3d1d1' : '#ffffff'}}
-                            onClick={() => handleKeyClick('abs(', 16)} onFocus={() => inputRef.current.focus()}>|x|
+                            onClick={() => handleKeyClick('abs(', 16)} >|x|
                         </button>
                         <button
+                            ref={buttonRefs.current[17]}
                             className="focusable"
                             tabIndex="17"
                             style={{...buttonStyle, backgroundColor: clickedButtonIndex === 17 ? '#d3d1d1' : '#ffffff'}}
-                            onClick={() => handleKeyClick('.', 17)} onFocus={() => inputRef.current.focus()}>,
+                            onClick={() => handleKeyClick('.', 17)}>,
                         </button>
                         <button
+                            ref={buttonRefs.current[18]}
                             className="focusable"
                             tabIndex="18"
                             style={{...buttonStyle, backgroundColor: clickedButtonIndex === 18 ? '#d3d1d1' : '#ffffff'}}
-                            onClick={() => handleKeyClick('cos(', 18)} onFocus={() => inputRef.current.focus()}>cos
+                            onClick={() => handleKeyClick('cos(', 18)} >cos
                         </button>
                         <button
+                            ref={buttonRefs.current[19]}
                             className="focusable"
                             tabIndex="19"
                             style={{...buttonStyle, backgroundColor: clickedButtonIndex === 19 ? '#d3d1d1' : '#ffffff'}}
-                            onClick={() => handleKeyClick('ctg(', 19)} onFocus={() => inputRef.current.focus()}>ctg
+                            onClick={() => handleKeyClick('ctg(', 19)}>ctg
                         </button>
                         <div style={{width: `${buttonWidth / 4}px`}}/>
                         <button
+                            ref={buttonRefs.current[20]}
                             className="focusable"
                             tabIndex="20"
                             style={{...buttonStyle, backgroundColor: clickedButtonIndex === 20 ? '#d3d1d1' : '#ffffff'}}
-                            onClick={() => handleKeyClick('1', 20)} onFocus={() => inputRef.current.focus()}>1
+                            onClick={() => handleKeyClick('1', 20)}>1
                         </button>
                         <button
+                            ref={buttonRefs.current[21]}
                             className="focusable"
                             tabIndex="21"
                             style={{...buttonStyle, backgroundColor: clickedButtonIndex === 21 ? '#d3d1d1' : '#ffffff'}}
-                            onClick={() => handleKeyClick('2', 21)} onFocus={() => inputRef.current.focus()}>2
+                            onClick={() => handleKeyClick('2', 21)} >2
                         </button>
                         <button
+                            ref={buttonRefs.current[22]}
                             className="focusable"
                             tabIndex="22"
                             style={{...buttonStyle, backgroundColor: clickedButtonIndex === 22 ? '#d3d1d1' : '#ffffff'}}
-                            onClick={() => handleKeyClick('3', 22)} onFocus={() => inputRef.current.focus()}>3
+                            onClick={() => handleKeyClick('3', 22)}>3
                         </button>
                         <button
+                            ref={buttonRefs.current[23]}
                             className="focusable"
                             tabIndex="23"
                             style={{...buttonStyle, backgroundColor: clickedButtonIndex === 23 ? '#d3d1d1' : '#ffffff'}}
-                            onClick={() => handleKeyClick('-', 23)} onFocus={() => inputRef.current.focus()}>-
+                            onClick={() => handleKeyClick('-', 23)}>-
                         </button>
                     </div>
                     <div style={{display: 'flex', flexWrap: 'wrap'}}>
                         <button
+                            ref={buttonRefs.current[24]}
                             className="focusable"
                             tabIndex="24"
                             style={{...buttonStyle, backgroundColor: clickedButtonIndex === 24 ? '#d3d1d1' : '#ffffff'}}
-                            onClick={() => handleKeyClick('sqrt(', 24)} onFocus={() => inputRef.current.focus()}>√
+                            onClick={() => handleKeyClick('sqrt(', 24)}>√
                         </button>
                         <button
+                            ref={buttonRefs.current[25]}
                             className="focusable"
                             tabIndex="25"
                             style={{...buttonStyle, backgroundColor: clickedButtonIndex === 25 ? '#d3d1d1' : '#ffffff'}}
-                            onClick={() => handleKeyClick('^', 25)} onFocus={() => inputRef.current.focus()}>^
+                            onClick={() => handleKeyClick('^', 25)}>^
                         </button>
                         <button
+                            ref={buttonRefs.current[26]}
                             className="focusable"
                             tabIndex="26"
                             style={{...buttonStyle, backgroundColor: clickedButtonIndex === 26 ? '#d3d1d1' : '#ffffff'}}
-                            onClick={() => handleKeyClick('e', 26)} onFocus={() => inputRef.current.focus()}>e
+                            onClick={() => handleKeyClick('e', 26)} >e
                         </button>
                         <button
+                            ref={buttonRefs.current[27]}
                             className="focusable"
                             tabIndex="27"
                             style={{...buttonStyle, backgroundColor: clickedButtonIndex === 27 ? '#d3d1d1' : '#ffffff'}}
-                            onClick={() => handleKeyClick('pi', 27)} onFocus={() => inputRef.current.focus()}>π
+                            onClick={() => handleKeyClick('pi', 27)} >π
                         </button>
                         <div style={{width: `${buttonWidth / 4}px`}}/>
                         <button
+                            ref={buttonRefs.current[28]}
                             className="focusable"
                             tabIndex="28"
                             style={{...buttonStyle, backgroundColor: clickedButtonIndex === 28 ? '#d3d1d1' : '#ffffff'}}
-                            onClick={() => handleKeyClick('0', 28)} onFocus={() => inputRef.current.focus()}>0
+                            onClick={() => handleKeyClick('0', 28)} >0
                         </button>
                         <button
+                            ref={buttonRefs.current[29]}
                             className="focusable"
                             tabIndex="29"
                             style={{...buttonStyle, backgroundColor: clickedButtonIndex === 29 ? '#d3d1d1' : '#ffffff'}}
-                            onClick={() => handleKeyClick('=', 29)} onFocus={() => inputRef.current.focus()}>=
+                            onClick={() => handleKeyClick('=', 29)}>=
                         </button>
                         <button
+                            ref={buttonRefs.current[30]}
                             className="focusable"
                             tabIndex="30"
                             style={{...buttonStyle, backgroundColor: clickedButtonIndex === 30 ? '#d3d1d1' : '#ffffff'}}
-                            onClick={() => handleKeyClick('+', 30)} onFocus={() => inputRef.current.focus()}>+
+                            onClick={() => handleKeyClick('+', 30)}>+
                         </button>
                         <button
+                            ref={buttonRefs.current[31]}
                             className="focusable"
                             tabIndex="31"
                             style={{...buttonStyle, backgroundColor: clickedButtonIndex === 31 ? '#d3d1d1' : '#ffffff'}}
-                            onClick={() => handleKeyClick('/', 31)} onFocus={() => inputRef.current.focus()}>/
+                            onClick={() => handleKeyClick('/', 31)}>/
                         </button>
                     </div>
                 </div>
             </div>
         </div>
+
     );
 };
 
-export default MathKeyboard;
+
+export default  MathKeyboard;
+
