@@ -21,8 +21,9 @@ const App = () => {
     const [keyboardButtonColor, setKeyboardButtonColor] = useState('#1a73e8');
     const inputRef = useRef(null);
     const assistantRef = useRef(null);
+    const keyboardRef = useRef(null);
+    const [focusedButtonIndex, setFocusedButtonIndex] = useState(0);
     useSpatnavInitialization();
-
 
     useEffect(() => {
         calculatePlotData();
@@ -50,7 +51,6 @@ const App = () => {
         assistant.on('data', handleAssistantData);
     }, [functions]);
 
-
     useEffect(() => {
         const intervalId = setInterval(() => {
             const focusedElement = getCurrentFocusedElement();
@@ -61,41 +61,86 @@ const App = () => {
         return () => clearInterval(intervalId);
     }, []);
 
-    useEffect(() => {
-        const handleKeyDown = (event) => {
-            switch (event.code) {
-                case 'ArrowLeft':
+    const handleKeyDown = (event) => {
+        switch (event.code) {
+            case 'ArrowLeft':
+                event.preventDefault();
+                if (isKeyboardExpanded) {
+                    moveFocus('left');
+                }
+                break;
+            case 'ArrowRight':
+                event.preventDefault();
+                if (isKeyboardExpanded) {
+                    moveFocus('right');
+                }
+                break;
+            case 'ArrowDown':
+                event.preventDefault();
+                if (isKeyboardExpanded) {
+                    moveFocus('down');
+                } else {
+                    setIsKeyboardExpanded(true);
+                    setTimeout(() => {
+                        setFocusedButtonIndex(0);
+                        focusButton(0);
+                    }, 100); // Задержка для расширения клавиатуры
+                }
+                break;
+            case 'ArrowUp':
+                event.preventDefault();
+                if (isKeyboardExpanded) {
+                    moveFocus('up');
+                }
+                break;
+            case 'Enter':
+                if (isKeyboardExpanded) {
                     event.preventDefault();
-                    const focusedElementLeft = getCurrentFocusedElement();
-                    if (focusedElementLeft && focusedElementLeft.id === "my-slider") {
-                        handleMaskChange(maskValue - 1);
+                    const currentButton = keyboardRef.current.querySelectorAll('.keyboard-button')[focusedButtonIndex];
+                    if (currentButton) {
+                        currentButton.click();
                     }
-                    break;
-                case 'ArrowRight':
-                    event.preventDefault();
-                    const focusedElementRight = getCurrentFocusedElement();
-                    if (focusedElementRight && focusedElementRight.id === "my-slider") {
-                        handleMaskChange(maskValue + 1);
-                    }
-                    break;
-                case 'ArrowDown':
-                    // event.preventDefault();
-                    // window.scrollTo(0, window.scrollY + 50);
-                    break;
-                case 'ArrowUp':
-                    // event.preventDefault();
-                    // window.scrollTo(0, window.scrollY - 50);
-                    break;
-            }
-        };
+                }
+                break;
+            default:
+                break;
+        }
+    };
 
-        window.addEventListener('keydown', handleKeyDown);
 
-        return () => {
-            window.removeEventListener('keydown', handleKeyDown);
-        };
-    }, []);
+    const moveFocus = (direction) => {
+        const buttons = keyboardRef.current.querySelectorAll('.keyboard-button');
+        let newIndex = focusedButtonIndex;
 
+        const rowLength = Math.sqrt(buttons.length); // Предполагаем, что раскладка квадратная
+
+        switch (direction) {
+            case 'down':
+                newIndex = (focusedButtonIndex + rowLength) % buttons.length;
+                break;
+            case 'up':
+                newIndex = (focusedButtonIndex - rowLength + buttons.length) % buttons.length;
+                break;
+            case 'left':
+                newIndex = (focusedButtonIndex - 1 + buttons.length) % buttons.length;
+                break;
+            case 'right':
+                newIndex = (focusedButtonIndex + 1) % buttons.length;
+                break;
+            default:
+                break;
+        }
+
+        setFocusedButtonIndex(newIndex);
+        focusButton(newIndex);
+    };
+
+    const focusButton = (index) => {
+        const buttons = keyboardRef.current.querySelectorAll('.keyboard-button');
+        if (buttons[index]) {
+            buttons[index].focus();
+        }
+    };
 
     const handleAssistantData = (event) => {
         console.log('handleAssistantData:', event);
@@ -108,7 +153,6 @@ const App = () => {
             console.error('Action parameters or function is undefined:', action);
         }
     };
-
 
     function calculatePlotData() {
         const traces = functions
@@ -171,6 +215,9 @@ const App = () => {
             setFunctionInput('');
             setIsFunctionListVisible(true);
             setErrorMessage('');
+            setTimeout(() => {
+                inputRef.current.focus(); // Переместить фокус на поле ввода следующей функции
+            }, 100);
         } else {
             setErrorMessage('Введите функцию.');
         }
@@ -237,13 +284,15 @@ const App = () => {
                             style={{
                                 background: 'none',
                                 border: 'none',
-                                color: 'red',
+                                color:
+
+ 'red',
                                 cursor: 'pointer',
-                                fontSize: '16px',
+                                padding: '0',
                                 marginLeft: '5px',
                             }}
                         >
-                            ✖
+                            &times;
                         </button>
                     </div>
                 ))}
@@ -266,30 +315,6 @@ const App = () => {
         setKeyboardButtonColor((prev) => (prev === '#1a73e8' ? '#1a73e8' : '#1a73e8'));
     };
 
-    const handleKeyDown = (event) => {
-        if (event.key === 'ArrowDown') {
-            setIsKeyboardExpanded(true);
-            if (inputRef.current) {
-                inputRef.current.focus();
-            }
-        }
-    };
-
-    const handleKeyUp = (event) => {
-        if (event.key === 'ArrowDown') {
-            setIsKeyboardExpanded(false);
-            if (inputRef.current) {
-                inputRef.current.focus();
-            }
-        }
-    };
-
-    useEffect(() => {
-        if (isKeyboardExpanded && inputRef.current) {
-            inputRef.current.focus();
-        }
-    }, [isKeyboardExpanded]);
-
     const handleRelayout = (event) => {
         if (event['xaxis.range[0]'] && event['xaxis.range[1]']) {
             setXRange([event['xaxis.range[0]'], event['xaxis.range[1]']]);
@@ -303,7 +328,6 @@ const App = () => {
         <div
             style={{ display: 'flex', height: '100vh' }}
             onKeyDown={handleKeyDown}
-            onKeyUp={handleKeyUp}
             tabIndex={-1}
         >
             <div style={{ flex: '1', height: '100%', borderRight: '1px solid #ccc' }}>
@@ -385,7 +409,7 @@ const App = () => {
                 )}
             </div>
             {isKeyboardExpanded && (
-                <div style={{ position: 'absolute', bottom: '0.05%', left: '1.5%', zIndex: '1'}}>
+                <div style={{ position: 'absolute', bottom: '0.05%', left: '1.5%', zIndex: '1'}} ref={keyboardRef}>
                     <MathKeyboard
                         inputRef={inputRef}
                         onKeyClick={(key) => setFunctionInput(functionInput + key)}
