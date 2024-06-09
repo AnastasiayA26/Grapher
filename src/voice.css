@@ -8,21 +8,7 @@ div .SuggestsSuggest {
         margin-left: 200px;
     }
 }
-/*
-.focused {
-    outline: 1px solid blue;
-}*/
-/*
-table.sn-section-item:focus {
-    outline: none;
-  }*/
 
-:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.8);
-    border-radius: 5px;
-    transition: box-shadow 0.2s ease; /*Плавное появление */
-}
 
 div .Bubble {
     background-color: rgba(0, 0, 0, 0);
@@ -59,4 +45,25 @@ div .myText {
     outline: none;
     width: 100%;
 }
+.app-container {
+    display: flex;
+    flex-direction: row;
+}
+.keyboard-expanded-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #fff;
+    z-index: 999; /* установите z-index таким образом, чтобы клавиатура была поверх графика */
+}
 
+
+/* Дополнительные стили, если необходимо */
+
+
+.focusable {
+    cursor: pointer;
+}
+
+/* Дополнительные стили, если необходимо */
