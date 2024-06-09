@@ -17,8 +17,7 @@ const App = () => {
     const [yRange, setYRange] = useState([-100, 100]);
     const [isFunctionListVisible, setIsFunctionListVisible] = useState(false);
     const [hiddenFunctions, setHiddenFunctions] = useState([]);
-    const [isKeyboardExpanded, setIsKeyboardExpanded] = useState(false);
-    const [keyboardButtonColor, setKeyboardButtonColor] = useState('#1a73e8');
+    const [isKeyboardExpanded, setIsKeyboardExpanded] = useState(true);
     const inputRef = useRef(null);
     const assistantRef = useRef(null);
     useSpatnavInitialization();
@@ -51,54 +50,9 @@ const App = () => {
     }, [functions]);
 
 
-    useEffect(() => {
-        let downPressTimer;
-        let upPressTimer;
-    
-        const handleKeyDown = (event) => {
-            if (event.code === 'ArrowDown') {
-                downPressTimer = setTimeout(() => {
-                    setIsKeyboardExpanded(true);
-                }, 5000); // Открываем клавиатуру через 5 секунд нажатия на ArrowDown
-                event.preventDefault();
-            } else if (event.code === 'ArrowUp') {
-                upPressTimer = setTimeout(() => {
-                    setIsKeyboardExpanded(false);
-                }, 5000); // Закрываем клавиатуру через 5 секунд нажатия на ArrowUp
-                event.preventDefault();
-            }
-        };
-    
-        const handleKeyUp = (event) => {
-            if (event.code === 'ArrowDown') {
-                clearTimeout(downPressTimer);
-            } else if (event.code === 'ArrowUp') {
-                clearTimeout(upPressTimer);
-            }
-        };
-    
-        window.addEventListener('keydown', handleKeyDown);
-        window.addEventListener('keyup', handleKeyUp);
-    
-        return () => {
-            window.removeEventListener('keydown', handleKeyDown);
-            window.removeEventListener('keyup', handleKeyUp);
-        };
-    }, []);
-
-    useEffect(() => {
-        const intervalId = setInterval(() => {
-            const focusedElement = getCurrentFocusedElement();
-            console.log("Focused element:", focusedElement);
-        }, 5000); // 5000 миллисекунд = 5 секунд
-
-        // Очистка интервала при размонтировании компонента
-        return () => clearInterval(intervalId);
-    }, []);
-
     const handleAssistantData = (event) => {
         console.log('handleAssistantData:', event);
-        const { action } = event;
+        const {action} = event;
 
         if (action && action.parameters && action.parameters.function) {
             const func = action.parameters.function;
@@ -111,7 +65,7 @@ const App = () => {
     function calculatePlotData() {
         const traces = functions
             .filter((func, index) => !hiddenFunctions.includes(index))
-            .map(({ func, color }, index) => {
+            .map(({func, color}, index) => {
                 let f;
                 try {
                     f = make_function(func);
@@ -165,9 +119,8 @@ const App = () => {
 
     const handleAddFunction = () => {
         if (functionInput.trim() !== '') {
-            // Добавляем функцию в строку ввода
             setFunctionInput(prevFunctionInput => prevFunctionInput + functionInput.trim());
-            setFunctions([...functions, { func: functionInput, color: getRandomColor() }]);
+            setFunctions([...functions, {func: functionInput, color: getRandomColor()}]);
             setFunctionInput('');
             setIsFunctionListVisible(true);
             setErrorMessage('');
@@ -180,15 +133,15 @@ const App = () => {
         setFunctions((prevFunctions) => prevFunctions.filter((_, i) => i !== index));
     };
 
-    const FunctionList = ({ functions, hiddenFunctions }) => (
-        <div style={{ marginTop: '10px' }}>
+    const FunctionList = ({functions, hiddenFunctions}) => (
+        <div style={{marginTop: '10px'}}>
             <div
                 style={{
                     backgroundColor: '#fff',
                     border: '1px solid #ddd',
                     borderRadius: '5px',
                     padding: '10px',
-                    width: 'auto',
+                    width: '13%',
                     maxHeight: '200px',
                     overflowY: 'auto',
                 }}
@@ -197,7 +150,7 @@ const App = () => {
                     <div
                         key={index}
                         className="focusable"
-                        style={{ padding: '5px', display: 'flex', alignItems: 'center', cursor: 'pointer' }}
+                        style={{padding: '5px', display: 'flex', alignItems: 'center', cursor: 'pointer'}}
                     >
                         <div
                             style={{
@@ -215,7 +168,7 @@ const App = () => {
                             onClick={() => handleFunctionToggle(index)}
                         >
                             {hiddenFunctions.includes(index) && (
-                                <span style={{ color: '#ddd', fontSize: '12px' }}>•</span>
+                                <span style={{color: '#ddd', fontSize: '12px'}}>•</span>
                             )}
                         </div>
                         <span
@@ -227,7 +180,7 @@ const App = () => {
                             contentEditable={!hiddenFunctions.includes(index)}
                             suppressContentEditableWarning={true}
                             onBlur={(e) =>
-                                handleFunctionEdit(index, { ...func, func: e.target.textContent })
+                                handleFunctionEdit(index, {...func, func: e.target.textContent})
                             }
                         >
                             {func.func}
@@ -261,34 +214,6 @@ const App = () => {
         });
     };
 
-    const handleKeyboardButtonClick = () => {
-        setIsKeyboardExpanded((prev) => !prev);
-        setKeyboardButtonColor((prev) => (prev === '#1a73e8' ? '#1a73e8' : '#1a73e8'));
-    };
-
-    const handleKeyDown = (event) => {
-        if (event.key === 'ArrowDown') {
-            setIsKeyboardExpanded(true);
-            if (inputRef.current) {
-                inputRef.current.focus();
-            }
-        }
-    };
-
-    const handleKeyUp = (event) => {
-        if (event.key === 'ArrowDown') {
-            setIsKeyboardExpanded(false);
-            if (inputRef.current) {
-                inputRef.current.focus();
-            }
-        }
-    };
-
-    useEffect(() => {
-        if (isKeyboardExpanded && inputRef.current) {
-            inputRef.current.focus();
-        }
-    }, [isKeyboardExpanded]);
 
     const handleRelayout = (event) => {
         if (event['xaxis.range[0]'] && event['xaxis.range[1]']) {
@@ -298,25 +223,18 @@ const App = () => {
             setYRange([event['yaxis.range[0]'], event['yaxis.range[1]']]);
         }
     };
-
     return (
         <div
             style={{ display: 'flex', height: '100vh' }}
-            onKeyDown={handleKeyDown}
-            onKeyUp={handleKeyUp}
-            tabIndex={-1}
         >
-            <div style={{ flex: '1', height: '100%', borderRight: '1px solid #ccc' }}>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div className="app-container" style={{ flex: '1', height: '100%', borderRight: '1px solid #ccc', flexDirection: 'column' }}>
+                <div className="input-container" style={{ display: 'flex', alignItems: 'center'}}>
                     <input
                         ref={inputRef}
-                        className="focusable"
                         type="text"
                         placeholder="5*x + 1"
                         value={functionInput}
                         onChange={handleFunctionInputChange}
-                        autoFocus
-                        onKeyDown={(e) => e.stopPropagation()}
                         style={{ marginRight: '10px', padding: '10px', width: '80%', margin: '0' }}
                     />
                     <button
@@ -358,41 +276,19 @@ const App = () => {
                         },
                     }}
                     useResizeHandler={true}
-                    style={{ width: '100%', height: '100%' }}
+                    style={{ width: '100%', height: '77%' }}
                     onRelayout={handleRelayout}
                 />
-                {!isKeyboardExpanded && (
-                    <button
-                        className="focusable"
-                        onClick={handleKeyboardButtonClick}
-                        style={{
-                            position: 'absolute',
-                            top: '0px',
-                            left: '0.5%',
-                            padding: '10px',
-                            fontSize: '14px',
-                            backgroundColor: keyboardButtonColor,
-                            color: '#fff',
-                            border: 'none',
-                            borderRadius: '5px',
-                            cursor: 'pointer',
-                        }}
-                    >
-                        <span role="img" aria-label="keyboard-icon">
-                            ⌨️
-                        </span>
-                    </button>
-                )}
             </div>
             {isKeyboardExpanded && (
-                <div style={{ position: 'absolute', bottom: '0.05%', left: '1.5%', zIndex: '1'}}>
+                <div style={{ position: 'absolute', bottom: '0.05%', zIndex: '1'}}>
                     <MathKeyboard
                         inputRef={inputRef}
                         onKeyClick={(key) => setFunctionInput(functionInput + key)}
                     />
                     <div style={{ textAlign: 'center', paddingTop: '0.25%' }}>
                         <span onClick={() => setIsKeyboardExpanded(false)} style={{ cursor: 'pointer' }}>
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 30 24 24" width="1.5em" height="4.5em">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 30 24 24" width="1.5em" height="3.0em">
                                 <path fill="none" d="M0 0h24v24H0z" />
                                 <path d="M7 10l5 5 5-5H7z" />
                             </svg>
@@ -414,4 +310,5 @@ function getRandomColor() {
 }
 
 export default App;
+
 
