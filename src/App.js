@@ -20,7 +20,8 @@ const App = () => {
     const [isKeyboardExpanded, setIsKeyboardExpanded] = useState(true);
     const inputRef = useRef(null);
     const assistantRef = useRef(null);
-    useSpatnavInitialization();
+    const addButtonRef = useRef(null);
+    const functionListRef = useRef(null);
 
 
     useEffect(() => {
@@ -39,26 +40,38 @@ const App = () => {
     };
 
     useEffect(() => {
-        window.addMathFunction = (func) => {
+        window.addMathFunction = (func, context) => {
             setFunctionInput(prev => prev + func);
         };
-
         const getState = () => ({ functions });
-
         const assistant = initializeAssistant(getState);
         assistant.on('data', handleAssistantData);
     }, [functions]);
 
-
     const handleAssistantData = (event) => {
         console.log('handleAssistantData:', event);
-        const {action} = event;
-
-        if (action && action.parameters && action.parameters.function) {
-            const func = action.parameters.function;
-            window.addMathFunction(func);
+        const { action } = event;
+    
+        if (action && action.parameters) {
+            if (action.parameters.function) {
+                const func = action.parameters.function;
+                window.addMathFunction(func);
+            }
         } else {
             console.error('Action parameters or function is undefined:', action);
+        }
+    };
+
+    const handleInputKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            addButtonRef.current.focus();
+        }
+    };
+    
+    const handleAddFunctionKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            handleAddFunction(); // Вызываем функцию добавления функции на график
         }
     };
 
@@ -117,6 +130,17 @@ const App = () => {
         setFunctionInput(e.target.value);
     };
 
+    // const handleAddFunction = () => {
+    //     if (functionInput.trim() !== '') {
+    //         setFunctionInput(prevFunctionInput => prevFunctionInput + functionInput.trim());
+    //         setFunctions([...functions, {func: functionInput, color: getRandomColor()}]);
+    //         setFunctionInput('');
+    //         setIsFunctionListVisible(true);
+    //         setErrorMessage('');
+    //     } else {
+    //         setErrorMessage('Введите функцию.');
+    //     }
+    // };
     const handleAddFunction = () => {
         if (functionInput.trim() !== '') {
             setFunctionInput(prevFunctionInput => prevFunctionInput + functionInput.trim());
@@ -134,7 +158,11 @@ const App = () => {
     };
 
     const FunctionList = ({functions, hiddenFunctions}) => (
-        <div style={{marginTop: '10px'}}>
+        <div
+            ref={functionListRef} 
+            style={{marginTop: '10px'}}
+            tabIndex={-1}
+        >
             <div
                 style={{
                     backgroundColor: '#fff',
@@ -235,13 +263,16 @@ const App = () => {
                         placeholder="5*x + 1"
                         value={functionInput}
                         onChange={handleFunctionInputChange}
-                        style={{ marginRight: '10px', padding: '10px', width: '80%', margin: '0' }}
+                        onKeyDown={handleInputKeyDown}
+                        style={{padding: '10px', width: '10%', margin: '0'}}
                     />
                     <button
+                        ref={addButtonRef}
                         className="focusable"
                         onClick={handleAddFunction}
+                        onKeyDown={handleAddFunctionKeyDown} 
                         style={{
-                            width: '20%',
+                            width: '3%',
                             padding: '10px',
                             backgroundColor: '#1a73e8',
                             color: '#fff',
@@ -310,5 +341,7 @@ function getRandomColor() {
 }
 
 export default App;
+
+
 
 
