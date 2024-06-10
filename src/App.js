@@ -51,7 +51,7 @@ const App = () => {
     const handleAssistantData = (event) => {
         console.log('handleAssistantData:', event);
         const { action } = event;
-    
+
         if (action && action.parameters) {
             if (action.parameters.function) {
                 const func = action.parameters.function;
@@ -68,7 +68,7 @@ const App = () => {
             addButtonRef.current.focus();
         }
     };
-    
+
     const handleAddFunctionKeyDown = (e) => {
         if (e.key === 'Enter') {
             handleAddFunction(); // Вызываем функцию добавления функции на график
@@ -159,7 +159,7 @@ const App = () => {
 
     const FunctionList = ({functions, hiddenFunctions}) => (
         <div
-            ref={functionListRef} 
+            ref={functionListRef}
             style={{marginTop: '10px'}}
             tabIndex={-1}
         >
@@ -169,7 +169,7 @@ const App = () => {
                     border: '1px solid #ddd',
                     borderRadius: '5px',
                     padding: '10px',
-                    width: '13%',
+                    width: 'auto%',
                     maxHeight: '200px',
                     overflowY: 'auto',
                 }}
@@ -264,15 +264,15 @@ const App = () => {
                         value={functionInput}
                         onChange={handleFunctionInputChange}
                         onKeyDown={handleInputKeyDown}
-                        style={{padding: '10px', width: '10%', margin: '0'}}
+                        style={{padding: '10px', width: '150%', margin: '0'}}
                     />
                     <button
                         ref={addButtonRef}
                         className="focusable"
                         onClick={handleAddFunction}
-                        onKeyDown={handleAddFunctionKeyDown} 
+                        onKeyDown={handleAddFunctionKeyDown}
                         style={{
-                            width: '3%',
+                            width: '30%',
                             padding: '10px',
                             backgroundColor: '#1a73e8',
                             color: '#fff',
@@ -286,7 +286,7 @@ const App = () => {
                     <FunctionList functions={functions} hiddenFunctions={hiddenFunctions} />
                 )}
             </div>
-            <div style={{ flex: '4', height: '100%', position: 'relative' }}>
+            <div style={{ flex: '4', height: '100%', position: 'relative', flexDirection: 'column' }}>
                 <Plot
                     data={plotData}
                     layout={{
@@ -307,7 +307,7 @@ const App = () => {
                         },
                     }}
                     useResizeHandler={true}
-                    style={{ width: '100%', height: '77%' }}
+                    style={{ width: '100%', height: '76%' }}
                     onRelayout={handleRelayout}
                 />
             </div>
@@ -341,7 +341,6 @@ function getRandomColor() {
 }
 
 export default App;
-
 
 
 
