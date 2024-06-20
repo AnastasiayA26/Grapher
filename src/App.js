@@ -7,12 +7,10 @@ import './index.css';
 import './voice.css';
 import { make_function } from './math_parser.js';
 import { useSpatnavInitialization, useSection, getCurrentFocusedElement } from '@salutejs/spatial';
-import useWindowSize from './useWindowSize';
 
 const App = () => {
     const [functions, setFunctions] = useState([]);
     const [functionInput, setFunctionInput] = useState('');
-    const [plotData, setPlotData] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
     const [xRange, setXRange] = useState([-100, 100]);
     const [yRange, setYRange] = useState([-100, 100]);
@@ -24,15 +22,37 @@ const App = () => {
     const assistantRef = useRef(null);
     const addButtonRef = useRef(null);
     const functionListRef = useRef(null);
-    const windowSize = useWindowSize();
+    const [plotLayout, setPlotLayout] = useState({
+        autosize: true,
+        margin: {t: 50, r: 50, b: 50, l: 50},
+        xaxis: {
+            zeroline: true,
+            zerolinecolor: '#000',
+            range: [-20, 20], // Set the initial range for x-axis
+        },
+        yaxis: {
+            zeroline: true,
+            zerolinecolor: '#000',
+            range: [-50, 50], // Set the initial range for y-axis
+        },
+    });
 
     useEffect(() => {
-        calculatePlotData();
-    }, [functions, hiddenFunctions, xRange, yRange]);
+        const handleResize = () => {
+            setPlotLayout((prevLayout) => ({
+                ...prevLayout,
+                width: window.innerWidth * 0.7, // Примерное значение ширины графика
+                height: window.innerHeight * 0.65, // Примерное значение высоты графика
+            }));
+        };
 
-    useEffect(() => {
-        calculatePlotData();
-    }, [windowSize]);
+        handleResize();
+
+        window.addEventListener('resize', handleResize);
+
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
 
     const initializeAssistant = (getState) => {
         if (process.env.NODE_ENV === 'development') {
@@ -80,50 +100,6 @@ const App = () => {
             handleAddFunction(); // Вызываем функцию добавления функции на график
         }
     };
-
-    function calculatePlotData() {
-        const traces = functions
-            .filter((func, index) => !hiddenFunctions.includes(index))
-            .map(({ func, color }, index) => {
-                let f;
-                try {
-                    f = make_function(func);
-                } catch (error) {
-                    setErrorMessage(`Ошибка в функции: ${func}`);
-                    return null;
-                }
-
-                const xValues = [];
-                const yValues = [];
-                const step = (xRange[1] - xRange[0]) / 1000;
-
-                for (let x = xRange[0]; x <= xRange[1]; x += step) {
-                    try {
-                        const y = f(x);
-                        xValues.push(x);
-                        yValues.push(y);
-                    } catch (error) {
-                        setErrorMessage(`Ошибка вычисления функции: ${func}`);
-                    }
-                }
-
-                return {
-                    x: xValues,
-                    y: yValues,
-                    mode: 'lines',
-                    type: 'scatter',
-                    line: {
-                        color: color,
-                        width: 2,
-                    },
-                    name: `Функция ${index + 1}`,
-                };
-            }).filter(Boolean);
-
-        setPlotData(traces);
-        setErrorMessage('');
-    }
-
     const handleFunctionEdit = (index, editedFunction) => {
         setFunctions((prevFunctions) => {
             const updatedFunctions = [...prevFunctions];
@@ -139,7 +115,7 @@ const App = () => {
     const handleAddFunction = () => {
         if (functionInput.trim() !== '') {
             setFunctionInput(prevFunctionInput => prevFunctionInput + functionInput.trim());
-            setFunctions([...functions, { func: functionInput, color: getRandomColor() }]);
+            setFunctions([...functions, {func: functionInput, color: getRandomColor()}]);
             setFunctionInput('');
             setIsFunctionListVisible(true);
             setErrorMessage('');
@@ -152,10 +128,10 @@ const App = () => {
         setFunctions((prevFunctions) => prevFunctions.filter((_, i) => i !== index));
     };
 
-    const FunctionList = ({ functions, hiddenFunctions }) => (
+    const FunctionList = ({functions, hiddenFunctions}) => (
         <div
             ref={functionListRef}
-            style={{ marginTop: '10px' }}
+            style={{marginTop: '10px'}}
             tabIndex={-1}
         >
             <div
@@ -173,7 +149,7 @@ const App = () => {
                     <div
                         key={index}
                         className="focusable"
-                        style={{ padding: '5px', display: 'flex', alignItems: 'center', cursor: 'pointer' }}
+                        style={{padding: '5px', display: 'flex', alignItems: 'center', cursor: 'pointer'}}
                     >
                         <div
                             style={{
@@ -191,7 +167,7 @@ const App = () => {
                             onClick={() => handleFunctionToggle(index)}
                         >
                             {hiddenFunctions.includes(index) && (
-                                <span style={{ color: '#ddd', fontSize: '12px' }}>•</span>
+                                <span style={{color: '#ddd', fontSize: '12px'}}>•</span>
                             )}
                         </div>
                         <span
@@ -203,7 +179,7 @@ const App = () => {
                             contentEditable={!hiddenFunctions.includes(index)}
                             suppressContentEditableWarning={true}
                             onBlur={(e) =>
-                                handleFunctionEdit(index, { ...func, func: e.target.textContent })
+                                handleFunctionEdit(index, {...func, func: e.target.textContent})
                             }
                         >
                             {func.func}
@@ -256,11 +232,46 @@ const App = () => {
         setIsHelpVisible(false);
     };
 
+    const generatePlotData = () => {
+        return functions.map(({func, color}) => {
+            let f;
+            try {
+                f = make_function(func);
+            } catch (error) {
+                setErrorMessage(`Ошибка в функции: ${func}`);
+                return null;
+            }
+
+            const xValues = [];
+            const yValues = [];
+            const step = (xRange[1] - xRange[0]) / 1000;
+
+            for (let x = xRange[0]; x <= xRange[1]; x += step) {
+                try {
+                    const y = f(x);
+                    xValues.push(x);
+                    yValues.push(y);
+                } catch (error) {
+                    setErrorMessage(`Ошибка вычисления функции: ${func}`);
+                }
+            }
+
+            return {
+                x: xValues,
+                y: yValues,
+                type: 'scatter',
+                mode: 'lines',
+                marker: {color},
+                name: func
+            };
+        }).filter(data => data !== null);
+    };
+
     return (
         <div style={{display: 'flex', height: '100vh'}}>
             <div className="app-container"
                  style={{flex: '1', height: 'auto', borderRight: '1px solid #ccc', flexDirection: 'column'}}>
-                <div className="input-container" style={{display: 'flex', alignItems: 'center'}}>
+                <div className="input-panel" style={{display: 'flex', alignItems: 'center'}}>
                     <input
                         ref={inputRef}
                         type="text"
@@ -287,11 +298,11 @@ const App = () => {
                         +
                     </button>
                 </div>
-                {isFunctionListVisible && (
-                    <FunctionList functions={functions} hiddenFunctions={hiddenFunctions}/>
-                )}
-            </div>
-            <div style={{padding: '3px', position: 'relative', top: '1px', zIndex: '2'}}>
+            {isFunctionListVisible && (
+                <FunctionList functions={functions} hiddenFunctions={hiddenFunctions}/>
+            )}
+        </div>
+    <div style={{padding: '3px', position: 'relative', top: '1px', zIndex: '2'}}>
     <span onClick={openHelpModal} style={{cursor: 'pointer'}}>
         <button
             style={{
@@ -307,100 +318,93 @@ const App = () => {
             ?
         </button>
     </span>
-                {/* Модальное окно справки */}
-                {isHelpVisible && (
-                    <div
-                        className="help-modal"
-                        style={{
-                            position: 'fixed',
-                            top: '35%',
-                            left: '20%',
-                            transform: 'translateY(-50%)',
-                            backgroundColor: '#e6f1fa',
-                            padding: '10px',
-                            borderRadius: '8px',
-                            boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)',
-                            zIndex: '999',
-                        }}
-                    >
-                        <h4 style={{ fontSize: '18px' }}>Справка</h4> {/* Уменьшить размер шрифта для заголовка */}
-                        <p style={{ fontSize: '14px' }}>Приложение позволяет строить графики математических функций</p> {/* Уменьшить размер шрифта для параграфа */}
-                        <ol>
-                            <strong style={{ fontSize: '14px' }}>Добавление функций:</strong> {/* Уменьшить размер шрифта для strong */}
-                            <ul>
-                                <li style={{ fontSize: '14px' }}>Введите математическое выражение в поле ввода и нажмите кнопку <span className="button">+</span></li>
-                                <li style={{ fontSize: '14px' }}>Примеры: 5*x + 1, sin(3*x)</li>
-                            </ul>
-                            <strong style={{ fontSize: '14px' }}>Управление функциями:</strong>
-                            <ul>
-                                <li style={{ fontSize: '14px' }}>Для скрытия/отображения функции кликните на маркер окрашенного круга рядом с функцией</li>
-                                <li style={{ fontSize: '14px' }}>Для удаления функции нажмите крестик в списке функций</li>
-                            </ul>
-                            <strong style={{ fontSize: '14px' }}>Изменение масштаба графика:</strong>
-                            <ul>
-                                <li style={{ fontSize: '14px' }}>Используйте манипуляторы на графике для изменения масштаба по осям X и Y</li>
-                            </ul>
-                        </ol>
-                        <button
-                            onClick={closeHelpModal}
-                            style={{
-                                padding: '10px',
-                                backgroundColor: '#1a73e8',
-                                color: '#fff',
-                                border: 'none',
-                                cursor: 'pointer',
-                                borderRadius: '4px',
-                                marginTop: '10px',
-                            }}
-                        >
-                            Закрыть
-                        </button>
-                    </div>
-                )}
-            </div>
-            <div style={{flex: '4', height: '100%', position: 'relative', flexDirection: 'column'}}>
-                <Plot
-                    data={plotData}
-                    layout={{
-                        autosize: true,
-                        xaxis: {
-                            range: xRange,
-                            zeroline: true,
-                            zerolinecolor: '#000',
-                            fixedrange: false,
-                        },
-                        yaxis: {
-                            scaleanchor: 'x',
-                            scaleratio: 1,
-                            range: yRange,
-                            zeroline: true,
-                            zerolinecolor: '#000',
-                            fixedrange: false,
-                        },
+        {/* Модальное окно справки */}
+        {isHelpVisible && (
+            <div
+                className="help-modal"
+                style={{
+                    position: 'fixed',
+                    top: '35%',
+                    left: '20%',
+                    transform: 'translateY(-50%)',
+                    backgroundColor: '#e6f1fa',
+                    padding: '10px',
+                    borderRadius: '8px',
+                    boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)',
+                    zIndex: '999',
+                }}
+            >
+                <h4 style={{fontSize: '18px'}}>Справка</h4> {/* Уменьшить размер шрифта для заголовка */}
+                <p style={{fontSize: '14px'}}>Приложение позволяет строить графики математических
+                    функций</p> {/* Уменьшить размер шрифта для параграфа */}
+                <ol>
+                    <strong style={{fontSize: '14px'}}>Добавление
+                        функций:</strong> {/* Уменьшить размер шрифта для strong */}
+                    <ul>
+                        <li style={{fontSize: '14px'}}>Введите математическое выражение в поле ввода и нажмите
+                            кнопку <span className="button">+</span></li>
+                        <li style={{fontSize: '14px'}}>Примеры: 5*x + 1, sin(3*x)</li>
+                    </ul>
+                    <strong style={{fontSize: '14px'}}>Управление функциями:</strong>
+                    <ul>
+                        <li style={{fontSize: '14px'}}>Для скрытия/отображения функции кликните на маркер
+                            окрашенного круга рядом с функцией
+                        </li>
+                        <li style={{fontSize: '14px'}}>Для удаления функции нажмите крестик в списке функций
+                        </li>
+                    </ul>
+                    <strong style={{fontSize: '14px'}}>Изменение масштаба графика:</strong>
+                    <ul>
+                        <li style={{fontSize: '14px'}}>Используйте манипуляторы на графике для изменения
+                            масштаба по осям X и Y
+                        </li>
+                    </ul>
+                </ol>
+                <button
+                    onClick={closeHelpModal}
+                    style={{
+                        padding: '10px',
+                        backgroundColor: '#1a73e8',
+                        color: '#fff',
+                        border: 'none',
+                        cursor: 'pointer',
+                        borderRadius: '4px',
+                        marginTop: '10px',
                     }}
-                    useResizeHandler={true}
-                    style={{width: '100%', height: '73%'}}
-                    onRelayout={handleRelayout}
-                />
+                >
+                    Закрыть
+                </button>
             </div>
-            {isKeyboardExpanded && (
-                <div style={{position: 'absolute', bottom: '0.05%', zIndex: '1'}}>
-                    <MathKeyboard
-                        inputRef={inputRef}
-                        onKeyClick={(key) => setFunctionInput(functionInput + key)}
-                    />
-                    <div style={{textAlign: 'center', paddingTop: '0.25%'}}>
+        )}
+    </div>
+    <div className="plot-panel" style={{flex: '3', padding: '10px'}}>
+        <Plot
+            data={generatePlotData()}
+            layout={plotLayout}
+            style={{width: '100%', height: '100%'}}
+        />
+    </div>
+    {
+        isKeyboardExpanded && (
+            <div style={{position: 'absolute', bottom: '0.05%', zIndex: '1'}}>
+                <MathKeyboard
+                    inputRef={inputRef}
+                    onKeyClick={(key) => setFunctionInput(functionInput + key)}
+                />
+                <div style={{textAlign: 'center', paddingTop: '0.25%'}}>
                         <span onClick={() => setIsKeyboardExpanded(false)} style={{cursor: 'pointer'}}>
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 30 24 24" width="3.5em" height="4.0em">
                                 <path fill="none" d="M0 0h24v24H0z"/>
                                 <path d="M7 10l5 5 5-5H7z"/>
                             </svg>
                         </span>
-                    </div>
                 </div>
-            )}
-        </div>
-    );
+            </div>
+        )
+    }
+</div>
+)
+    ;
 };
 
 function getRandomColor() {
