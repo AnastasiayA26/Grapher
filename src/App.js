@@ -259,7 +259,7 @@ const App = () => {
     return (
         <div style={{display: 'flex', height: '100vh'}}>
             <div className="app-container"
-                 style={{flex: '1', height: '100%', borderRight: '1px solid #ccc', flexDirection: 'column'}}>
+                 style={{flex: '1', height: 'auto', borderRight: '1px solid #ccc', flexDirection: 'column'}}>
                 <div className="input-container" style={{display: 'flex', alignItems: 'center'}}>
                     <input
                         ref={inputRef}
@@ -323,31 +323,23 @@ const App = () => {
                             zIndex: '999',
                         }}
                     >
-                        <h4>Справка</h4>
-                        <p>Приложение позволяет строить графики математических функций</p>
+                        <h4 style={{ fontSize: '18px' }}>Справка</h4> {/* Уменьшить размер шрифта для заголовка */}
+                        <p style={{ fontSize: '14px' }}>Приложение позволяет строить графики математических функций</p> {/* Уменьшить размер шрифта для параграфа */}
                         <ol>
-                            <li><strong>Добавление функций:</strong>
-                                <ul>
-                                    <li>Введите математическое выражение в поле ввода и нажмите кнопку <span
-                                        className="button">+</span>
-                                    </li>
-                                    <li>Примеры: 5*x + 1, sin(3*x)</li>
-                                </ul>
-                            </li>
-                            <li><strong>Управление функциями:</strong>
-                                <ul>
-                                    <li>Для скрытия/отображения функции кликните на маркер окрашенного круга
-                                        рядом с функцией
-                                    </li>
-                                    <li>Для удаления функции нажмите крестик в списке функций
-                                    </li>
-                                </ul>
-                            </li>
-                            <li><strong>Изменение масштаба графика:</strong>
-                                <ul>
-                                <li>Используйте манипуляторы на графике для изменения масштаба по осям X и Y.</li>
-                                </ul>
-                            </li>
+                            <strong style={{ fontSize: '14px' }}>Добавление функций:</strong> {/* Уменьшить размер шрифта для strong */}
+                            <ul>
+                                <li style={{ fontSize: '14px' }}>Введите математическое выражение в поле ввода и нажмите кнопку <span className="button">+</span></li>
+                                <li style={{ fontSize: '14px' }}>Примеры: 5*x + 1, sin(3*x)</li>
+                            </ul>
+                            <strong style={{ fontSize: '14px' }}>Управление функциями:</strong>
+                            <ul>
+                                <li style={{ fontSize: '14px' }}>Для скрытия/отображения функции кликните на маркер окрашенного круга рядом с функцией</li>
+                                <li style={{ fontSize: '14px' }}>Для удаления функции нажмите крестик в списке функций</li>
+                            </ul>
+                            <strong style={{ fontSize: '14px' }}>Изменение масштаба графика:</strong>
+                            <ul>
+                                <li style={{ fontSize: '14px' }}>Используйте манипуляторы на графике для изменения масштаба по осям X и Y</li>
+                            </ul>
                         </ol>
                         <button
                             onClick={closeHelpModal}
@@ -421,5 +413,6 @@ function getRandomColor() {
 }
 
 export default App;
+
 
 
