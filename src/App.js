@@ -7,6 +7,7 @@ import './index.css';
 import './voice.css';
 import { make_function } from './math_parser.js';
 import { useSpatnavInitialization, useSection, getCurrentFocusedElement } from '@salutejs/spatial';
+import useWindowSize from './useWindowSize';
 
 const App = () => {
     const [functions, setFunctions] = useState([]);
@@ -22,11 +23,15 @@ const App = () => {
     const assistantRef = useRef(null);
     const addButtonRef = useRef(null);
     const functionListRef = useRef(null);
-
+    const windowSize = useWindowSize();
 
     useEffect(() => {
         calculatePlotData();
     }, [functions, hiddenFunctions, xRange, yRange]);
+
+    useEffect(() => {
+        calculatePlotData();
+    }, [windowSize]);
 
     const initializeAssistant = (getState) => {
         if (process.env.NODE_ENV === 'development') {
@@ -78,7 +83,7 @@ const App = () => {
     function calculatePlotData() {
         const traces = functions
             .filter((func, index) => !hiddenFunctions.includes(index))
-            .map(({func, color}, index) => {
+            .map(({ func, color }, index) => {
                 let f;
                 try {
                     f = make_function(func);
@@ -130,21 +135,10 @@ const App = () => {
         setFunctionInput(e.target.value);
     };
 
-    // const handleAddFunction = () => {
-    //     if (functionInput.trim() !== '') {
-    //         setFunctionInput(prevFunctionInput => prevFunctionInput + functionInput.trim());
-    //         setFunctions([...functions, {func: functionInput, color: getRandomColor()}]);
-    //         setFunctionInput('');
-    //         setIsFunctionListVisible(true);
-    //         setErrorMessage('');
-    //     } else {
-    //         setErrorMessage('Введите функцию.');
-    //     }
-    // };
     const handleAddFunction = () => {
         if (functionInput.trim() !== '') {
             setFunctionInput(prevFunctionInput => prevFunctionInput + functionInput.trim());
-            setFunctions([...functions, {func: functionInput, color: getRandomColor()}]);
+            setFunctions([...functions, { func: functionInput, color: getRandomColor() }]);
             setFunctionInput('');
             setIsFunctionListVisible(true);
             setErrorMessage('');
@@ -157,10 +151,10 @@ const App = () => {
         setFunctions((prevFunctions) => prevFunctions.filter((_, i) => i !== index));
     };
 
-    const FunctionList = ({functions, hiddenFunctions}) => (
+    const FunctionList = ({ functions, hiddenFunctions }) => (
         <div
             ref={functionListRef}
-            style={{marginTop: '10px'}}
+            style={{ marginTop: '10px' }}
             tabIndex={-1}
         >
             <div
@@ -178,7 +172,7 @@ const App = () => {
                     <div
                         key={index}
                         className="focusable"
-                        style={{padding: '5px', display: 'flex', alignItems: 'center', cursor: 'pointer'}}
+                        style={{ padding: '5px', display: 'flex', alignItems: 'center', cursor: 'pointer' }}
                     >
                         <div
                             style={{
@@ -196,7 +190,7 @@ const App = () => {
                             onClick={() => handleFunctionToggle(index)}
                         >
                             {hiddenFunctions.includes(index) && (
-                                <span style={{color: '#ddd', fontSize: '12px'}}>•</span>
+                                <span style={{ color: '#ddd', fontSize: '12px' }}>•</span>
                             )}
                         </div>
                         <span
@@ -208,7 +202,7 @@ const App = () => {
                             contentEditable={!hiddenFunctions.includes(index)}
                             suppressContentEditableWarning={true}
                             onBlur={(e) =>
-                                handleFunctionEdit(index, {...func, func: e.target.textContent})
+                                handleFunctionEdit(index, { ...func, func: e.target.textContent })
                             }
                         >
                             {func.func}
@@ -242,7 +236,6 @@ const App = () => {
         });
     };
 
-
     const handleRelayout = (event) => {
         if (event['xaxis.range[0]'] && event['xaxis.range[1]']) {
             setXRange([event['xaxis.range[0]'], event['xaxis.range[1]']]);
@@ -251,12 +244,13 @@ const App = () => {
             setYRange([event['yaxis.range[0]'], event['yaxis.range[1]']]);
         }
     };
+
     return (
         <div
             style={{ display: 'flex', height: '100vh' }}
         >
             <div className="app-container" style={{ flex: '1', height: '100%', borderRight: '1px solid #ccc', flexDirection: 'column' }}>
-                <div className="input-container" style={{ display: 'flex', alignItems: 'center'}}>
+                <div className="input-container" style={{display: 'flex', alignItems: 'center'}}>
                     <input
                         ref={inputRef}
                         type="text"
@@ -264,6 +258,7 @@ const App = () => {
                         value={functionInput}
                         onChange={handleFunctionInputChange}
                         onKeyDown={handleInputKeyDown}
+                        onTouchStart={(e) => e.preventDefault()}  // Prevent default touch event to avoid showing system keyboard
                         style={{padding: '10px', width: '150%', margin: '0'}}
                     />
                     <button
@@ -283,10 +278,10 @@ const App = () => {
                     </button>
                 </div>
                 {isFunctionListVisible && (
-                    <FunctionList functions={functions} hiddenFunctions={hiddenFunctions} />
+                    <FunctionList functions={functions} hiddenFunctions={hiddenFunctions}/>
                 )}
             </div>
-            <div style={{ flex: '4', height: '100%', position: 'relative', flexDirection: 'column' }}>
+            <div style={{flex: '4', height: '100%', position: 'relative', flexDirection: 'column'}}>
                 <Plot
                     data={plotData}
                     layout={{
@@ -307,19 +302,19 @@ const App = () => {
                         },
                     }}
                     useResizeHandler={true}
-                    style={{ width: '100%', height: '76%' }}
+                    style={{ width: '100%', height: '73%' }}
                     onRelayout={handleRelayout}
                 />
             </div>
             {isKeyboardExpanded && (
-                <div style={{ position: 'absolute', bottom: '0.05%', zIndex: '1'}}>
+                <div style={{ position: 'absolute', bottom: '0.05%', zIndex: '1' }}>
                     <MathKeyboard
                         inputRef={inputRef}
                         onKeyClick={(key) => setFunctionInput(functionInput + key)}
                     />
                     <div style={{ textAlign: 'center', paddingTop: '0.25%' }}>
                         <span onClick={() => setIsKeyboardExpanded(false)} style={{ cursor: 'pointer' }}>
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 30 24 24" width="1.5em" height="3.0em">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 30 24 24" width="3.5em" height="4.0em">
                                 <path fill="none" d="M0 0h24v24H0z" />
                                 <path d="M7 10l5 5 5-5H7z" />
                             </svg>
@@ -341,6 +336,5 @@ function getRandomColor() {
 }
 
 export default App;
-
 
 
