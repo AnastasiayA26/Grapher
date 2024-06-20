@@ -19,6 +19,7 @@ const App = () => {
     const [isFunctionListVisible, setIsFunctionListVisible] = useState(false);
     const [hiddenFunctions, setHiddenFunctions] = useState([]);
     const [isKeyboardExpanded, setIsKeyboardExpanded] = useState(true);
+    const [isHelpVisible, setIsHelpVisible] = useState(false); // State for help visibility
     const inputRef = useRef(null);
     const assistantRef = useRef(null);
     const addButtonRef = useRef(null);
@@ -245,11 +246,20 @@ const App = () => {
         }
     };
 
+    // Функция для открытия справки
+    const openHelpModal = () => {
+        setIsHelpVisible(true);
+    };
+
+    // Функция для закрытия справки
+    const closeHelpModal = () => {
+        setIsHelpVisible(false);
+    };
+
     return (
-        <div
-            style={{ display: 'flex', height: '100vh' }}
-        >
-            <div className="app-container" style={{ flex: '1', height: '100%', borderRight: '1px solid #ccc', flexDirection: 'column' }}>
+        <div style={{display: 'flex', height: '100vh'}}>
+            <div className="app-container"
+                 style={{flex: '1', height: '100%', borderRight: '1px solid #ccc', flexDirection: 'column'}}>
                 <div className="input-container" style={{display: 'flex', alignItems: 'center'}}>
                     <input
                         ref={inputRef}
@@ -281,6 +291,81 @@ const App = () => {
                     <FunctionList functions={functions} hiddenFunctions={hiddenFunctions}/>
                 )}
             </div>
+            <div style={{padding: '3px', position: 'relative', top: '1px', zIndex: '2'}}>
+    <span onClick={openHelpModal} style={{cursor: 'pointer'}}>
+        <button
+            style={{
+                width: '30px',
+                height: '30px',
+                backgroundColor: '#1a73e8',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '50%',
+                fontSize: '20px',
+            }}
+        >
+            ?
+        </button>
+    </span>
+                {/* Модальное окно справки */}
+                {isHelpVisible && (
+                    <div
+                        className="help-modal"
+                        style={{
+                            position: 'fixed',
+                            top: '35%',
+                            left: '20%',
+                            transform: 'translateY(-50%)',
+                            backgroundColor: '#e6f1fa',
+                            padding: '10px',
+                            borderRadius: '8px',
+                            boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)',
+                            zIndex: '999',
+                        }}
+                    >
+                        <h4>Справка</h4>
+                        <p>Приложение позволяет строить графики математических функций</p>
+                        <ol>
+                            <li><strong>Добавление функций:</strong>
+                                <ul>
+                                    <li>Введите математическое выражение в поле ввода и нажмите кнопку <span
+                                        className="button">+</span>
+                                    </li>
+                                    <li>Примеры: 5*x + 1, sin(3*x)</li>
+                                </ul>
+                            </li>
+                            <li><strong>Управление функциями:</strong>
+                                <ul>
+                                    <li>Для скрытия/отображения функции кликните на маркер окрашенного круга
+                                        рядом с функцией
+                                    </li>
+                                    <li>Для удаления функции нажмите крестик в списке функций
+                                    </li>
+                                </ul>
+                            </li>
+                            <li><strong>Изменение масштаба графика:</strong>
+                                <ul>
+                                <li>Используйте манипуляторы на графике для изменения масштаба по осям X и Y.</li>
+                                </ul>
+                            </li>
+                        </ol>
+                        <button
+                            onClick={closeHelpModal}
+                            style={{
+                                padding: '10px',
+                                backgroundColor: '#1a73e8',
+                                color: '#fff',
+                                border: 'none',
+                                cursor: 'pointer',
+                                borderRadius: '4px',
+                                marginTop: '10px',
+                            }}
+                        >
+                            Закрыть
+                        </button>
+                    </div>
+                )}
+            </div>
             <div style={{flex: '4', height: '100%', position: 'relative', flexDirection: 'column'}}>
                 <Plot
                     data={plotData}
@@ -302,21 +387,21 @@ const App = () => {
                         },
                     }}
                     useResizeHandler={true}
-                    style={{ width: '100%', height: '73%' }}
+                    style={{width: '100%', height: '73%'}}
                     onRelayout={handleRelayout}
                 />
             </div>
             {isKeyboardExpanded && (
-                <div style={{ position: 'absolute', bottom: '0.05%', zIndex: '1' }}>
+                <div style={{position: 'absolute', bottom: '0.05%', zIndex: '1'}}>
                     <MathKeyboard
                         inputRef={inputRef}
                         onKeyClick={(key) => setFunctionInput(functionInput + key)}
                     />
-                    <div style={{ textAlign: 'center', paddingTop: '0.25%' }}>
-                        <span onClick={() => setIsKeyboardExpanded(false)} style={{ cursor: 'pointer' }}>
+                    <div style={{textAlign: 'center', paddingTop: '0.25%'}}>
+                        <span onClick={() => setIsKeyboardExpanded(false)} style={{cursor: 'pointer'}}>
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 30 24 24" width="3.5em" height="4.0em">
-                                <path fill="none" d="M0 0h24v24H0z" />
-                                <path d="M7 10l5 5 5-5H7z" />
+                                <path fill="none" d="M0 0h24v24H0z"/>
+                                <path d="M7 10l5 5 5-5H7z"/>
                             </svg>
                         </span>
                     </div>
