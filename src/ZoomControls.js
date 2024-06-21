@@ -21,14 +21,14 @@ export const handleResetZoom = (setZoomX, setZoomY) => {
     setZoomY(1);
 };
 
-const ZoomControls = ({ handleZoomInX, handleZoomOutX, handleZoomInY, handleZoomOutY, handleResetZoom }) => {
+const ZoomControls = ({ onZoomInX, onZoomOutX, onZoomInY, onZoomOutY, onResetZoom, style }) => {
     return (
-        <div style={{ marginTop: '20px', marginLeft: '10px', zIndex: 10 }}>
-            <button className="custom-button" onClick={handleZoomInX}>Zoom In X</button>
-            <button className="custom-button" onClick={handleZoomOutX}>Zoom Out X</button>
-            <button className="custom-button" onClick={handleZoomInY}>Zoom In Y</button>
-            <button className="custom-button" onClick={handleZoomOutY}>Zoom Out Y</button>
-            <button className="custom-button" onClick={handleResetZoom}>Reset Zoom</button>
+        <div style={{ position: 'absolute', ...style }}>
+            <button onClick={onZoomInX}>+ X</button>
+            <button onClick={onZoomOutX}>- X</button>
+            <button onClick={onZoomInY}>+ Y</button>
+            <button onClick={onZoomOutY}>- Y</button>
+            <button onClick={onResetZoom}>Reset</button>
         </div>
     );
 };
