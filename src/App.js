@@ -22,6 +22,10 @@ const App = () => {
     const assistantRef = useRef(null);
     const addButtonRef = useRef(null);
     const functionListRef = useRef(null);
+    const functionRefs = useRef([]);
+    const colorRefs = useRef([]);
+    const removeButtonRefs = useRef([]);
+    const [isKeyboardFocused, setIsKeyboardFocused] = useState(false);
     const [plotLayout, setPlotLayout] = useState({
         autosize: true,
         margin: {t: 50, r: 50, b: 50, l: 50},
@@ -36,6 +40,7 @@ const App = () => {
             range: [-50, 50], // Set the initial range for y-axis
         },
     });
+
 
     useEffect(() => {
         const handleResize = () => {
@@ -74,6 +79,12 @@ const App = () => {
         assistant.on('data', handleAssistantData);
     }, [functions]);
 
+    useEffect(() => {
+        if (isKeyboardExpanded && functionListRef.current) {
+            functionListRef.current.focus();
+        }
+    }, [isKeyboardExpanded]);
+
     const handleAssistantData = (event) => {
         console.log('handleAssistantData:', event);
         const { action } = event;
@@ -88,18 +99,31 @@ const App = () => {
         }
     };
 
-    const handleInputKeyDown = (e) => {
+   const handleInputKeyDown = (e) => {
+       if (e.key === 'Enter') {
+           e.preventDefault();
+           addButtonRef.current.focus();
+       } else if (e.key === 'ArrowDown') {
+           if (functions.length > 0) {
+               functionRefs.current[0].focus();
+           }
+       } else if (e.key === 'ArrowRight') {
+           addButtonRef.current.focus();
+       }
+   };
+
+   const handleAddFunctionKeyDown = (e) => {
         if (e.key === 'Enter') {
-            e.preventDefault();
-            addButtonRef.current.focus();
+            handleAddFunction();
+        } else if (e.key === 'ArrowDown' && functions.length > 0) {
+            functionRefs.current[0].focus();
+        } else if (e.key === 'ArrowUp') {
+            inputRef.current.focus();
+        } else if (e.key === 'ArrowLeft') {
+            inputRef.current.focus();
         }
     };
 
-    const handleAddFunctionKeyDown = (e) => {
-        if (e.key === 'Enter') {
-            handleAddFunction(); // Вызываем функцию добавления функции на график
-        }
-    };
     const handleFunctionEdit = (index, editedFunction) => {
         setFunctions((prevFunctions) => {
             const updatedFunctions = [...prevFunctions];
@@ -148,10 +172,14 @@ const App = () => {
                 {functions.map((func, index) => (
                     <div
                         key={index}
+                        tabIndex={1}
+                        ref={el => functionRefs.current[index] = el}
                         className="focusable"
                         style={{padding: '5px', display: 'flex', alignItems: 'center', cursor: 'pointer'}}
+                        onKeyDown={(e) => handleFunctionKeyDown(e, index)}
                     >
                         <div
+                            ref={(el) => colorRefs.current[index] = el}
                             style={{
                                 width: '20px',
                                 height: '20px',
@@ -164,7 +192,9 @@ const App = () => {
                                 alignItems: 'center',
                                 justifyContent: 'center',
                             }}
+                            tabIndex={1}
                             onClick={() => handleFunctionToggle(index)}
+                            onKeyDown={(e) => handleColorKeyDown(e, index)}
                         >
                             {hiddenFunctions.includes(index) && (
                                 <span style={{color: '#ddd', fontSize: '12px'}}>•</span>
@@ -185,6 +215,7 @@ const App = () => {
                             {func.func}
                         </span>
                         <button
+                            ref={(el) => removeButtonRefs.current[index] = el}
                             onClick={() => handleFunctionRemove(index)}
                             style={{
                                 background: 'none',
@@ -194,6 +225,8 @@ const App = () => {
                                 fontSize: '16px',
                                 marginLeft: '5px',
                             }}
+                            tabIndex={1}
+                            onKeyDown={(e) => handleRemoveButtonKeyDown(e, index)}
                         >
                             ✖
                         </button>
@@ -202,6 +235,66 @@ const App = () => {
             </div>
         </div>
     );
+
+    const handleFunctionKeyDown = (e, index) => {
+        if (e.key === 'ArrowDown' && index < functions.length - 1) {
+            colorRefs.current[index + 1].focus();
+        } else if (e.key === 'ArrowUp') {
+            if (index > 0) {
+                colorRefs.current[index - 1].focus();
+            } else {
+                inputRef.current.focus();
+            }
+        } else if (e.key === 'ArrowRight') {
+            removeButtonRefs.current[index].focus();
+        }
+
+        if (index === functions.length - 1 && ['ArrowDown', 'ArrowRight'].includes(e.key)) {
+            buttonRefs.current.focus(); // Фокус на inputRef после последнего элемента списка функций
+        }
+    };
+
+    const handleColorKeyDown = (e, index) => {
+        if (e.key === 'ArrowRight') {
+            removeButtonRefs.current[index].focus();
+        } else if (e.key === 'ArrowLeft') {
+            functionRefs.current[index].focus();
+        } else if (e.key === 'ArrowDown' && index < functions.length - 1) {
+            colorRefs.current[index + 1].focus();
+        } else if (e.key === 'ArrowUp') {
+            if (index > 0) {
+                colorRefs.current[index - 1].focus();
+            } else {
+                inputRef.current.focus();
+            }
+        } else if (e.key === 'Enter') {
+            setHiddenFunctions((prevHiddenFunctions) => {
+                if (prevHiddenFunctions.includes(index)) {
+                    return prevHiddenFunctions.filter((i) => i !== index);
+                } else {
+                    return [...prevHiddenFunctions, index];
+                }
+            });
+        }
+    };
+
+    const handleRemoveButtonKeyDown = (e, index) => {
+        if (e.key === 'ArrowLeft') {
+            colorRefs.current[index].focus();
+        } else if (e.key === 'ArrowRight') {
+            functionRefs.current[index].focus();
+        } else if (e.key === 'ArrowDown' && index < functions.length - 1) {
+            colorRefs.current[index + 1].focus();
+        } else if (e.key === 'ArrowUp') {
+            if (index > 0) {
+                colorRefs.current[index - 1].focus();
+            } else {
+                inputRef.current.focus();
+            }
+        } else if (e.key === 'Enter') {
+            setFunctions((prevFunctions) => prevFunctions.filter((_, i) => i !== index));
+        }
+    };
 
     const handleFunctionToggle = (index) => {
         setHiddenFunctions((prevHiddenFunctions) => {
@@ -273,6 +366,7 @@ const App = () => {
                  style={{flex: '1', height: 'auto', borderRight: '1px solid #ccc', flexDirection: 'column'}}>
                 <div className="input-panel" style={{display: 'flex', alignItems: 'center'}}>
                     <input
+                        tabIndex={1}
                         ref={inputRef}
                         type="text"
                         placeholder="5*x + 1"
@@ -283,6 +377,7 @@ const App = () => {
                         style={{padding: '10px', width: '150%', margin: '0'}}
                     />
                     <button
+                        tabIndex={1}
                         ref={addButtonRef}
                         className="focusable"
                         onClick={handleAddFunction}
@@ -384,24 +479,26 @@ const App = () => {
             style={{width: '100%', height: '100%'}}
         />
     </div>
-    {
-        isKeyboardExpanded && (
-            <div style={{position: 'absolute', bottom: '0.05%', zIndex: '1'}}>
-                <MathKeyboard
-                    inputRef={inputRef}
-                    onKeyClick={(key) => setFunctionInput(functionInput + key)}
-                />
-                <div style={{textAlign: 'center', paddingTop: '0.25%'}}>
-                        <span onClick={() => setIsKeyboardExpanded(false)} style={{cursor: 'pointer'}}>
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 30 24 24" width="3.5em" height="4.0em">
-                                <path fill="none" d="M0 0h24v24H0z"/>
-                                <path d="M7 10l5 5 5-5H7z"/>
-                            </svg>
-                        </span>
-                </div>
-            </div>
-        )
-    }
+    // {
+    //     isKeyboardExpanded && (
+    //         <div 
+    //             style={{position: 'absolute', bottom: '0.05%', zIndex: '1'}}>
+    //             <MathKeyboard
+    //                 tabIndex={-1}
+    //                 inputRef={inputRef}
+    //                 onKeyClick={(key) => setFunctionInput(functionInput + key)}
+    //             />
+    //             <div style={{textAlign: 'center', paddingTop: '0.25%'}}>
+    //                     <span onClick={() => setIsKeyboardExpanded(false)} style={{cursor: 'pointer'}}>
+    //                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 30 24 24" width="3.5em" height="4.0em">
+    //                             <path fill="none" d="M0 0h24v24H0z"/>
+    //                             <path d="M7 10l5 5 5-5H7z"/>
+    //                         </svg>
+    //                     </span>
+    //             </div>
+    //         </div>
+    //     )
+    // }
 </div>
 )
     ;
@@ -417,6 +514,9 @@ function getRandomColor() {
 }
 
 export default App;
+
+
+
 
 
 
