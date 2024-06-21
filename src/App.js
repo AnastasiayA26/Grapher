@@ -47,7 +47,7 @@ const App = () => {
             setPlotLayout((prevLayout) => ({
                 ...prevLayout,
                 width: window.innerWidth * 0.7, // Примерное значение ширины графика
-                height: window.innerHeight * 0.65, // Примерное значение высоты графика
+                height: window.innerHeight * 0.7, // Примерное значение высоты графика
             }));
         };
 
@@ -547,7 +547,7 @@ const App = () => {
                 />
                 <div style={{textAlign: 'center', paddingTop: '0.25%'}}>
                         <span onClick={() => setIsKeyboardExpanded(false)} style={{cursor: 'pointer'}}>
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 30 24 24" width="3.5em" height="4.0em">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 30 24 24" width="3.5em" height="6.0em">
                                 <path fill="none" d="M0 0h24v24H0z"/>
                                 <path d="M7 10l5 5 5-5H7z"/>
                             </svg>
