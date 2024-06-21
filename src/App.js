@@ -5,9 +5,9 @@ import { createSmartappDebugger, createAssistant } from '@salutejs/client';
 import './styles.css';
 import './index.css';
 import './voice.css';
+import ZoomControls from './ZoomControls.js';
 import { make_function } from './math_parser.js';
 import { useSpatnavInitialization, useSection, getCurrentFocusedElement } from '@salutejs/spatial';
-
 const App = () => {
     const [functions, setFunctions] = useState([]);
     const [functionInput, setFunctionInput] = useState('');
@@ -58,6 +58,59 @@ const App = () => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
+    const handleZoomInX = () => {
+        setPlotLayout(prevLayout => ({
+            ...prevLayout,
+            xaxis: {
+                ...prevLayout.xaxis,
+                range: [prevLayout.xaxis.range[0] * 0.8, prevLayout.xaxis.range[1] * 0.8]
+            }
+        }));
+    };
+
+    const handleZoomOutX = () => {
+        setPlotLayout(prevLayout => ({
+            ...prevLayout,
+            xaxis: {
+                ...prevLayout.xaxis,
+                range: [prevLayout.xaxis.range[0] / 0.8, prevLayout.xaxis.range[1] / 0.8]
+            }
+        }));
+    };
+
+    const handleZoomInY = () => {
+        setPlotLayout(prevLayout => ({
+            ...prevLayout,
+            yaxis: {
+                ...prevLayout.yaxis,
+                range: [prevLayout.yaxis.range[0] * 0.8, prevLayout.yaxis.range[1] * 0.8]
+            }
+        }));
+    };
+
+    const handleZoomOutY = () => {
+        setPlotLayout(prevLayout => ({
+            ...prevLayout,
+            yaxis: {
+                ...prevLayout.yaxis,
+                range: [prevLayout.yaxis.range[0] / 0.8, prevLayout.yaxis.range[1] / 0.8]
+            }
+        }));
+    };
+
+    const handleResetZoom = () => {
+        setPlotLayout((prevLayout) => ({
+            ...prevLayout,
+            xaxis: {
+                ...prevLayout.xaxis,
+                range: [-20, 20], // Reset x-axis range
+            },
+            yaxis: {
+                ...prevLayout.yaxis,
+                range: [-50, 50], // Reset y-axis range
+            },
+        }));
+    };
 
     const initializeAssistant = (getState) => {
         if (process.env.NODE_ENV === 'development') {
@@ -247,10 +300,6 @@ const App = () => {
             }
         } else if (e.key === 'ArrowRight') {
             removeButtonRefs.current[index].focus();
-        }
-
-        if (index === functions.length - 1 && ['ArrowDown', 'ArrowRight'].includes(e.key)) {
-            buttonRefs.current.focus(); // Фокус на inputRef после последнего элемента списка функций
         }
     };
 
@@ -478,27 +527,35 @@ const App = () => {
             layout={plotLayout}
             style={{width: '100%', height: '100%'}}
         />
+        <ZoomControls
+        onZoomInX={handleZoomInX}
+        onZoomOutX={handleZoomOutX}
+        onZoomInY={handleZoomInY}
+        onZoomOutY={handleZoomOutY}
+        onResetZoom={handleResetZoom}
+        style={{ position: 'absolute', top: '10px', right: '10px' }}
+        />
     </div>
-    // {
-    //     isKeyboardExpanded && (
-    //         <div 
-    //             style={{position: 'absolute', bottom: '0.05%', zIndex: '1'}}>
-    //             <MathKeyboard
-    //                 tabIndex={-1}
-    //                 inputRef={inputRef}
-    //                 onKeyClick={(key) => setFunctionInput(functionInput + key)}
-    //             />
-    //             <div style={{textAlign: 'center', paddingTop: '0.25%'}}>
-    //                     <span onClick={() => setIsKeyboardExpanded(false)} style={{cursor: 'pointer'}}>
-    //                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 30 24 24" width="3.5em" height="4.0em">
-    //                             <path fill="none" d="M0 0h24v24H0z"/>
-    //                             <path d="M7 10l5 5 5-5H7z"/>
-    //                         </svg>
-    //                     </span>
-    //             </div>
-    //         </div>
-    //     )
-    // }
+    {
+        isKeyboardExpanded && (
+            <div 
+                style={{position: 'absolute', bottom: '0.05%', zIndex: '1'}}>
+                <MathKeyboard
+                    tabIndex={-1}
+                    inputRef={inputRef}
+                    onKeyClick={(key) => setFunctionInput(functionInput + key)}
+                />
+                <div style={{textAlign: 'center', paddingTop: '0.25%'}}>
+                        <span onClick={() => setIsKeyboardExpanded(false)} style={{cursor: 'pointer'}}>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 30 24 24" width="3.5em" height="4.0em">
+                                <path fill="none" d="M0 0h24v24H0z"/>
+                                <path d="M7 10l5 5 5-5H7z"/>
+                            </svg>
+                        </span>
+                </div>
+            </div>
+        )
+    }
 </div>
 )
     ;
@@ -514,7 +571,6 @@ function getRandomColor() {
 }
 
 export default App;
-
 
 
 
