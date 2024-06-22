@@ -537,7 +537,7 @@ const App = () => {
             position: 'absolute',
             width: '25%',
             top: '0%',
-            right: '0%',
+            right: '1.5%',
              }}
         />
     </div>
