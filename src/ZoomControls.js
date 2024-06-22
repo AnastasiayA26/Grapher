@@ -22,16 +22,28 @@ export const handleResetZoom = (setZoomX, setZoomY) => {
 };
 
 const ZoomControls = ({ onZoomInX, onZoomOutX, onZoomInY, onZoomOutY, onResetZoom, style }) => {
+    const containerStyle = {
+        position: 'absolute',
+        display: 'flex',
+        flexDirection: 'row',
+        ...style
+    };
+    const buttonStyle = {
+        padding: '2vh 1.5vw', // Использование относительных единиц для подстройки под размер экрана
+        fontSize: '1vw',
+        flexShrink: 0, // предотвращение уменьшения размера кнопок при уменьшении контейнера
+        backgroundColor: '#f1f1ee'
+    };
+
     return (
-        <div style={{ position: 'absolute', ...style }}>
-            <button onClick={onZoomInX}>+ X</button>
-            <button onClick={onZoomOutX}>- X</button>
-            <button onClick={onZoomInY}>+ Y</button>
-            <button onClick={onZoomOutY}>- Y</button>
-            <button onClick={onResetZoom}>Reset</button>
+        <div style={containerStyle}>
+            <button onClick={onZoomInX} style={buttonStyle}>+ X</button>
+            <button onClick={onZoomOutX} style={buttonStyle}>- X</button>
+            <button onClick={onZoomInY} style={buttonStyle}>+ Y</button>
+            <button onClick={onZoomOutY} style={buttonStyle}>- Y</button>
+            <button onClick={onResetZoom} style={buttonStyle}>Reset</button>
         </div>
     );
 };
 
 export default ZoomControls;
-
