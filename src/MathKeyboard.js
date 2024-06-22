@@ -8,6 +8,7 @@ const MathKeyboard = ({ onKeyClick, inputRef }) => {
     const [buttonColor, setButtonColor] = useState(Array(20).fill('#ffffff')); // Assuming 20 buttons, adjust if needed
     const [clickedButtonIndex, setClickedButtonIndex] = useState(null);
     const [currentFocusIndex, setCurrentFocusIndex] = useState(null);
+    const [functionInput, setFunctionInput] = useState(''); // Add state for function input
     const buttonRefs = useRef([]);
 
 
@@ -16,55 +17,71 @@ const MathKeyboard = ({ onKeyClick, inputRef }) => {
         buttonRefs.current = Array(30).fill(null).map((_, i) => buttonRefs.current[i] || React.createRef());
     }, []);
 
+    useEffect(() => {
+        if (inputRef && inputRef.current) {
+            inputRef.current.value = functionInput;
+        }
+    }, [functionInput, inputRef]);
+
     function handleDelete() {
         if (!inputRef || !inputRef.current) return;
-
+    
         const input = inputRef.current;
         const selectionStart = input.selectionStart;
         const selectionEnd = input.selectionEnd;
         let newValue;
 
-        if (selectionEnd - 1 > 0) {
-            const currentValue = input.value;
-            newValue = currentValue.slice(0, selectionStart - 1) + currentValue.slice(selectionEnd);
-            const newSelectionEnd = selectionEnd - 1;
-
-            input.value = newValue;
-            input.setSelectionRange(newSelectionEnd, newSelectionEnd);
-            inputRef.current = input;
-            onKeyClick('');
-        } else if (selectionStart === input.value.length || selectionEnd === 1) {
-            newValue = '';
-            input.value = newValue;
-            inputRef.current = input;
-            onKeyClick('');
-            input.setSelectionRange(0, 0);
-        } else {
-            return; // Do nothing if the cursor is at the beginning and there is no selection
+        if (input.value.length === 0) {
+            // Если инпут пустой, просто вернуть без дальнейших действий
+            return;
         }
+
+        if (selectionStart === selectionEnd) {
+            if (selectionStart > 0) {
+                newValue = input.value.slice(0, selectionStart - 1) + input.value.slice(selectionEnd);
+                input.setSelectionRange(selectionStart - 1, selectionStart - 1);
+            }
+        } else {
+            newValue = input.value.slice(0, selectionStart) + input.value.slice(selectionEnd);
+            input.setSelectionRange(selectionStart, selectionStart);
+        }
+    
+        input.value = newValue;
+        setFunctionInput(newValue); // Update functionInput state
+        onKeyClick(newValue);
+        input.focus();
     }
 
     const handleKeyClick = (key, index) => {
-        if (key === '\u232b') {
-            setCurrentFocusIndex(index);
+        const input = inputRef.current;
+        const selectionStart = input.selectionStart;
+        const selectionEnd = input.selectionEnd;
+        let newValue;
+    
+        if (key === '\u232b') { // Delete key
             handleDelete();
         } else {
-            setCurrentFocusIndex(index);
             let expression = '';
             if (['sqrt', 'sin', 'cos', 'tan', 'ctg', 'ln', 'log'].includes(key)) {
                 expression = `${key}(`;
             } else {
                 expression = key;
             }
-            onKeyClick(expression);
+    
+            newValue = input.value.slice(0, selectionStart) + expression + input.value.slice(selectionEnd);
+            input.value = newValue;
+            setFunctionInput(newValue); // Update functionInput state
+            input.setSelectionRange(selectionStart + expression.length, selectionStart + expression.length);
+            onKeyClick(newValue);
         }
+    
         setClickedButtonIndex(index);
         setButtonColor(prevState => prevState.map((color, i) => i === index ? '#d3d1d1' : '#ffffff'));
         setTimeout(() => {
             setClickedButtonIndex(null);
             setButtonColor(prevState => prevState.map((color, i) => i === index ? '#ffffff' : color));
         }, 200); // Change this value to adjust the duration of button lighting
-        inputRef.current.focus();
+        input.focus();
     };
 
     const handleKeyDown = (event) => {
