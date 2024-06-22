@@ -29,7 +29,7 @@ const ZoomControls = ({ onZoomInX, onZoomOutX, onZoomInY, onZoomOutY, onResetZoo
         ...style
     };
     const buttonStyle = {
-        padding: '1.5vh 1.5vw', // Использование относительных единиц для подстройки под размер экрана
+        padding: '2vh 1.5vw', // Использование относительных единиц для подстройки под размер экрана
         fontSize: '1vw',
         flexShrink: 0, // предотвращение уменьшения размера кнопок при уменьшении контейнера
         backgroundColor: '#f1f1ee'
