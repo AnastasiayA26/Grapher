@@ -527,13 +527,18 @@ const App = () => {
             layout={plotLayout}
             style={{width: '100%', height: '100%'}}
         />
-        <ZoomControls
+            <ZoomControls
         onZoomInX={handleZoomInX}
         onZoomOutX={handleZoomOutX}
         onZoomInY={handleZoomInY}
         onZoomOutY={handleZoomOutY}
         onResetZoom={handleResetZoom}
-        style={{ position: 'absolute', top: '10px', right: '10px' }}
+        style={{
+            position: 'absolute',
+            width: '25%',
+            top: '0%',
+            right: '0%',
+             }}
         />
     </div>
     {
