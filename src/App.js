@@ -302,26 +302,33 @@ const App = () => {
 
     const handleFunctionKeyDown = (e, index) => {
         if (e.key === 'ArrowDown' && index < functions.length - 1) {
+            e.preventDefault();
             colorRefs.current[index + 1].focus();
         } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
             if (index > 0) {
                 colorRefs.current[index - 1].focus();
             } else {
                 inputRef.current.focus();
             }
         } else if (e.key === 'ArrowRight') {
+            e.preventDefault();
             removeButtonRefs.current[index].focus();
         }
     };
-
+    
     const handleColorKeyDown = (e, index) => {
         if (e.key === 'ArrowRight') {
+            e.preventDefault();
             removeButtonRefs.current[index].focus();
         } else if (e.key === 'ArrowLeft') {
+            e.preventDefault();
             functionRefs.current[index].focus();
         } else if (e.key === 'ArrowDown' && index < colorRefs.current.length - 1) {
+            e.preventDefault();
             colorRefs.current[index + 1].focus();
         } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
             if (index > 0) {
                 colorRefs.current[index - 1].focus();
             } else {
@@ -342,18 +349,23 @@ const App = () => {
     
     const handleRemoveButtonKeyDown = (e, index) => {
         if (e.key === 'ArrowLeft') {
+            e.preventDefault();
             colorRefs.current[index].focus();
         } else if (e.key === 'ArrowRight') {
+            e.preventDefault();
             functionRefs.current[index].focus();
         } else if (e.key === 'ArrowDown' && index < functions.length - 1) {
+            e.preventDefault();
             colorRefs.current[index + 1].focus();
         } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
             if (index > 0) {
                 colorRefs.current[index - 1].focus();
             } else {
                 inputRef.current.focus();
             }
         } else if (e.key === 'Enter') {
+            e.preventDefault();
             setFunctions((prevFunctions) => {
                 const updatedFunctions = prevFunctions.filter((_, i) => i !== index);
                 if (index === 0) {
@@ -369,7 +381,7 @@ const App = () => {
                 return updatedFunctions;
             });
         }
-    };    
+    };
 
     const handleFunctionToggle = (index) => {
         setHiddenFunctions((prevHiddenFunctions) => {
