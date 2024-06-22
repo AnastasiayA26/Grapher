@@ -25,7 +25,9 @@ const App = () => {
     const functionRefs = useRef([]);
     const colorRefs = useRef([]);
     const removeButtonRefs = useRef([]);
-    const [isKeyboardFocused, setIsKeyboardFocused] = useState(false);
+    const helpButtonRef = useRef(null);
+    const closeButtonRef = useRef(null);
+    const zoomControlsRef = useRef(null);
     const [plotLayout, setPlotLayout] = useState({
         autosize: true,
         margin: {t: 50, r: 50, b: 50, l: 50},
@@ -138,6 +140,12 @@ const App = () => {
         }
     }, [isKeyboardExpanded]);
 
+    useEffect(() => {
+        if (isHelpVisible && closeButtonRef.current) {
+            closeButtonRef.current.focus();
+        }
+    }, [isHelpVisible]);
+
     const handleAssistantData = (event) => {
         console.log('handleAssistantData:', event);
         const { action } = event;
@@ -168,12 +176,14 @@ const App = () => {
    const handleAddFunctionKeyDown = (e) => {
         if (e.key === 'Enter') {
             handleAddFunction();
-        } else if (e.key === 'ArrowDown' && functions.length > 0) {
+        } else if (e.key === 'ArrowDown' && functionRefs.current.length > 0) {
             functionRefs.current[0].focus();
         } else if (e.key === 'ArrowUp') {
             inputRef.current.focus();
         } else if (e.key === 'ArrowLeft') {
             inputRef.current.focus();
+        } else if (e.key === 'ArrowRight') {
+            helpButtonRef.current.focus();
         }
     };
 
@@ -308,15 +318,17 @@ const App = () => {
             removeButtonRefs.current[index].focus();
         } else if (e.key === 'ArrowLeft') {
             functionRefs.current[index].focus();
-        } else if (e.key === 'ArrowDown' && index < functions.length - 1) {
+        } else if (e.key === 'ArrowDown' && index < colorRefs.current.length - 1) {
             colorRefs.current[index + 1].focus();
         } else if (e.key === 'ArrowUp') {
             if (index > 0) {
                 colorRefs.current[index - 1].focus();
             } else {
-                inputRef.current.focus();
+                inputRef.current.focus(); // Устанавливаем фокус на поле ввода
             }
         } else if (e.key === 'Enter') {
+            e.preventDefault();
+            inputRef.current.focus(); // Устанавливаем фокус на поле ввода
             setHiddenFunctions((prevHiddenFunctions) => {
                 if (prevHiddenFunctions.includes(index)) {
                     return prevHiddenFunctions.filter((i) => i !== index);
@@ -326,7 +338,7 @@ const App = () => {
             });
         }
     };
-
+    
     const handleRemoveButtonKeyDown = (e, index) => {
         if (e.key === 'ArrowLeft') {
             colorRefs.current[index].focus();
@@ -341,9 +353,22 @@ const App = () => {
                 inputRef.current.focus();
             }
         } else if (e.key === 'Enter') {
-            setFunctions((prevFunctions) => prevFunctions.filter((_, i) => i !== index));
+            setFunctions((prevFunctions) => {
+                const updatedFunctions = prevFunctions.filter((_, i) => i !== index);
+                if (index === 0) {
+                    // If deleting the first function, set focus to inputRef.current
+                    inputRef.current.focus();
+                } else if (index === functions.length - 1) {
+                    // If deleting the last function, set focus to the previous color button
+                    colorRefs.current[index - 1].focus();
+                } else {
+                    // Otherwise, set focus to the next color button after deletion
+                    colorRefs.current[index].focus();
+                }
+                return updatedFunctions;
+            });
         }
-    };
+    };    
 
     const handleFunctionToggle = (index) => {
         setHiddenFunctions((prevHiddenFunctions) => {
@@ -364,14 +389,20 @@ const App = () => {
         }
     };
 
-    // Функция для открытия справки
     const openHelpModal = () => {
         setIsHelpVisible(true);
+        setTimeout(() => {
+            if (closeButtonRef.current) {
+                closeButtonRef.current.focus();
+            }
+        }, 0);
     };
 
-    // Функция для закрытия справки
     const closeHelpModal = () => {
         setIsHelpVisible(false);
+        if (helpButtonRef.current) {
+            helpButtonRef.current.focus();
+        }
     };
 
     const generatePlotData = () => {
@@ -449,6 +480,7 @@ const App = () => {
     <div style={{padding: '3px', position: 'relative', top: '1px', zIndex: '2'}}>
     <span onClick={openHelpModal} style={{cursor: 'pointer'}}>
         <button
+            ref={helpButtonRef}
             style={{
                 width: '30px',
                 height: '30px',
@@ -505,6 +537,7 @@ const App = () => {
                     </ul>
                 </ol>
                 <button
+                    ref={closeButtonRef}
                     onClick={closeHelpModal}
                     style={{
                         padding: '10px',
@@ -527,7 +560,8 @@ const App = () => {
             layout={plotLayout}
             style={{width: '100%', height: '100%'}}
         />
-            <ZoomControls
+        <ZoomControls 
+        ref={zoomControlsRef}
         onZoomInX={handleZoomInX}
         onZoomOutX={handleZoomOutX}
         onZoomInY={handleZoomInY}
@@ -537,11 +571,11 @@ const App = () => {
             position: 'absolute',
             width: '25%',
             top: '0%',
-            right: '1.5%',
-             }}
+            right: '0%',
+            }}
         />
     </div>
-    {
+    {/* {
         isKeyboardExpanded && (
             <div 
                 style={{position: 'absolute', bottom: '0.05%', zIndex: '1'}}>
@@ -560,7 +594,7 @@ const App = () => {
                 </div>
             </div>
         )
-    }
+    } */}
 </div>
 )
     ;
@@ -576,8 +610,6 @@ function getRandomColor() {
 }
 
 export default App;
-
-
 
 
 
