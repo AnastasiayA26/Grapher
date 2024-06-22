@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Plot from 'react-plotly.js';
 import MathKeyboard from './MathKeyboard.js';
 import { createSmartappDebugger, createAssistant } from '@salutejs/client';
+import 'normalize.css';
 import './styles.css';
 import './index.css';
 import './voice.css';
@@ -440,6 +441,20 @@ const App = () => {
         }).filter(data => data !== null);
     };
 
+    const isTouchDevice = () => {
+        return 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
+    };
+
+    const isSmartTV = () => {
+        return /TV|SmartTV|AppleTV|GoogleTV|HbbTV|NetCast.TV/i.test(navigator.userAgent);
+    };
+
+    const handleTouchStart = (e) => {
+        if (isTouchDevice() || isSmartTV()) {
+            e.preventDefault(); // Prevent default touch event to avoid showing system keyboard
+        }
+    };
+
     return (
         <div style={{display: 'flex', height: '100vh'}}>
             <div className="app-container"
@@ -453,7 +468,7 @@ const App = () => {
                         value={functionInput}
                         onChange={handleFunctionInputChange}
                         onKeyDown={handleInputKeyDown}
-                        onTouchStart={(e) => e.preventDefault()}  // Prevent default touch event to avoid showing system keyboard
+                        onTouchStart={handleTouchStart}  // Prevent default touch event to avoid showing system keyboard
                         style={{padding: '10px', width: '150%', margin: '0'}}
                     />
                     <button
@@ -558,7 +573,9 @@ const App = () => {
         <Plot
             data={generatePlotData()}
             layout={plotLayout}
-            style={{width: '100%', height: '100%'}}
+            config={{displayModeBar: false}}
+            style={{width: '100%', height: '100%'}
+        }
         />
         <ZoomControls 
         ref={zoomControlsRef}
@@ -569,13 +586,13 @@ const App = () => {
         onResetZoom={handleResetZoom}
         style={{
             position: 'absolute',
-            width: '25%',
+            width: '60%',
             top: '0%',
             right: '1.5%',
             }}
         />
     </div>
-    {/* {
+    {
         isKeyboardExpanded && (
             <div 
                 style={{position: 'absolute', bottom: '0.05%', zIndex: '1'}}>
@@ -594,10 +611,9 @@ const App = () => {
                 </div>
             </div>
         )
-    } */}
+    }
 </div>
-)
-    ;
+);
 };
 
 function getRandomColor() {
