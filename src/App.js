@@ -418,40 +418,46 @@ const App = () => {
         }
     };
 
-    const generatePlotData = () => {
-        return functions.map(({func, color}) => {
-            let f;
+    
+
+const generatePlotData = () => {
+    return functions.map(({func, color}, index) => {
+        if (hiddenFunctions.includes(index)) {
+            return null;  // Если функция скрыта, возвращаем null
+        }
+
+        let f;
+        try {
+            f = make_function(func);
+        } catch (error) {
+            setErrorMessage(`Ошибка в функции: ${func}`);
+            return null;
+        }
+
+        const xValues = [];
+        const yValues = [];
+        const step = (xRange[1] - xRange[0]) / 1000;
+
+        for (let x = xRange[0]; x <= xRange[1]; x += step) {
             try {
-                f = make_function(func);
+                const y = f(x);
+                xValues.push(x);
+                yValues.push(y);
             } catch (error) {
-                setErrorMessage(`Ошибка в функции: ${func}`);
-                return null;
+                setErrorMessage(`Ошибка вычисления функции: ${func}`);
             }
+        }
 
-            const xValues = [];
-            const yValues = [];
-            const step = (xRange[1] - xRange[0]) / 1000;
-
-            for (let x = xRange[0]; x <= xRange[1]; x += step) {
-                try {
-                    const y = f(x);
-                    xValues.push(x);
-                    yValues.push(y);
-                } catch (error) {
-                    setErrorMessage(`Ошибка вычисления функции: ${func}`);
-                }
-            }
-
-            return {
-                x: xValues,
-                y: yValues,
-                type: 'scatter',
-                mode: 'lines',
-                marker: {color},
-                name: func
-            };
-        }).filter(data => data !== null);
-    };
+        return {
+            x: xValues,
+            y: yValues,
+            type: 'scatter',
+            mode: 'lines',
+            marker: {color},
+            name: func
+        };
+    }).filter(data => data !== null);  // Исключаем null значения из возвращаемого массива
+};
 
     const isTouchDevice = () => {
         return 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
