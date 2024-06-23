@@ -6,7 +6,9 @@ import 'normalize.css';
 import './styles.css';
 import './index.css';
 import './voice.css';
-import ZoomControls from './ZoomControls.js';
+import './MathKeyboard.css';
+import { ButtonGroup, Button } from "@mui/material";
+//import ZoomControls from './ZoomControls.js';
 import { make_function } from './math_parser.js';
 import { useSpatnavInitialization, useSection, getCurrentFocusedElement } from '@salutejs/spatial';
 const App = () => {
@@ -44,7 +46,6 @@ const App = () => {
         },
     });
 
-
     useEffect(() => {
         const handleResize = () => {
             setPlotLayout((prevLayout) => ({
@@ -60,6 +61,7 @@ const App = () => {
 
         return () => window.removeEventListener('resize', handleResize);
     }, []);
+
 
     const handleZoomInX = () => {
         setPlotLayout(prevLayout => ({
@@ -179,12 +181,16 @@ const App = () => {
             handleAddFunction();
         } else if (e.key === 'ArrowDown' && functionRefs.current.length > 0) {
             functionRefs.current[0].focus();
-        } else if (e.key === 'ArrowUp') {
-            inputRef.current.focus();
-        } else if (e.key === 'ArrowLeft') {
+        } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
             inputRef.current.focus();
         } else if (e.key === 'ArrowRight') {
-            helpButtonRef.current.focus();
+            if (helpButtonRef.current) {
+                helpButtonRef.current.focus();
+            } else if (zoomControlsRef.current) {
+                zoomControlsRef.current.focus();
+            } else if (addButtonRef.current) {
+                addButtonRef.current.focus();
+            }
         }
     };
 
@@ -402,23 +408,54 @@ const App = () => {
         }
     };
 
-    const openHelpModal = () => {
-        setIsHelpVisible(true);
+    // const openHelpModal = () => {
+    //     setIsHelpVisible(true);
+    //     setTimeout(() => {
+    //         if (closeButtonRef.current) {
+    //             closeButtonRef.current.focus();
+    //         }
+    //     }, 0);
+    // };
+
+    // const closeHelpModal = () => {
+    //     setIsHelpVisible(false);
+    //     if (helpButtonRef.current) {
+    //         helpButtonRef.current.focus();
+    //     }
+    // };
+
+    const toggleHelpModal = (isOpen) => {
+        setIsHelpVisible(isOpen);
+
         setTimeout(() => {
-            if (closeButtonRef.current) {
+            if (isOpen && closeButtonRef.current) {
                 closeButtonRef.current.focus();
+            } else if (!isOpen) {
+                if (helpButtonRef.current) {
+                    helpButtonRef.current.focus();
+                }
             }
         }, 0);
     };
+    // Example usage
+    const openHelp = () => toggleHelpModal(true);
+    const closeHelp = () => toggleHelpModal(false);
 
-    const closeHelpModal = () => {
-        setIsHelpVisible(false);
-        if (helpButtonRef.current) {
-            helpButtonRef.current.focus();
+    const handleHelpButtonKeyDown = (e) => {
+        if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            if (zoomControlsRef.current) {
+                const buttons = zoomControlsRef.current.querySelectorAll("button");
+                if (buttons.length > 0) {
+                    buttons[0].focus(); // Устанавливаем фокус на первую кнопку в контейнере
+                }
+            }
         }
-    };
-
-    
+        if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            addButtonRef.current.focus();
+        }
+    }
 
 const generatePlotData = () => {
     return functions.map(({func, color}, index) => {
@@ -473,6 +510,30 @@ const generatePlotData = () => {
         }
     };
 
+    const handleKeyZoom = (e) => {
+        const buttons = zoomControlsRef.current.querySelectorAll("button");
+        const currentButtonIndex = Array.from(buttons).findIndex(button => button === document.activeElement);
+        switch (e.key) {
+          case "ArrowLeft":
+            if (currentButtonIndex > 0) {
+              buttons[currentButtonIndex - 1].focus();
+            } else {
+              // Если текущий элемент - первая кнопка, фокусируемся на кнопке помощи
+              if (helpButtonRef.current) {
+                helpButtonRef.current.focus();
+              }
+            }
+            break;
+          case "ArrowRight":
+            if (currentButtonIndex < buttons.length - 1) {
+              buttons[currentButtonIndex + 1].focus();
+            }
+            break;
+          default:
+            break;
+        }
+      };
+
     return (
         <div style={{display: 'flex', height: '100vh'}}>
             <div className="app-container"
@@ -511,7 +572,7 @@ const generatePlotData = () => {
             )}
         </div>
     <div style={{padding: '3px', position: 'relative', top: '1px', zIndex: '2'}}>
-    <span onClick={openHelpModal} style={{cursor: 'pointer'}}>
+    <span onClick={openHelp} style={{cursor: 'pointer'}}>
         <button
             ref={helpButtonRef}
             style={{
@@ -523,6 +584,7 @@ const generatePlotData = () => {
                 borderRadius: '50%',
                 fontSize: '20px',
             }}
+            onKeyDown={handleHelpButtonKeyDown}
         >
             ?
         </button>
@@ -571,7 +633,7 @@ const generatePlotData = () => {
                 </ol>
                 <button
                     ref={closeButtonRef}
-                    onClick={closeHelpModal}
+                    onClick={closeHelp}
                     style={{
                         padding: '10px',
                         backgroundColor: '#1a73e8',
@@ -595,20 +657,25 @@ const generatePlotData = () => {
             style={{width: '100%', height: '100%'}
         }
         />
-        <ZoomControls 
-        ref={zoomControlsRef}
-        onZoomInX={handleZoomInX}
-        onZoomOutX={handleZoomOutX}
-        onZoomInY={handleZoomInY}
-        onZoomOutY={handleZoomOutY}
-        onResetZoom={handleResetZoom}
-        style={{
-            position: 'absolute',
-            width: '60%',
-            top: '0%',
-            right: '1.5%',
+        <div
+            ref={zoomControlsRef}
+            tabIndex={-1}
+            onKeyDown={handleKeyZoom}
+            style={{
+                position: 'absolute',
+                width: '60%',
+                top: '0%',
+                right: '1.5%',
             }}
-        />
+        >
+            <ButtonGroup variant="contained" aria-label="Basic button group" size="large">
+                <Button tabIndex={0} onClick={handleZoomInX}>+ X</Button>
+                <Button tabIndex={1} onClick={handleZoomOutX}>- X</Button>
+                <Button tabIndex={2} onClick={handleZoomInY}>+ Y</Button>
+                <Button tabIndex={3} onClick={handleZoomOutY}>- Y</Button>
+                <Button tabIndex={4} onClick={handleResetZoom}>Reset</Button>
+            </ButtonGroup>
+        </div>
     </div>
     {
         isKeyboardExpanded && (
@@ -644,6 +711,7 @@ function getRandomColor() {
 }
 
 export default App;
+
 
 
 
