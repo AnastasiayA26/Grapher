@@ -25,6 +25,7 @@ let transformer = {
     },
     expr_binary:  function ([lhs, {value: op}, rhs]) {
         switch (op) {
+            case "^": case "**": return (x) => Math.pow(lhs(x), rhs(x));
             case "+": return (x) => lhs(x) + rhs(x);
             case "-": return (x) => lhs(x) - rhs(x);
             case "*": return (x) => lhs(x) * rhs(x);
