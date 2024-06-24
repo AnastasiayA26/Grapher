@@ -28,9 +28,15 @@ const App = () => {
     const functionRefs = useRef([]);
     const colorRefs = useRef([]);
     const removeButtonRefs = useRef([]);
-    const helpButtonRef = useRef(null);
     const closeButtonRef = useRef(null);
     const zoomControlsRef = useRef(null);
+    const buttonRefs = useRef([]);
+
+    // Initialize buttonRefs
+    useEffect(() => {
+        buttonRefs.current = Array(37).fill(null).map((_, i) => buttonRefs.current[i] || React.createRef());
+    }, []);
+
     const [plotLayout, setPlotLayout] = useState({
         autosize: true,
         margin: {t: 50, r: 50, b: 50, l: 50},
@@ -117,25 +123,25 @@ const App = () => {
         }));
     };
 
-    const initializeAssistant = (getState) => {
-        if (process.env.NODE_ENV === 'development') {
-            return createSmartappDebugger({
-                token: process.env.REACT_APP_TOKEN ?? '',
-                initPhrase: `Запусти ${process.env.REACT_APP_SMARTAPP}`,
-                getState,
-            });
-        }
-        return createAssistant({ getState });
-    };
-
-    useEffect(() => {
-        window.addMathFunction = (func, context) => {
-            setFunctionInput(prev => prev + func);
-        };
-        const getState = () => ({ functions });
-        const assistant = initializeAssistant(getState);
-        assistant.on('data', handleAssistantData);
-    }, [functions]);
+    // const initializeAssistant = (getState) => {
+    //     if (process.env.NODE_ENV === 'development') {
+    //         return createSmartappDebugger({
+    //             token: process.env.REACT_APP_TOKEN ?? '',
+    //             initPhrase: `Запусти ${process.env.REACT_APP_SMARTAPP}`,
+    //             getState,
+    //         });
+    //     }
+    //     return createAssistant({ getState });
+    // };
+    //
+    // useEffect(() => {
+    //     window.addMathFunction = (func, context) => {
+    //         setFunctionInput(prev => prev + func);
+    //     };
+    //     const getState = () => ({ functions });
+    //     const assistant = initializeAssistant(getState);
+    //     assistant.on('data', handleAssistantData);
+    // }, [functions]);
 
     useEffect(() => {
         if (isKeyboardExpanded && functionListRef.current) {
@@ -164,15 +170,15 @@ const App = () => {
     };
 
    const handleInputKeyDown = (e) => {
-       if (e.key === 'Enter') {
+        if (e.key === 'Enter') {
            e.preventDefault();
-           addButtonRef.current.focus();
+           buttonRefs?.current[0].focus();
        } else if (e.key === 'ArrowDown') {
            if (functions.length > 0) {
                functionRefs.current[0].focus();
            }
        } else if (e.key === 'ArrowRight') {
-           addButtonRef.current.focus();
+           buttonRefs?.current[0].focus();
        }
    };
 
@@ -184,12 +190,12 @@ const App = () => {
         } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
             inputRef.current.focus();
         } else if (e.key === 'ArrowRight') {
-            if (helpButtonRef.current) {
-                helpButtonRef.current.focus();
+            if (buttonRefs?.current[1].current) {
+                buttonRefs?.current[1].current.focus();
             } else if (zoomControlsRef.current) {
                 zoomControlsRef.current.focus();
             } else if (addButtonRef.current) {
-                addButtonRef.current.focus();
+                buttonRefs?.current[0].focus();
             }
         }
     };
@@ -307,6 +313,7 @@ const App = () => {
     );
 
     const handleFunctionKeyDown = (e, index) => {
+        console.log(e);
         if (e.key === 'ArrowDown' && index < functions.length - 1) {
             e.preventDefault();
             colorRefs.current[index + 1].focus();
@@ -419,8 +426,8 @@ const App = () => {
 
     // const closeHelpModal = () => {
     //     setIsHelpVisible(false);
-    //     if (helpButtonRef.current) {
-    //         helpButtonRef.current.focus();
+    //     if (buttonRefs?.current[1].current) {
+    //         buttonRefs?.current[1].current.focus();
     //     }
     // };
 
@@ -431,8 +438,8 @@ const App = () => {
             if (isOpen && closeButtonRef.current) {
                 closeButtonRef.current.focus();
             } else if (!isOpen) {
-                if (helpButtonRef.current) {
-                    helpButtonRef.current.focus();
+                if (buttonRefs?.current[1].current) {
+                    buttonRefs?.current[1].current.focus();
                 }
             }
         }, 0);
@@ -453,7 +460,7 @@ const App = () => {
         }
         if (e.key === 'ArrowLeft') {
             e.preventDefault();
-            addButtonRef.current.focus();
+            buttonRefs?.current[0].focus();
         }
     }
 
@@ -519,8 +526,8 @@ const generatePlotData = () => {
               buttons[currentButtonIndex - 1].focus();
             } else {
               // Если текущий элемент - первая кнопка, фокусируемся на кнопке помощи
-              if (helpButtonRef.current) {
-                helpButtonRef.current.focus();
+              if (buttonRefs?.current[1].current) {
+                buttonRefs?.current[1].current.focus();
               }
             }
             break;
@@ -540,7 +547,7 @@ const generatePlotData = () => {
                  style={{flex: '1', height: 'auto', borderRight: '1px solid #ccc', flexDirection: 'column'}}>
                 <div className="input-panel" style={{display: 'flex', alignItems: 'center'}}>
                     <input
-                        tabIndex={1}
+                        tabIndex={30}
                         ref={inputRef}
                         type="text"
                         placeholder="5*x + 1"
@@ -551,8 +558,8 @@ const generatePlotData = () => {
                         style={{padding: '10px', width: '150%', margin: '0', border: '1px solid black'}}
                     />
                     <button
-                        tabIndex={1}
-                        ref={addButtonRef}
+                        tabIndex={31}
+                        ref={buttonRefs?.current[31]}
                         className="focusable"
                         onClick={handleAddFunction}
                         onKeyDown={handleAddFunctionKeyDown}
@@ -574,7 +581,8 @@ const generatePlotData = () => {
     <div style={{padding: '3px', position: 'relative', top: '1px', zIndex: '2'}}>
     <span onClick={openHelp} style={{cursor: 'pointer'}}>
         <button
-            ref={helpButtonRef}
+            tabIndex={32}
+            ref={buttonRefs?.current[32]}
             style={{
                 width: '30px',
                 height: '30px',
@@ -669,11 +677,11 @@ const generatePlotData = () => {
             }}
         >
             <ButtonGroup variant="contained" aria-label="Basic button group" size="large">
-                <Button tabIndex={0} onClick={handleZoomInX}>+ X</Button>
-                <Button tabIndex={1} onClick={handleZoomOutX}>- X</Button>
-                <Button tabIndex={2} onClick={handleZoomInY}>+ Y</Button>
-                <Button tabIndex={3} onClick={handleZoomOutY}>- Y</Button>
-                <Button tabIndex={4} onClick={handleResetZoom}>Reset</Button>
+                <Button ref={buttonRefs?.current[33]} tabIndex={33} onClick={handleZoomInX}>+ X</Button>
+                <Button ref={buttonRefs?.current[34]} tabIndex={34} onClick={handleZoomOutX}>- X</Button>
+                <Button ref={buttonRefs?.current[35]} tabIndex={35} onClick={handleZoomInY}>+ Y</Button>
+                <Button ref={buttonRefs?.current[36]} tabIndex={36} onClick={handleZoomOutY}>- Y</Button>
+                <Button ref={buttonRefs?.current[37]} tabIndex={37} onClick={handleResetZoom}>Reset</Button>
             </ButtonGroup>
         </div>
     </div>
@@ -682,9 +690,12 @@ const generatePlotData = () => {
             <div 
                 style={{position: 'absolute', bottom: '0.05%', zIndex: '1'}}>
                 <MathKeyboard
+                    functionInput={functionInput}
+                    setFunctionInput={setFunctionInput}
                     tabIndex={-1}
                     inputRef={inputRef}
-                    onKeyClick={(key) => setFunctionInput(functionInput + key)}
+                    buttonRefs={buttonRefs}
+                    onKeyClick={(key) => setFunctionInput(functionInput => functionInput + key)}
                 />
                 <div style={{textAlign: 'center', paddingTop: '0.25%'}}>
                         <span onClick={() => setIsKeyboardExpanded(false)} style={{cursor: 'pointer'}}>
