@@ -50,8 +50,8 @@ const App = () => {
         const handleResize = () => {
             setPlotLayout((prevLayout) => ({
                 ...prevLayout,
-                width: window.innerWidth * 0.7, // Примерное значение ширины графика
-                height: window.innerHeight * 0.7, // Примерное значение высоты графика
+                width: window.innerWidth * 0.67, // Примерное значение ширины графика
+                height: window.innerHeight * 0.67, // Примерное значение высоты графика
             }));
         };
 
@@ -548,7 +548,7 @@ const generatePlotData = () => {
                         onChange={handleFunctionInputChange}
                         onKeyDown={handleInputKeyDown}
                         onTouchStart={handleTouchStart}  // Prevent default touch event to avoid showing system keyboard
-                        style={{padding: '10px', width: '150%', margin: '0'}}
+                        style={{padding: '10px', width: '150%', margin: '0', border: '1px solid black'}}
                     />
                     <button
                         tabIndex={1}
