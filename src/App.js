@@ -612,7 +612,7 @@ const generatePlotData = () => {
                     <strong style={{fontSize: '14px'}}>Добавление
                         функций:</strong> {/* Уменьшить размер шрифта для strong */}
                     <ul>
-                        <li style={{fontSize: '14px'}}>Введите математическое выражение в поле ввода и нажмите
+                        <li style={{fontSize: '14px'}}>Введите математическое выражение в поле c 5*x + 1 и нажмите
                             кнопку <span className="button">+</span></li>
                         <li style={{fontSize: '14px'}}>Примеры: 5*x + 1, sin(3*x)</li>
                     </ul>
