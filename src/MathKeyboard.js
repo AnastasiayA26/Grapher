@@ -1,21 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef , useCallback } from 'react';
 import './MathKeyboard.css';
+import { help } from 'mathjs';
 
 
-const MathKeyboard = ({ onKeyClick, inputRef }) => {
+const MathKeyboard = ({ onKeyClick, inputRef, functionInput, setFunctionInput, buttonRefs }) => {
     const [expanded, setExpanded] = useState(true);
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     const [buttonColor, setButtonColor] = useState(Array(20).fill('#ffffff')); // Assuming 20 buttons, adjust if needed
     const [clickedButtonIndex, setClickedButtonIndex] = useState(null);
     const [currentFocusIndex, setCurrentFocusIndex] = useState(null);
-    const [functionInput, setFunctionInput] = useState(''); // Add state for function input
-    const buttonRefs = useRef([]);
-
-
-    // Initialize buttonRefs
-    useEffect(() => {
-        buttonRefs.current = Array(30).fill(null).map((_, i) => buttonRefs.current[i] || React.createRef());
-    }, []);
 
     useEffect(() => {
         if (inputRef && inputRef.current) {
@@ -23,69 +16,7 @@ const MathKeyboard = ({ onKeyClick, inputRef }) => {
         }
     }, [functionInput, inputRef]);
 
-    // function handleDelete() {
-    //     if (!inputRef || !inputRef.current) return;
-    //
-    //     const input = inputRef.current;
-    //     const selectionStart = input.selectionStart;
-    //     const selectionEnd = input.selectionEnd;
-    //     let newValue;
-    //
-    //     if (input.value.length === 0) {
-    //         // Если инпут пустой, просто вернуть без дальнейших действий
-    //         return;
-    //     }
-    //
-    //     if (selectionStart === selectionEnd) {
-    //         if (selectionStart > 0) {
-    //             newValue = input.value.slice(0, selectionStart - 1) + input.value.slice(selectionEnd);
-    //             input.setSelectionRange(selectionStart - 1, selectionStart - 1);
-    //         }
-    //     } else {
-    //         newValue = input.value.slice(0, selectionStart) + input.value.slice(selectionEnd);
-    //         input.setSelectionRange(selectionStart, selectionStart);
-    //     }
-    //
-    //     input.value = newValue;
-    //     setFunctionInput(newValue); // Update functionInput state
-    //     onKeyClick(newValue);
-    //     input.focus();
-    // }
-    //
-    // const handleKeyClick = (key, index) => {
-    //     const input = inputRef.current;
-    //     const selectionStart = input.selectionStart;
-    //     const selectionEnd = input.selectionEnd;
-    //     let newValue;
-    //
-    //     if (key === '\u232b') { // Delete key
-    //         handleDelete();
-    //     } else {
-    //         let expression = '';
-    //         if (['sqrt', 'sin', 'cos', 'tan', 'ctg', 'ln', 'log'].includes(key)) {
-    //             expression = `${key}(`;
-    //         } else {
-    //             expression = key;
-    //         }
-    //
-    //         newValue = input.value.slice(0, selectionStart) + expression + input.value.slice(selectionEnd);
-    //         input.value = newValue;
-    //         setFunctionInput(newValue); // Update functionInput state
-    //         input.setSelectionRange(selectionStart + expression.length, selectionStart + expression.length);
-    //         onKeyClick(newValue);
-    //     }
-    //
-    //     setClickedButtonIndex(index);
-    //     setButtonColor(prevState => prevState.map((color, i) => i === index ? '#d3d1d1' : '#ffffff'));
-    //     setTimeout(() => {
-    //         setClickedButtonIndex(null);
-    //         setButtonColor(prevState => prevState.map((color, i) => i === index ? '#ffffff' : color));
-    //     }, 200); // Change this value to adjust the duration of button lighting
-    //     input.focus();
-    // };
-
-
-    function handleDelete() {
+    const handleDelete = useCallback(() => {
         if (!inputRef || !inputRef.current) return;
 
         const input = inputRef.current;
@@ -94,26 +25,22 @@ const MathKeyboard = ({ onKeyClick, inputRef }) => {
         let newValue;
 
         if (selectionEnd - 1 > 0) {
-            const currentValue = input.value;
+            const currentValue = functionInput;
             newValue = currentValue.slice(0, selectionStart - 1) + currentValue.slice(selectionEnd);
             const newSelectionEnd = selectionEnd - 1;
 
-            input.value = newValue;
             input.setSelectionRange(newSelectionEnd, newSelectionEnd);
             inputRef.current = input;
-            onKeyClick('');
+            setFunctionInput(newValue);
         } else if (selectionStart === input.value.length || selectionEnd === 1) {
             newValue = '';
-            input.value = newValue;
             inputRef.current = input;
-            onKeyClick('');
+            setFunctionInput(newValue);
             input.setSelectionRange(0, 0);
-        } else {
-            return; // Do nothing if the cursor is at the beginning and there is no selection
-         }
-     }
+        }
 
-
+        return null;
+    }, [functionInput])
 
     const handleKeyClick = (key, index) => {
         if (key === '\u232b') {
@@ -130,14 +57,12 @@ const MathKeyboard = ({ onKeyClick, inputRef }) => {
             onKeyClick(expression);
         }
         setClickedButtonIndex(index);
-        setButtonColor(prevState => prevState.map((color, i) => i === index ? '#d3d1d1' : '#ffffff'));
+        setButtonColor(prevState => prevState.map((_, i) => i === index ? '#d3d1d1' : '#ffffff'));
         setTimeout(() => {
             setClickedButtonIndex(null);
             setButtonColor(prevState => prevState.map((color, i) => i === index ? '#ffffff' : color));
         }, 200); // Change this value to adjust the duration of button lighting
-        inputRef.current.focus();
     };
-
 
     const handleKeyDown = (event) => {
         const { key, shiftKey } = event;
@@ -146,6 +71,7 @@ const MathKeyboard = ({ onKeyClick, inputRef }) => {
             event.preventDefault(); // Prevent default tab behavior
 
             let newIndex = currentFocusIndex !== null ? currentFocusIndex : 0; // Default to 0 if currentFocusIndex is null
+
 
             // Calculate the next index based on whether the shift key is pressed
             newIndex = shiftKey ? (newIndex - 1 + 30) % 30 : (newIndex + 1) % 30;
@@ -157,15 +83,21 @@ const MathKeyboard = ({ onKeyClick, inputRef }) => {
 
             let newIndex = currentFocusIndex !== null ? currentFocusIndex : 0; // Default to 0 if currentFocusIndex is null
 
+            console.log()
+
             switch (key) {
                 case 'ArrowLeft':
                     newIndex = (newIndex - 1 + 30) % 30; // Wrap around to end
                     break;
                 case 'ArrowRight':
-                    newIndex = (newIndex + 1 + 30) % 30; // Wrap around to beginning
+                    newIndex = (newIndex + 1 + 38) % 38; // Wrap around to beginning
                     break;
                 case 'ArrowUp':
-                    newIndex = (newIndex - 10 + 30) % 30; // Move up by one row, wrapping around
+                    if (currentFocusIndex <= 9) {
+                        newIndex = (newIndex - 10 + 38) % 38; // Move up by one row, wrapping around
+                    } else {
+                        newIndex = (newIndex - 10 + 30) % 30; // Move up by one row, wrapping around
+                    }
                     break;
                 case 'ArrowDown':
                     newIndex = (newIndex + 10) % 30; // Move down by one row, wrapping around
@@ -213,7 +145,6 @@ const MathKeyboard = ({ onKeyClick, inputRef }) => {
         margin: '2px',
         width: `${buttonWidth}px`
     };
-
 
     return (
         <div style={{ display: 'flex', height: keyboardHeightPercentage }}>
