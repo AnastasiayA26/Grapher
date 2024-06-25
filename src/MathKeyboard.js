@@ -134,7 +134,6 @@ const MathKeyboard = ({ onKeyClick, inputRef, functionInput, setFunctionInput, b
     const keyboardHeightPercentage = '30%'; // Процентное значение высоты контейнера кнопок относительно высоты экрана
 
     const buttonStyle = {
-         const buttonStyle = {
         flex: '1',
         padding: windowWidth <= 480 ? '1%' : '1%',
         fontSize: '1.2vw', // Размер шрифта в процентах от ширины окна
@@ -149,7 +148,6 @@ const MathKeyboard = ({ onKeyClick, inputRef, functionInput, setFunctionInput, b
         display: 'flex', // Используем flexbox
         alignItems: 'center', // Центрируем содержимое по вертикали
         justifyContent: 'center' // Центрируем содержимое по горизонтали
-    };
     };
 
     return (
