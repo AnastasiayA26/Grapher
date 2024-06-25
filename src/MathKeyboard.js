@@ -134,16 +134,22 @@ const MathKeyboard = ({ onKeyClick, inputRef, functionInput, setFunctionInput, b
     const keyboardHeightPercentage = '30%'; // Процентное значение высоты контейнера кнопок относительно высоты экрана
 
     const buttonStyle = {
+         const buttonStyle = {
         flex: '1',
-        padding: windowWidth <= 480 ? '1%' : '0.75%', // Используем проценты для адаптивного padding
-        fontSize: windowWidth <= 480 ? '10px' : '16px',
+        padding: '0', // Убираем padding, чтобы текст занимал все пространство
+        fontSize: '1.2vw', // Размер шрифта в процентах от ширины окна
         backgroundColor: '#ffffff',
         color: '#333333',
         border: '1px solid #cccccc',
         borderRadius: '5px',
         cursor: 'pointer',
-        margin: '2px',
-        width: `${buttonWidth}px`
+        margin: '0.2vw',
+        width: '10vw', // Ширина кнопки в процентах от ширины окна
+        height: '6vh', // Высота кнопки в процентах от высоты окна
+        display: 'flex', // Используем flexbox
+        alignItems: 'center', // Центрируем содержимое по вертикали
+        justifyContent: 'center' // Центрируем содержимое по горизонтали
+    };
     };
 
     return (
