@@ -540,6 +540,50 @@ const generatePlotData = () => {
             break;
         }
       };
+ const helpButtonStyle = {
+        width: '3vw',
+        height: '3vw',
+        backgroundColor: '#1a73e8',
+        color: '#fff',
+        border: 'none',
+        borderRadius: '50%',
+        fontSize: '2vw',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+    };
+
+    const helpModalStyle = {
+        position: 'fixed',
+        top: '35%',
+        left: '25%',
+        transform: 'translateY(-50%)',
+        backgroundColor: '#e6f1fa',
+        padding: '2vw',
+        borderRadius: '8px',
+        boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)',
+        zIndex: '999'
+    };
+
+    const helpModalTextStyle = {
+        fontSize: '1.2vw'
+    };
+
+    const zoomButtonStyle = {
+        padding: '0vw',
+        fontSize: '1vw',
+        backgroundColor: '#1a73e8',
+        color: '#fff',
+        border: 'none',
+        borderRadius: '5px',
+        cursor: 'pointer',
+        margin: '0.05vw',
+        flex: '1',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+    };
+
 
     return (
         <div style={{display: 'flex', height: '100vh'}}>
@@ -583,74 +627,55 @@ const generatePlotData = () => {
         <button
             tabIndex={32}
             ref={buttonRefs?.current[32]}
-            style={{
-                width: '30px',
-                height: '30px',
-                backgroundColor: '#1a73e8',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '50%',
-                fontSize: '20px',
-            }}
+            style={helpButtonStyle}
             onKeyDown={handleHelpButtonKeyDown}
         >
             ?
         </button>
     </span>
-        {/* Модальное окно справки */}
-        {isHelpVisible && (
-            <div
-                className="help-modal"
-                style={{
-                    position: 'fixed',
-                    top: '35%',
-                    left: '20%',
-                    transform: 'translateY(-50%)',
-                    backgroundColor: '#e6f1fa',
-                    padding: '10px',
-                    borderRadius: '8px',
-                    boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)',
-                    zIndex: '999',
-                }}
-            >
-                <h4 style={{fontSize: '18px'}}>Справка</h4> {/* Уменьшить размер шрифта для заголовка */}
-                <p style={{fontSize: '14px'}}>Приложение позволяет строить графики математических
-                    функций</p> {/* Уменьшить размер шрифта для параграфа */}
-                <ol>
-                    <strong style={{fontSize: '14px'}}>Добавление
-                        функций:</strong> {/* Уменьшить размер шрифта для strong */}
-                    <ul>
-                        <li style={{fontSize: '14px'}}>Введите математическое выражение в поле c 5*x + 1 и нажмите
-                            кнопку <span className="button">+</span></li>
-                        <li style={{fontSize: '14px'}}>Примеры: 5*x + 1, sin(3*x)</li>
-                    </ul>
-                    <strong style={{fontSize: '14px'}}>Управление функциями:</strong>
-                    <ul>
-                        <li style={{fontSize: '14px'}}>Для скрытия/отображения функции кликните на маркер
-                            окрашенного круга рядом с функцией
-                        </li>
-                        <li style={{fontSize: '14px'}}>Для удаления функции нажмите крестик в списке функций
-                        </li>
-                    </ul>
-                    <strong style={{fontSize: '14px'}}>Изменение масштаба графика:</strong>
-                    <ul>
-                        <li style={{fontSize: '14px'}}>Используйте манипуляторы на графике для изменения
-                            масштаба по осям X и Y
-                        </li>
-                    </ul>
-                </ol>
+       {/* Модальное окно справки */}
+                {isHelpVisible && (
+                    <div
+                        className="help-modal"
+                        style={helpModalStyle}
+                    >
+                        <h4 style={helpModalTextStyle}>Справка</h4>
+                        <p style={helpModalTextStyle}>Приложение позволяет строить графики математических функций</p>
+                        <ol>
+                            <strong style={helpModalTextStyle}>Добавление функций:</strong>
+                            <ul>
+                                <li style={helpModalTextStyle}>Введите математическое выражение в поле c 5*x + 1 и
+                                    нажмите кнопку <span className="button">+</span></li>
+                                <li style={helpModalTextStyle}>Примеры: 5*x + 1, sin(3*x)</li>
+                            </ul>
+                            <strong style={helpModalTextStyle}>Управление функциями:</strong>
+                            <ul>
+                                <li style={helpModalTextStyle}>Для скрытия/отображения функции кликните на маркер
+                                    окрашенного круга рядом с функцией
+                                </li>
+                                <li style={helpModalTextStyle}>Для удаления функции нажмите крестик в списке функций
+                                </li>
+                            </ul>
+                            <strong style={helpModalTextStyle}>Изменение масштаба графика:</strong>
+                            <ul>
+                                <li style={helpModalTextStyle}>Используйте манипуляторы на графике для изменения
+                                    масштаба по осям X и Y
+                                </li>
+                            </ul>
+                        </ol>
                 <button
                     ref={closeButtonRef}
                     onClick={closeHelp}
-                    style={{
-                        padding: '10px',
-                        backgroundColor: '#1a73e8',
-                        color: '#fff',
-                        border: 'none',
-                        cursor: 'pointer',
-                        borderRadius: '4px',
-                        marginTop: '10px',
-                    }}
+                   style={{
+                                padding: '1vw',
+                                backgroundColor: '#1a73e8',
+                                color: '#fff',
+                                border: 'none',
+                                cursor: 'pointer',
+                                borderRadius: '4px',
+                                marginTop: '1vw',
+                                fontSize: '1.2vw' // Размер шрифта для кнопки "Закрыть"
+                            }}
                 >
                     Закрыть
                 </button>
@@ -674,14 +699,16 @@ const generatePlotData = () => {
                 width: '60%',
                 top: '0%',
                 right: '1.5%',
+                display: 'flex',
+                justifyContent: 'space-between'
             }}
         >
             <ButtonGroup variant="contained" aria-label="Basic button group" size="large">
-                <Button ref={buttonRefs?.current[33]} tabIndex={33} onClick={handleZoomInX}>+ X</Button>
-                <Button ref={buttonRefs?.current[34]} tabIndex={34} onClick={handleZoomOutX}>- X</Button>
-                <Button ref={buttonRefs?.current[35]} tabIndex={35} onClick={handleZoomInY}>+ Y</Button>
-                <Button ref={buttonRefs?.current[36]} tabIndex={36} onClick={handleZoomOutY}>- Y</Button>
-                <Button ref={buttonRefs?.current[37]} tabIndex={37} onClick={handleResetZoom}>Reset</Button>
+                <Button ref={buttonRefs?.current[33]} tabIndex={33} onClick={handleZoomInX} style={zoomButtonStyle}>+ X</Button>
+                <Button ref={buttonRefs?.current[34]} tabIndex={34} onClick={handleZoomOutX} style={zoomButtonStyle}>- X</Button>
+                <Button ref={buttonRefs?.current[35]} tabIndex={35} onClick={handleZoomInY} style={zoomButtonStyle}>+ Y</Button>
+                <Button ref={buttonRefs?.current[36]} tabIndex={36} onClick={handleZoomOutY} style={zoomButtonStyle}>- Y</Button>
+                <Button ref={buttonRefs?.current[37]} tabIndex={37} onClick={handleResetZoom} style={zoomButtonStyle}>Reset</Button>
             </ButtonGroup>
         </div>
     </div>
