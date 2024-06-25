@@ -136,7 +136,7 @@ const MathKeyboard = ({ onKeyClick, inputRef, functionInput, setFunctionInput, b
     const buttonStyle = {
          const buttonStyle = {
         flex: '1',
-        padding: '0', // Убираем padding, чтобы текст занимал все пространство
+        padding: windowWidth <= 480 ? '1%' : '1%',
         fontSize: '1.2vw', // Размер шрифта в процентах от ширины окна
         backgroundColor: '#ffffff',
         color: '#333333',
