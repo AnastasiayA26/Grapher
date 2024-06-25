@@ -111,12 +111,12 @@ const MathKeyboard = ({ onKeyClick, inputRef, functionInput, setFunctionInput, b
                         newIndex = (newIndex - 10 + 30) % 30; // Move up by one row, wrapping around
                     }
                     break;
-                case 'ArrowDown':
-                    if (currentFocusIndex >= 31) {
-                        // newIndex = (newIndex - 10 + 38) % 38; // Move up by one row, wrapping around
+                 case 'ArrowDown':
+                    if (currentFocusIndex <= 30) {
+                        newIndex = (newIndex + 10) % 30;
+                    }// Move down by one row, wrapping around
+                    else{
                         newIndex = 0;
-                    } else {
-                        newIndex = (newIndex - 10) % 30; // Move up by one row, wrapping around
                     }
                     break;
                 default:
