@@ -135,14 +135,14 @@ const MathKeyboard = ({ onKeyClick, inputRef, functionInput, setFunctionInput, b
 
     const buttonStyle = {
         flex: '1',
-        padding: windowWidth <= 480 ? '1%' : '1%',
+        padding: windowWidth <= 480 ? '1.5%' : '1.5%',
         fontSize: '1.2vw', // Размер шрифта в процентах от ширины окна
         backgroundColor: '#ffffff',
         color: '#333333',
         border: '1px solid #cccccc',
         borderRadius: '5px',
         cursor: 'pointer',
-        margin: '0.2vw',
+        margin: '0.1vw',
         width: '10vw', // Ширина кнопки в процентах от ширины окна
         height: '6vh', // Высота кнопки в процентах от высоты окна
         display: 'flex', // Используем flexbox
