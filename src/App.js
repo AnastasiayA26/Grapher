@@ -237,12 +237,12 @@ const App = () => {
             <div
                 style={{
                     backgroundColor: '#fff',
-                    border: '1px solid #ddd',
+                    padding: '1vw',  // Используем относительную единицу измерения
+                    width: '23vw',  // Ширина поля в процентах от ширины экрана
+                    margin: '0',
                     borderRadius: '5px',
-                    padding: '10px',
-                    width: 'auto%',
-                    maxHeight: '200px',
-                    overflowY: 'auto',
+                    border: '1px solid black',
+                    fontSize: '1.2vw',  // Размер шрифта в относительной единице измерения
                 }}
             >
                 {functions.map((func, index) => (
@@ -257,16 +257,17 @@ const App = () => {
                         <div
                             ref={(el) => colorRefs.current[index] = el}
                             style={{
-                                width: '20px',
-                                height: '20px',
+                                width: '1.5vw',
+                                height: '1.5vw',
+                                color: '#fff',
                                 borderRadius: '50%',
-                                backgroundColor: func.color,
-                                marginRight: '5px',
-                                cursor: 'pointer',
-                                border: '1px solid #ddd',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
+                                backgroundColor: func.color,
+                                marginRight: '0.5vw',
+                                border: '1px solid #ddd',
+
                             }}
                             tabIndex={1}
                             onClick={() => handleFunctionToggle(index)}
@@ -298,8 +299,7 @@ const App = () => {
                                 border: 'none',
                                 color: 'red',
                                 cursor: 'pointer',
-                                fontSize: '16px',
-                                marginLeft: '5px',
+                                fontSize: '1.2vw'
                             }}
                             tabIndex={1}
                             onKeyDown={(e) => handleRemoveButtonKeyDown(e, index)}
@@ -540,6 +540,15 @@ const generatePlotData = () => {
             break;
         }
       };
+
+    const zoomButtonStyle = {
+        padding: '0.1vw',
+        width: '5vw',  // Adjust as needed
+        backgroundColor: '#1a73e8',
+        color: '#fff',
+        border: 'none',
+        fontSize: '1vw',  // Adjust as needed
+    };
  const helpButtonStyle = {
         width: '3vw',
         height: '3vw',
@@ -569,22 +578,6 @@ const generatePlotData = () => {
         fontSize: '1.2vw'
     };
 
-    const zoomButtonStyle = {
-        padding: '0vw',
-        fontSize: '1vw',
-        backgroundColor: '#1a73e8',
-        color: '#fff',
-        border: 'none',
-        borderRadius: '5px',
-        cursor: 'pointer',
-        margin: '0.05vw',
-        flex: '1',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
-    };
-
-
     return (
         <div style={{display: 'flex', height: '100vh'}}>
             <div className="app-container"
@@ -599,7 +592,13 @@ const generatePlotData = () => {
                         onChange={handleFunctionInputChange}
                         onKeyDown={handleInputKeyDown}
                         onTouchStart={handleTouchStart}  // Prevent default touch event to avoid showing system keyboard
-                        style={{padding: '10px', width: '150%', margin: '0', border: '1px solid black'}}
+                        style={{
+                            padding: '1vw',  // Используем относительную единицу измерения
+                            width: '18vw',  // Ширина поля в процентах от ширины экрана
+                            margin: '0',
+                            border: '1px solid black',
+                            fontSize: '1.2vw',  // Размер шрифта в относительной единице измерения
+                        }}
                     />
                     <button
                         tabIndex={31}
@@ -608,21 +607,22 @@ const generatePlotData = () => {
                         onClick={handleAddFunction}
                         onKeyDown={handleAddFunctionKeyDown}
                         style={{
-                            width: '30%',
-                            padding: '10px',
+                            padding: '1vw',
+                            width: '5vw',// Используем относительную единицу измерения
                             backgroundColor: '#1a73e8',
                             color: '#fff',
-                            margin: '0',
+                            border: 'none',
+                            fontSize: '1.2vw',  // Размер шрифта в относительной единице измерения
                         }}
                     >
                         +
                     </button>
                 </div>
-            {isFunctionListVisible && (
-                <FunctionList functions={functions} hiddenFunctions={hiddenFunctions}/>
-            )}
-        </div>
-    <div style={{padding: '3px', position: 'relative', top: '1px', zIndex: '2'}}>
+                {isFunctionListVisible && (
+                    <FunctionList functions={functions} hiddenFunctions={hiddenFunctions}/>
+                )}
+            </div>
+            <div style={{padding: '3px', position: 'relative', top: '1px', zIndex: '2'}}>
     <span onClick={openHelp} style={{cursor: 'pointer'}}>
         <button
             tabIndex={32}
@@ -633,7 +633,7 @@ const generatePlotData = () => {
             ?
         </button>
     </span>
-       {/* Модальное окно справки */}
+                {/* Модальное окно справки */}
                 {isHelpVisible && (
                     <div
                         className="help-modal"
@@ -699,8 +699,7 @@ const generatePlotData = () => {
                 width: '60%',
                 top: '0%',
                 right: '1.5%',
-                display: 'flex',
-                justifyContent: 'space-between'
+
             }}
         >
             <ButtonGroup variant="contained" aria-label="Basic button group" size="large">
@@ -709,6 +708,7 @@ const generatePlotData = () => {
                 <Button ref={buttonRefs?.current[35]} tabIndex={35} onClick={handleZoomInY} style={zoomButtonStyle}>+ Y</Button>
                 <Button ref={buttonRefs?.current[36]} tabIndex={36} onClick={handleZoomOutY} style={zoomButtonStyle}>- Y</Button>
                 <Button ref={buttonRefs?.current[37]} tabIndex={37} onClick={handleResetZoom} style={zoomButtonStyle}>Reset</Button>
+
             </ButtonGroup>
         </div>
     </div>
@@ -749,6 +749,8 @@ function getRandomColor() {
 }
 
 export default App;
+
+
 
 
 
