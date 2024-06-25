@@ -39,16 +39,20 @@ const App = () => {
 
     const [plotLayout, setPlotLayout] = useState({
         autosize: true,
-        margin: {t: 50, r: 50, b: 50, l: 50},
+        margin: { t: 50, r: 50, b: 50, l: 50 },
         xaxis: {
             zeroline: true,
             zerolinecolor: '#000',
-            range: [-20, 20], // Set the initial range for x-axis
+            range: [-20, 20],
+            tickfont: {
+                size: (window.innerWidth < 2000) ? 14 : 22
+            }  // Adjust tick font size for x-axis
         },
         yaxis: {
             zeroline: true,
             zerolinecolor: '#000',
-            range: [-50, 50], // Set the initial range for y-axis
+            range: [-20, 20],
+            tickfont: { size: (window.innerWidth < 2000) ? 14 : 22}  // Adjust tick font size for y-axis
         },
     });
 
@@ -749,6 +753,10 @@ function getRandomColor() {
 }
 
 export default App;
+
+
+
+
 
 
 
