@@ -85,16 +85,28 @@ const MathKeyboard = ({ onKeyClick, inputRef, functionInput, setFunctionInput, b
 
             console.log()
 
-            switch (key) {
+              switch (key) {
                 case 'ArrowLeft':
+                    if (currentFocusIndex < 30){
                     newIndex = (newIndex - 1 + 30) % 30; // Wrap around to end
+                    }
+                    else{
+                        if (currentFocusIndex === 30){
+                            newIndex = 1;
+                        }
+                        else {
+                            newIndex = (newIndex - 1 + 38) % 38;
+                        }
+                    }
                     break;
+
                 case 'ArrowRight':
                     newIndex = (newIndex + 1 + 38) % 38; // Wrap around to beginning
                     break;
                 case 'ArrowUp':
                     if (currentFocusIndex <= 9) {
-                        newIndex = (newIndex - 10 + 38) % 38; // Move up by one row, wrapping around
+                        // newIndex = (newIndex - 10 + 38) % 38; // Move up by one row, wrapping around
+                        newIndex = 31;
                     } else {
                         newIndex = (newIndex - 10 + 30) % 30; // Move up by one row, wrapping around
                     }
@@ -105,7 +117,6 @@ const MathKeyboard = ({ onKeyClick, inputRef, functionInput, setFunctionInput, b
                 default:
                     break;
             }
-
             setCurrentFocusIndex(newIndex);
             buttonRefs.current[newIndex]?.current && buttonRefs.current[newIndex].current.focus();
         }
