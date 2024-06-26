@@ -5,7 +5,7 @@ import { createSmartappDebugger, createAssistant } from '@salutejs/client';
 import 'normalize.css';
 import './styles.css';
 import './index.css';
-import './voice.css';
+//import './voice.css';
 import './MathKeyboard.css';
 import { ButtonGroup, Button } from "@mui/material";
 //import ZoomControls from './ZoomControls.js';
