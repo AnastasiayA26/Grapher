@@ -543,7 +543,7 @@ const App = () => {
         backgroundColor: '#1a73e8',
         color: '#fff',
         border: 'none',
-        fontSize: '1vw',  // Adjust as needed
+        fontSize: '1.2vw',  // Adjust as needed
     };
     const helpButtonStyle = {
         width: '3vw',
