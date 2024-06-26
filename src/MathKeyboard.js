@@ -85,10 +85,10 @@ const MathKeyboard = ({ onKeyClick, inputRef, functionInput, setFunctionInput, b
 
             console.log()
 
-            switch (key) {
+              switch (key) {
                 case 'ArrowLeft':
                     if (currentFocusIndex < 30){
-                        newIndex = (newIndex - 1 + 30) % 30; // Wrap around to end
+                    newIndex = (newIndex - 1 + 30) % 30; // Wrap around to end
                     }
                     else{
                         if (currentFocusIndex === 30){
@@ -111,7 +111,7 @@ const MathKeyboard = ({ onKeyClick, inputRef, functionInput, setFunctionInput, b
                         newIndex = (newIndex - 10 + 30) % 30; // Move up by one row, wrapping around
                     }
                     break;
-                case 'ArrowDown':
+                 case 'ArrowDown':
                     if (currentFocusIndex < 30) {
                         newIndex = (newIndex + 10) % 30;
                     }// Move down by one row, wrapping around
@@ -158,9 +158,9 @@ const MathKeyboard = ({ onKeyClick, inputRef, functionInput, setFunctionInput, b
         border: '1px solid #cccccc',
         borderRadius: '5px',
         cursor: 'pointer',
-        margin: '0.05vw',
+        margin: '0.03vw',
         width: '10vw', // Ширина кнопки в процентах от ширины окна
-        height: '6vh', // Высота кнопки в процентах от высоты окна
+        height: '0.6vh', // Высота кнопки в процентах от высоты окна
         display: 'flex', // Используем flexbox
         alignItems: 'center', // Центрируем содержимое по вертикали
         justifyContent: 'center' // Центрируем содержимое по горизонтали
@@ -174,7 +174,7 @@ const MathKeyboard = ({ onKeyClick, inputRef, functionInput, setFunctionInput, b
                     flexDirection: 'column',
                     gap: '3px',
                     padding: '7px',
-                    backgroundColor: '#949494',
+                    backgroundColor: '#2f4c72',//изменила
                     borderRadius: '10px',
                     flex: expanded ? '1' : '0'
                 }}>
@@ -409,4 +409,7 @@ const MathKeyboard = ({ onKeyClick, inputRef, functionInput, setFunctionInput, b
 
 
 export default MathKeyboard;
+
+
+
 
