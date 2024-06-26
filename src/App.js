@@ -432,8 +432,8 @@ const App = () => {
             if (isOpen && closeButtonRef.current) {
                 closeButtonRef.current.focus();
             } else if (!isOpen) {
-                if (buttonRefs?.current[1].current) {
-                    buttonRefs?.current[1].current.focus();
+                if (buttonRefs?.current[32].current) {
+                    buttonRefs?.current[32].current.focus();
                 }
             }
         }, 0);
