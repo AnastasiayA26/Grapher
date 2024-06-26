@@ -182,7 +182,9 @@ const App = () => {
                functionRefs.current[0].focus();
            }
        } else if (e.key === 'ArrowRight') {
-           buttonRefs?.current[0].focus();
+            if (buttonRefs.current[31] && buttonRefs.current[31].current) {
+                buttonRefs.current[31].current.focus();
+            }
        }
    };
 
@@ -464,7 +466,9 @@ const App = () => {
         }
         if (e.key === 'ArrowLeft') {
             e.preventDefault();
-            buttonRefs?.current[0].focus();
+            if (buttonRefs.current[31] && buttonRefs.current[31].current) {
+                buttonRefs.current[31].current.focus();
+            }
         }
     }
 
