@@ -45,7 +45,7 @@ const App = () => {
             zerolinecolor: '#000',
             range: [-20, 20],
             tickfont: {
-                size: (window.innerWidth < 2000) ? 16 : 36
+                size:  (window.innerWidth < 1300) ? 16 : 28
             },  // Adjust tick font size for x-axis
             gridcolor: '#efe7e7', // Цвет линий сетки
             gridwidth: 2       // Толщина линий сетки
@@ -54,7 +54,7 @@ const App = () => {
             zeroline: true,
             zerolinecolor: '#000',
             range: [-20, 20],
-            tickfont: {size: (window.innerWidth < 2000) ? 16 : 36},  // Adjust tick font size for y-axis
+            tickfont: {size:  (window.innerWidth < 1300) ? 16 : 28},  // Adjust tick font size for y-axis
             gridcolor: '#efe7e7', // Цвет линий сетки
             gridwidth: 2       // Толщина линий сетки
         },
