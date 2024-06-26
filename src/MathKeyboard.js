@@ -174,7 +174,7 @@ const MathKeyboard = ({ onKeyClick, inputRef, functionInput, setFunctionInput, b
                     flexDirection: 'column',
                     gap: '3px',
                     padding: '7px',
-                    backgroundColor: '#f2f2f2',
+                    backgroundColor: '#949494',
                     borderRadius: '10px',
                     flex: expanded ? '1' : '0'
                 }}>
