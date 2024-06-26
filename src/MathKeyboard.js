@@ -85,10 +85,10 @@ const MathKeyboard = ({ onKeyClick, inputRef, functionInput, setFunctionInput, b
 
             console.log()
 
-              switch (key) {
+            switch (key) {
                 case 'ArrowLeft':
                     if (currentFocusIndex < 30){
-                    newIndex = (newIndex - 1 + 30) % 30; // Wrap around to end
+                        newIndex = (newIndex - 1 + 30) % 30; // Wrap around to end
                     }
                     else{
                         if (currentFocusIndex === 30){
@@ -111,7 +111,7 @@ const MathKeyboard = ({ onKeyClick, inputRef, functionInput, setFunctionInput, b
                         newIndex = (newIndex - 10 + 30) % 30; // Move up by one row, wrapping around
                     }
                     break;
-                 case 'ArrowDown':
+                case 'ArrowDown':
                     if (currentFocusIndex < 30) {
                         newIndex = (newIndex + 10) % 30;
                     }// Move down by one row, wrapping around
@@ -152,13 +152,13 @@ const MathKeyboard = ({ onKeyClick, inputRef, functionInput, setFunctionInput, b
     const buttonStyle = {
         flex: '1',
         padding: windowWidth <= 480 ? '1%' : '1%',
-        fontSize: '1.2vw', // Размер шрифта в процентах от ширины окна
+        fontSize: '1.4vw', // Размер шрифта в процентах от ширины окна
         backgroundColor: '#ffffff',
         color: '#333333',
         border: '1px solid #cccccc',
         borderRadius: '5px',
         cursor: 'pointer',
-        margin: '0.1vw',
+        margin: '0.05vw',
         width: '10vw', // Ширина кнопки в процентах от ширины окна
         height: '6vh', // Высота кнопки в процентах от высоты окна
         display: 'flex', // Используем flexbox
@@ -409,5 +409,4 @@ const MathKeyboard = ({ onKeyClick, inputRef, functionInput, setFunctionInput, b
 
 
 export default MathKeyboard;
-
 
