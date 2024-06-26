@@ -45,14 +45,18 @@ const App = () => {
             zerolinecolor: '#000',
             range: [-20, 20],
             tickfont: {
-                size: (window.innerWidth < 2000) ? 14 : 22
-            }  // Adjust tick font size for x-axis
+                size: (window.innerWidth < 2000) ? 16 : 36
+            },  // Adjust tick font size for x-axis
+            gridcolor: '#efe7e7', // Цвет линий сетки
+            gridwidth: 2       // Толщина линий сетки
         },
         yaxis: {
             zeroline: true,
             zerolinecolor: '#000',
             range: [-20, 20],
-            tickfont: { size: (window.innerWidth < 2000) ? 14 : 22}  // Adjust tick font size for y-axis
+            tickfont: {size: (window.innerWidth < 2000) ? 16 : 36},  // Adjust tick font size for y-axis
+            gridcolor: '#efe7e7', // Цвет линий сетки
+            gridwidth: 2       // Толщина линий сетки
         },
     });
 
@@ -122,7 +126,7 @@ const App = () => {
             },
             yaxis: {
                 ...prevLayout.yaxis,
-                range: [-50, 50], // Reset y-axis range
+                range: [-20, 20], // Reset y-axis range
             },
         }));
     };
@@ -173,22 +177,22 @@ const App = () => {
         }
     };
 
-   const handleInputKeyDown = (e) => {
+    const handleInputKeyDown = (e) => {
         if (e.key === 'Enter') {
-           e.preventDefault();
-           buttonRefs?.current[0].focus();
-       } else if (e.key === 'ArrowDown') {
-           if (functions.length > 0) {
-               functionRefs.current[0].focus();
-           }
-       } else if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            buttonRefs?.current[0].focus();
+        } else if (e.key === 'ArrowDown') {
+            if (functions.length > 0) {
+                functionRefs.current[0].focus();
+            }
+        } else if (e.key === 'ArrowRight') {
             if (buttonRefs.current[31] && buttonRefs.current[31].current) {
                 buttonRefs.current[31].current.focus();
             }
-       }
-   };
+        }
+    };
 
-   const handleAddFunctionKeyDown = (e) => {
+    const handleAddFunctionKeyDown = (e) => {
         if (e.key === 'Enter') {
             handleAddFunction();
         } else if (e.key === 'ArrowDown' && functionRefs.current.length > 0) {
@@ -248,7 +252,7 @@ const App = () => {
                     margin: '0',
                     borderRadius: '5px',
                     border: '1px solid black',
-                    fontSize: '1.2vw',  // Размер шрифта в относительной единице измерения
+                    fontSize: '1.4vw',  // Размер шрифта в относительной единице измерения
                 }}
             >
                 {functions.map((func, index) => (
@@ -305,7 +309,7 @@ const App = () => {
                                 border: 'none',
                                 color: 'red',
                                 cursor: 'pointer',
-                                fontSize: '1.2vw'
+                                fontSize: '1.4vw'
                             }}
                             tabIndex={1}
                             onKeyDown={(e) => handleRemoveButtonKeyDown(e, index)}
@@ -335,7 +339,7 @@ const App = () => {
             removeButtonRefs.current[index].focus();
         }
     };
-    
+
     const handleColorKeyDown = (e, index) => {
         if (e.key === 'ArrowRight') {
             e.preventDefault();
@@ -365,7 +369,7 @@ const App = () => {
             });
         }
     };
-    
+
     const handleRemoveButtonKeyDown = (e, index) => {
         if (e.key === 'ArrowLeft') {
             e.preventDefault();
@@ -421,22 +425,6 @@ const App = () => {
         }
     };
 
-    // const openHelpModal = () => {
-    //     setIsHelpVisible(true);
-    //     setTimeout(() => {
-    //         if (closeButtonRef.current) {
-    //             closeButtonRef.current.focus();
-    //         }
-    //     }, 0);
-    // };
-
-    // const closeHelpModal = () => {
-    //     setIsHelpVisible(false);
-    //     if (buttonRefs?.current[1].current) {
-    //         buttonRefs?.current[1].current.focus();
-    //     }
-    // };
-
     const toggleHelpModal = (isOpen) => {
         setIsHelpVisible(isOpen);
 
@@ -472,44 +460,44 @@ const App = () => {
         }
     }
 
-const generatePlotData = () => {
-    return functions.map(({func, color}, index) => {
-        if (hiddenFunctions.includes(index)) {
-            return null;  // Если функция скрыта, возвращаем null
-        }
-
-        let f;
-        try {
-            f = make_function(func);
-        } catch (error) {
-            setErrorMessage(`Ошибка в функции: ${func}`);
-            return null;
-        }
-
-        const xValues = [];
-        const yValues = [];
-        const step = (xRange[1] - xRange[0]) / 1000;
-
-        for (let x = xRange[0]; x <= xRange[1]; x += step) {
-            try {
-                const y = f(x);
-                xValues.push(x);
-                yValues.push(y);
-            } catch (error) {
-                setErrorMessage(`Ошибка вычисления функции: ${func}`);
+    const generatePlotData = () => {
+        return functions.map(({func, color}, index) => {
+            if (hiddenFunctions.includes(index)) {
+                return null;  // Если функция скрыта, возвращаем null
             }
-        }
 
-        return {
-            x: xValues,
-            y: yValues,
-            type: 'scatter',
-            mode: 'lines',
-            marker: {color},
-            name: func
-        };
-    }).filter(data => data !== null);  // Исключаем null значения из возвращаемого массива
-};
+            let f;
+            try {
+                f = make_function(func);
+            } catch (error) {
+                setErrorMessage(`Ошибка в функции: ${func}`);
+                return null;
+            }
+
+            const xValues = [];
+            const yValues = [];
+            const step = (xRange[1] - xRange[0]) / 1000;
+
+            for (let x = xRange[0]; x <= xRange[1]; x += step) {
+                try {
+                    const y = f(x);
+                    xValues.push(x);
+                    yValues.push(y);
+                } catch (error) {
+                    setErrorMessage(`Ошибка вычисления функции: ${func}`);
+                }
+            }
+
+            return {
+                x: xValues,
+                y: yValues,
+                type: 'scatter',
+                mode: 'lines',
+                marker: {color},
+                name: func
+            };
+        }).filter(data => data !== null);  // Исключаем null значения из возвращаемого массива
+    };
 
     const isTouchDevice = () => {
         return 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
@@ -529,25 +517,25 @@ const generatePlotData = () => {
         const buttons = zoomControlsRef.current.querySelectorAll("button");
         const currentButtonIndex = Array.from(buttons).findIndex(button => button === document.activeElement);
         switch (e.key) {
-          case "ArrowLeft":
-            if (currentButtonIndex > 0) {
-              buttons[currentButtonIndex - 1].focus();
-            } else {
-              // Если текущий элемент - первая кнопка, фокусируемся на кнопке помощи
-              if (buttonRefs?.current[1].current) {
-                buttonRefs?.current[1].current.focus();
-              }
-            }
-            break;
-          case "ArrowRight":
-            if (currentButtonIndex < buttons.length - 1) {
-              buttons[currentButtonIndex + 1].focus();
-            }
-            break;
-          default:
-            break;
+            case "ArrowLeft":
+                if (currentButtonIndex > 0) {
+                    buttons[currentButtonIndex - 1].focus();
+                } else {
+                    // Если текущий элемент - первая кнопка, фокусируемся на кнопке помощи
+                    if (buttonRefs?.current[1].current) {
+                        buttonRefs?.current[1].current.focus();
+                    }
+                }
+                break;
+            case "ArrowRight":
+                if (currentButtonIndex < buttons.length - 1) {
+                    buttons[currentButtonIndex + 1].focus();
+                }
+                break;
+            default:
+                break;
         }
-      };
+    };
 
     const zoomButtonStyle = {
         padding: '0.1vw',
@@ -557,7 +545,7 @@ const generatePlotData = () => {
         border: 'none',
         fontSize: '1vw',  // Adjust as needed
     };
- const helpButtonStyle = {
+    const helpButtonStyle = {
         width: '3vw',
         height: '3vw',
         backgroundColor: '#1a73e8',
@@ -583,13 +571,13 @@ const generatePlotData = () => {
     };
 
     const helpModalTextStyle = {
-        fontSize: '1.2vw'
+        fontSize: '1.4vw'
     };
 
     return (
         <div style={{display: 'flex', height: '100vh'}}>
             <div className="app-container"
-                 style={{flex: '1', height: 'auto', borderRight: '1px solid #ccc', flexDirection: 'column'}}>
+                 style={{flex: '1', height: 'auto', borderRight: '3px solid #ccc', flexDirection: 'column'}}>
                 <div className="input-panel" style={{display: 'flex', alignItems: 'center'}}>
                     <input
                         tabIndex={30}
@@ -605,7 +593,7 @@ const generatePlotData = () => {
                             width: '18vw',  // Ширина поля в процентах от ширины экрана
                             margin: '0',
                             border: '1px solid black',
-                            fontSize: '1.2vw',  // Размер шрифта в относительной единице измерения
+                            fontSize: '1.4vw',  // Размер шрифта в относительной единице измерения
                         }}
                     />
                     <button
@@ -620,7 +608,7 @@ const generatePlotData = () => {
                             backgroundColor: '#1a73e8',
                             color: '#fff',
                             border: 'none',
-                            fontSize: '1.2vw',  // Размер шрифта в относительной единице измерения
+                            fontSize: '1.4vw',  // Размер шрифта в относительной единице измерения
                         }}
                     >
                         +
@@ -671,10 +659,10 @@ const generatePlotData = () => {
                                 </li>
                             </ul>
                         </ol>
-                <button
-                    ref={closeButtonRef}
-                    onClick={closeHelp}
-                   style={{
+                        <button
+                            ref={closeButtonRef}
+                            onClick={closeHelp}
+                            style={{
                                 padding: '1vw',
                                 backgroundColor: '#1a73e8',
                                 color: '#fff',
@@ -682,69 +670,69 @@ const generatePlotData = () => {
                                 cursor: 'pointer',
                                 borderRadius: '4px',
                                 marginTop: '1vw',
-                                fontSize: '1.2vw' // Размер шрифта для кнопки "Закрыть"
+                                fontSize: '1.4vw' // Размер шрифта для кнопки "Закрыть"
                             }}
-                >
-                    Закрыть
-                </button>
+                        >
+                            Закрыть
+                        </button>
+                    </div>
+                )}
             </div>
-        )}
-    </div>
-    <div className="plot-panel" style={{flex: '3', padding: '10px'}}>
-        <Plot
-            data={generatePlotData()}
-            layout={plotLayout}
-            config={{displayModeBar: false}}
-            style={{width: '100%', height: '100%'}
-        }
-        />
-        <div
-            ref={zoomControlsRef}
-            tabIndex={-1}
-            onKeyDown={handleKeyZoom}
-            style={{
-                position: 'absolute',
-                width: '60%',
-                top: '0%',
-                right: '1.5%',
-
-            }}
-        >
-            <ButtonGroup variant="contained" aria-label="Basic button group" size="large">
-                <Button ref={buttonRefs?.current[33]} tabIndex={33} onClick={handleZoomInX} style={zoomButtonStyle}>+ X</Button>
-                <Button ref={buttonRefs?.current[34]} tabIndex={34} onClick={handleZoomOutX} style={zoomButtonStyle}>- X</Button>
-                <Button ref={buttonRefs?.current[35]} tabIndex={35} onClick={handleZoomInY} style={zoomButtonStyle}>+ Y</Button>
-                <Button ref={buttonRefs?.current[36]} tabIndex={36} onClick={handleZoomOutY} style={zoomButtonStyle}>- Y</Button>
-                <Button ref={buttonRefs?.current[37]} tabIndex={37} onClick={handleResetZoom} style={zoomButtonStyle}>Reset</Button>
-
-            </ButtonGroup>
-        </div>
-    </div>
-    {
-        isKeyboardExpanded && (
-            <div 
-                style={{position: 'absolute', bottom: '0.05%', zIndex: '1'}}>
-                <MathKeyboard
-                    functionInput={functionInput}
-                    setFunctionInput={setFunctionInput}
-                    tabIndex={-1}
-                    inputRef={inputRef}
-                    buttonRefs={buttonRefs}
-                    onKeyClick={(key) => setFunctionInput(functionInput => functionInput + key)}
+            <div className="plot-panel" style={{flex: '3', padding: '10px'}}>
+                <Plot
+                    data={generatePlotData()}
+                    layout={plotLayout}
+                    config={{displayModeBar: false}}
+                    style={{width: '100%', height: '100%'}
+                    }
                 />
-                <div style={{textAlign: 'center', paddingTop: '0.25%'}}>
+                <div
+                    ref={zoomControlsRef}
+                    tabIndex={-1}
+                    onKeyDown={handleKeyZoom}
+                    style={{
+                        position: 'absolute',
+                        width: '60%',
+                        top: '0%',
+                        right: '1.5%',
+
+                    }}
+                >
+                    <ButtonGroup variant="contained" aria-label="Basic button group" size="large">
+                        <Button ref={buttonRefs?.current[33]} tabIndex={33} onClick={handleZoomInX} style={zoomButtonStyle}>+ X</Button>
+                        <Button ref={buttonRefs?.current[34]} tabIndex={34} onClick={handleZoomOutX} style={zoomButtonStyle}>- X</Button>
+                        <Button ref={buttonRefs?.current[35]} tabIndex={35} onClick={handleZoomInY} style={zoomButtonStyle}>+ Y</Button>
+                        <Button ref={buttonRefs?.current[36]} tabIndex={36} onClick={handleZoomOutY} style={zoomButtonStyle}>- Y</Button>
+                        <Button ref={buttonRefs?.current[37]} tabIndex={37} onClick={handleResetZoom} style={zoomButtonStyle}>Reset</Button>
+
+                    </ButtonGroup>
+                </div>
+            </div>
+            {
+                isKeyboardExpanded && (
+                    <div
+                        style={{position: 'absolute', bottom: '0.05%', zIndex: '1'}}>
+                        <MathKeyboard
+                            functionInput={functionInput}
+                            setFunctionInput={setFunctionInput}
+                            tabIndex={-1}
+                            inputRef={inputRef}
+                            buttonRefs={buttonRefs}
+                            onKeyClick={(key) => setFunctionInput(functionInput => functionInput + key)}
+                        />
+                        <div style={{textAlign: 'center', paddingTop: '0.25%'}}>
                         <span onClick={() => setIsKeyboardExpanded(false)} style={{cursor: 'pointer'}}>
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 30 24 24" width="3.5em" height="6.0em">
                                 <path fill="none" d="M0 0h24v24H0z"/>
                                 <path d="M7 10l5 5 5-5H7z"/>
                             </svg>
                         </span>
-                </div>
-            </div>
-        )
-    }
-</div>
-);
+                        </div>
+                    </div>
+                )
+            }
+        </div>
+    );
 };
 
 function getRandomColor() {
@@ -757,6 +745,19 @@ function getRandomColor() {
 }
 
 export default App;
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
