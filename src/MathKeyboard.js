@@ -112,7 +112,7 @@ const MathKeyboard = ({ onKeyClick, inputRef, functionInput, setFunctionInput, b
                     }
                     break;
                  case 'ArrowDown':
-                    if (currentFocusIndex <= 30) {
+                    if (currentFocusIndex < 30) {
                         newIndex = (newIndex + 10) % 30;
                     }// Move down by one row, wrapping around
                     else{
