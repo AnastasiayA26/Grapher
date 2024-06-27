@@ -167,6 +167,12 @@ const App = () => {
         window.addMathFunction = (func, context) => {
             setFunctionInput(prev => prev + func);
         };
+        window.buildMathFunction = (func) => {
+            setFunctions(prevFunctions => [
+                ...prevFunctions,
+                { func: func, color: getRandomColor() }
+            ]);
+        };
         const getState = () => ({ functions });
         const assistant = initializeAssistant(getState);
         assistant.on('data', handleAssistantData);
@@ -184,6 +190,19 @@ const App = () => {
         }
     }, [isHelpVisible]);
 
+    const addMathFunction = (func) => {
+        setFunctions((prevFunctions) => [
+            ...prevFunctions,
+            { func: func, color: getRandomColor() }
+        ]);
+    };
+
+    const triggerAddFunctionButtonClick = () => {
+        if (buttonRefs?.current[31]) {
+            buttonRefs?.current[31].current.click();
+        }
+    };
+
     const handleAssistantData = (event) => {
         console.log('handleAssistantData:', event);
         const { action } = event;
@@ -191,7 +210,8 @@ const App = () => {
         if (action && action.parameters) {
             if (action.parameters.function) {
                 const func = action.parameters.function;
-                window.addMathFunction(func);
+                addMathFunction(func);
+                triggerAddFunctionButtonClick();
             }
         } else {
             console.error('Action parameters or function is undefined:', action);
