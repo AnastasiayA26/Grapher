@@ -31,27 +31,10 @@ const App = () => {
     const closeButtonRef = useRef(null);
     const zoomControlsRef = useRef(null);
     const buttonRefs = useRef([]);
-    const [showError, setShowError] = useState(false);
-    const [isErrorVisible, setIsErrorVisible] = useState(false);
-
-
     // Initialize buttonRefs
     useEffect(() => {
         buttonRefs.current = Array(37).fill(null).map((_, i) => buttonRefs.current[i] || React.createRef());
     }, []);
-
-    useEffect(() => {
-        if (isErrorVisible) {
-            const timer = setTimeout(() => {
-                setIsErrorVisible(false);
-            }, 10000);
-
-            // Очистка таймера, если компонент размонтируется раньше
-            return () => clearTimeout(timer);
-        }
-    }, [isErrorVisible]);
-
-
     const [plotLayout, setPlotLayout] = useState({
         autosize: true,
         margin: { t: 50, r: 50, b: 50, l: 50 },
@@ -75,12 +58,9 @@ const App = () => {
             gridwidth: 1,
             color: '#ffffff',
         },
-
         paper_bgcolor: '#5e7ca4', // Цвет фона за пределами графика
         plot_bgcolor: '#5e7ca4'   // Цвет фона самой области графика
-
     });
-
     useEffect(() => {
         const handleResize = () => {
             setPlotLayout((prevLayout) => ({
@@ -89,15 +69,10 @@ const App = () => {
                 height: window.innerHeight * 0.65, // Примерное значение высоты графика
             }));
         };
-
         handleResize();
-
         window.addEventListener('resize', handleResize);
-
         return () => window.removeEventListener('resize', handleResize);
     }, []);
-
-
     const handleZoomInX = () => {
         setPlotLayout(prevLayout => ({
             ...prevLayout,
@@ -107,7 +82,6 @@ const App = () => {
             }
         }));
     };
-
     const handleZoomOutX = () => {
         setPlotLayout(prevLayout => ({
             ...prevLayout,
@@ -117,7 +91,6 @@ const App = () => {
             }
         }));
     };
-
     const handleZoomInY = () => {
         setPlotLayout(prevLayout => ({
             ...prevLayout,
@@ -127,7 +100,6 @@ const App = () => {
             }
         }));
     };
-
     const handleZoomOutY = () => {
         setPlotLayout(prevLayout => ({
             ...prevLayout,
@@ -137,7 +109,6 @@ const App = () => {
             }
         }));
     };
-
     const handleResetZoom = () => {
         setPlotLayout((prevLayout) => ({
             ...prevLayout,
@@ -151,7 +122,6 @@ const App = () => {
             },
         }));
     };
-
     const initializeAssistant = (getState) => {
         if (process.env.NODE_ENV === 'development') {
             return createSmartappDebugger({
@@ -177,47 +147,21 @@ const App = () => {
         const assistant = initializeAssistant(getState);
         assistant.on('data', handleAssistantData);
     }, [functions]);
-
-    useEffect(() => {
-        if (isKeyboardExpanded && functionListRef.current) {
-            functionListRef.current.focus();
-        }
-    }, [isKeyboardExpanded]);
-
-    useEffect(() => {
-        if (isHelpVisible && closeButtonRef.current) {
-            closeButtonRef.current.focus();
-        }
-    }, [isHelpVisible]);
-
-    // const addMathFunction = (func) => {
-    //     setFunctions((prevFunctions) => [
-    //         ...prevFunctions,
-    //         { func: func, color: getRandomColor() }
-    //     ]);
-    // };
-
     const triggerAddFunctionButtonClick = () => {
         if (buttonRefs?.current[31]) {
             buttonRefs?.current[31].current.click();
         }
     };
-
-    // const handleAssistantData = (event) => {
-    //     console.log('handleAssistantData:', event);
-    //     const { action } = event;
-
-    //     if (action && action.parameters) {
-    //         //if (action.parameters.function) {
-    //             const func = action.parameters.function;
-    //             addMathFunction(func);
-    //             triggerAddFunctionButtonClick();
-    //         //}
-    //     } else {
-    //         console.error('Action parameters or function is undefined:', action);
-    //     }
-    // };
-
+    useEffect(() => {
+        if (isKeyboardExpanded && functionListRef.current) {
+            functionListRef.current.focus();
+        }
+    }, [isKeyboardExpanded]);
+    useEffect(() => {
+        if (isHelpVisible && closeButtonRef.current) {
+            closeButtonRef.current.focus();
+        }
+    }, [isHelpVisible]);
     const handleAssistantData = (event) => {
         console.log('handleAssistantData: event', event);
         const { action } = event;
@@ -242,7 +186,6 @@ const App = () => {
           console.error('Action parameters or function is undefined:', action);
         }
     };
-
     const handleInputKeyDown = (e) => {
         if (e.key === 'Enter') {
             e.preventDefault();
@@ -257,7 +200,6 @@ const App = () => {
             }
         }
     };
-
     const handleAddFunctionKeyDown = (e) => {
         if (e.key === 'Enter') {
             handleAddFunction();
@@ -275,7 +217,6 @@ const App = () => {
             }
         }
     };
-
     const handleFunctionEdit = (index, editedFunction) => {
         setFunctions((prevFunctions) => {
             const updatedFunctions = [...prevFunctions];
@@ -283,43 +224,23 @@ const App = () => {
             return updatedFunctions;
         });
     };
-
     const handleFunctionInputChange = (e) => {
         setFunctionInput(e.target.value);
     };
-
     const handleAddFunction = () => {
         if (functionInput.trim() !== '') {
-            try {
-                const newFunction = make_function(functionInput.trim());
-                if (newFunction) {
-                    console.log('Function created successfully:', functionInput);
-                    setFunctions([...functions, { func: functionInput, color: getRandomColor() }]);
-                    setFunctionInput('');
-                    setErrorMessage('');
-                    setIsErrorVisible(false); // Скрыть сообщение об ошибке
-                } else {
-                    console.log('Function creation returned undefined or null.');
-                    setErrorMessage('Ошибка: функция не может быть построена.');
-                    setIsErrorVisible(true); // Показать сообщение об ошибке
-                }
-            } catch (error) {
-                console.log('Error during function creation:', error);
-                setErrorMessage(``);
-
-
-                setIsErrorVisible(true); // Показать сообщение об ошибке
-            }
+            setFunctionInput(prevFunctionInput => prevFunctionInput + functionInput.trim());
+            setFunctions([...functions, {func: functionInput, color: getRandomColor()}]);
+            setFunctionInput('');
+            setIsFunctionListVisible(true);
+            setErrorMessage('');
         } else {
             setErrorMessage('Введите функцию.');
-            setIsErrorVisible(true); // Показать сообщение об ошибке
         }
     };
-
     const handleFunctionRemove = (index) => {
         setFunctions((prevFunctions) => prevFunctions.filter((_, i) => i !== index));
     };
-
     const FunctionList = ({functions, hiddenFunctions}) => (
         <div
             ref={functionListRef}
@@ -359,7 +280,6 @@ const App = () => {
                                 backgroundColor: func.color,
                                 marginRight: '0.5vw',
                                 border: '1px solid #ddd',
-
                             }}
                             tabIndex={1}
                             onClick={() => handleFunctionToggle(index)}
@@ -403,7 +323,6 @@ const App = () => {
             </div>
         </div>
     );
-
     const handleFunctionKeyDown = (e, index) => {
         console.log(e);
         if (e.key === 'ArrowDown' && index < functions.length - 1) {
@@ -487,7 +406,6 @@ const App = () => {
             });
         }
     };
-
     const handleFunctionToggle = (index) => {
         setHiddenFunctions((prevHiddenFunctions) => {
             if (prevHiddenFunctions.includes(index)) {
@@ -497,7 +415,6 @@ const App = () => {
             }
         });
     };
-
     const handleRelayout = (event) => {
         if (event['xaxis.range[0]'] && event['xaxis.range[1]']) {
             setXRange([event['xaxis.range[0]'], event['xaxis.range[1]']]);
@@ -506,11 +423,22 @@ const App = () => {
             setYRange([event['yaxis.range[0]'], event['yaxis.range[1]']]);
         }
     };
-
-
+    // const openHelpModal = () => {
+    //     setIsHelpVisible(true);
+    //     setTimeout(() => {
+    //         if (closeButtonRef.current) {
+    //             closeButtonRef.current.focus();
+    //         }
+    //     }, 0);
+    // };
+    // const closeHelpModal = () => {
+    //     setIsHelpVisible(false);
+    //     if (buttonRefs?.current[1].current) {
+    //         buttonRefs?.current[1].current.focus();
+    //     }
+    // };
     const toggleHelpModal = (isOpen) => {
         setIsHelpVisible(isOpen);
-
         setTimeout(() => {
             if (isOpen && closeButtonRef.current) {
                 closeButtonRef.current.focus();
@@ -524,7 +452,6 @@ const App = () => {
     // Example usage
     const openHelp = () => toggleHelpModal(true);
     const closeHelp = () => toggleHelpModal(false);
-
     const handleHelpButtonKeyDown = (e) => {
         if (e.key === 'ArrowRight') {
             e.preventDefault();
@@ -542,13 +469,11 @@ const App = () => {
             }
         }
     }
-
     const generatePlotData = () => {
         return functions.map(({func, color}, index) => {
             if (hiddenFunctions.includes(index)) {
                 return null;  // Если функция скрыта, возвращаем null
             }
-
             let f;
             try {
                 f = make_function(func);
@@ -556,11 +481,9 @@ const App = () => {
                 setErrorMessage(`Ошибка в функции: ${func}`);
                 return null;
             }
-
             const xValues = [];
             const yValues = [];
             const step = (xRange[1] - xRange[0]) / 1000;
-
             for (let x = xRange[0]; x <= xRange[1]; x += step) {
                 try {
                     const y = f(x);
@@ -570,7 +493,6 @@ const App = () => {
                     setErrorMessage(`Ошибка вычисления функции: ${func}`);
                 }
             }
-
             return {
                 x: xValues,
                 y: yValues,
@@ -581,21 +503,17 @@ const App = () => {
             };
         }).filter(data => data !== null);  // Исключаем null значения из возвращаемого массива
     };
-
     const isTouchDevice = () => {
         return 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
     };
-
     const isSmartTV = () => {
         return /TV|SmartTV|AppleTV|GoogleTV|HbbTV|NetCast.TV/i.test(navigator.userAgent);
     };
-
     const handleTouchStart = (e) => {
         if (isTouchDevice() || isSmartTV()) {
             e.preventDefault(); // Prevent default touch event to avoid showing system keyboard
         }
     };
-
     const handleKeyZoom = (e) => {
         const buttons = zoomControlsRef.current.querySelectorAll("button");
         const currentButtonIndex = Array.from(buttons).findIndex(button => button === document.activeElement);
@@ -619,7 +537,6 @@ const App = () => {
                 break;
         }
     };
-
     const zoomButtonStyle = {
         padding: '0.1vw',
         width: '5vw',  // Adjust as needed
@@ -640,24 +557,12 @@ const App = () => {
         alignItems: 'center',
         justifyContent: 'center'
     };
-
     const helpModalStyle = {
         position: 'fixed',
         top: '35%',
         left: '25%',
         transform: 'translateY(-50%)',
         backgroundColor: '#e6f1fa',
-        padding: '2vw',
-        borderRadius: '8px',
-        boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)',
-        zIndex: '999'
-    };
-    const ErrorModalStyle = {
-        position: 'fixed',
-        top: '28%',
-        left: '25%',
-        transform: 'translateY(-50%)',
-        backgroundColor: '#f6cdd0',
         padding: '2vw',
         borderRadius: '8px',
         boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)',
@@ -671,7 +576,7 @@ const App = () => {
     return (
         <div style={{display: 'flex', height: '100vh'}}>
             <div className="app-container"
-                 style={{flex: '1', height: 'auto', borderRight: '3px solid #ccc', flexDirection: 'column'}}>
+                style={{flex: '1', height: 'auto', borderRight: '1px solid #ccc', flexDirection: 'column'}}>
                 <div className="input-panel" style={{display: 'flex', alignItems: 'center'}}>
                     <input
                         tabIndex={30}
@@ -707,19 +612,6 @@ const App = () => {
                     >
                         +
                     </button>
-                    {isErrorVisible && (
-                            <div className="error-message-container" style={ErrorModalStyle}>
-                                <p style={helpModalTextStyle}>{<div>
-                                    <p style={helpModalTextStyle}>Ошибка: функция не может быть построена</p>
-                                    <p style={helpModalTextStyle}>Проверьте правильность ввода:</p>
-                                    <ul>
-                                        <li style={helpModalTextStyle}>убедитесь, что используете знак * для умножения</li>
-                                        <li style={helpModalTextStyle}>проверьте отсутствие символа "=" в выражении</li>
-                                    </ul>
-                                    <p style={helpModalTextStyle}>Пример записи: cos(3*x - 1)</p>
-                                </div>}</p>
-                            </div>
-                        )}
                 </div>
                 {isFunctionListVisible && (
                     <FunctionList functions={functions} hiddenFunctions={hiddenFunctions}/>
@@ -771,7 +663,7 @@ const App = () => {
                             onClick={closeHelp}
                             style={{
                                 padding: '1vw',
-                                backgroundColor: '#2f4c72',
+                                backgroundColor: '#1a73e8',
                                 color: '#fff',
                                 border: 'none',
                                 cursor: 'pointer',
@@ -803,7 +695,6 @@ const App = () => {
                         top: '0%',
                         right: '1.5%',
                         // backgroundColor: "#90a4c0",
-
                     }}
                 >
                     <ButtonGroup variant="contained" aria-label="Basic button group" size="large">
@@ -812,7 +703,6 @@ const App = () => {
                         <Button ref={buttonRefs?.current[35]} tabIndex={35} onClick={handleZoomInY} style={zoomButtonStyle}>+ Y</Button>
                         <Button ref={buttonRefs?.current[36]} tabIndex={36} onClick={handleZoomOutY} style={zoomButtonStyle}>- Y</Button>
                         <Button ref={buttonRefs?.current[37]} tabIndex={37} onClick={handleResetZoom} style={zoomButtonStyle}>Reset</Button>
-
                     </ButtonGroup>
                 </div>
             </div>
@@ -842,7 +732,6 @@ const App = () => {
         </div>
     );
 };
-
 function getRandomColor() {
     var letters = '0123456789ABCDEF';
     var color = '#';
@@ -853,6 +742,10 @@ function getRandomColor() {
 }
 
 export default App;
+
+
+
+
 
 
 
