@@ -204,17 +204,27 @@ const App = () => {
     };
 
     const handleAssistantData = (event) => {
-        console.log('handleAssistantData:', event);
+        console.log('handleAssistantData: event', event);
         const { action } = event;
-
-        if (action && action.parameters) {
-            if (action.parameters.function) {
-                const func = action.parameters.function;
-                addMathFunction(func);
-                triggerAddFunctionButtonClick();
-            }
+    
+        /////////////////////////////////////////////
+        if (action && action.type === 'build_math_function') {
+          if (action.parameters && action.parameters.function) {
+            const func = action.parameters.function;
+            addMathFunction(func);
+            //FunctionList(func);
+        } 
+          triggerAddFunctionButtonClick();
+        }
+        /////////////////////////////////////////////
+        else if (action && action.parameters) {
+          if (action.parameters.function) {
+            const func = action.parameters.function;
+            addMathFunction(func);
+            triggerAddFunctionButtonClick();
+          }
         } else {
-            console.error('Action parameters or function is undefined:', action);
+          console.error('Action parameters or function is undefined:', action);
         }
     };
 
