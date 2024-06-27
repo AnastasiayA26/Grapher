@@ -32,7 +32,7 @@ const App = () => {
     const zoomControlsRef = useRef(null);
     const buttonRefs = useRef([]);
     const [showError, setShowError] = useState(false);
-    const [isErrorVisible, setIsErrorVisible] = useState(true);
+    const [isErrorVisible, setIsErrorVisible] = useState(false);
 
 
     // Initialize buttonRefs
