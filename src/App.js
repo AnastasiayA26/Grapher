@@ -258,7 +258,7 @@ const App = () => {
                     margin: '0',
                     borderRadius: '5px',
                     border: '1px solid black',
-                    fontSize: '1.2vw',  // Размер шрифта в относительной единице измерения
+                    fontSize: '1.4vw',  // Размер шрифта в относительной единице измерения
                 }}
             >
                 {functions.map((func, index) => (
@@ -315,7 +315,7 @@ const App = () => {
                                 border: 'none',
                                 color: 'red',
                                 cursor: 'pointer',
-                                fontSize: '1.2vw'
+                                fontSize: '1.4vw'
                             }}
                             tabIndex={1}
                             onKeyDown={(e) => handleRemoveButtonKeyDown(e, index)}
@@ -565,7 +565,7 @@ const generatePlotData = () => {
         backgroundColor: '#2f4c72',
         color: '#fff',
         border: 'none',
-        fontSize: '1vw',  // Adjust as needed
+        fontSize: '1.2vw',  // Adjust as needed
     };
     const helpButtonStyle = {
         width: '3vw',
@@ -593,13 +593,13 @@ const generatePlotData = () => {
     };
 
     const helpModalTextStyle = {
-        fontSize: '1.2vw'
+        fontSize: '1.4vw'
     };
 
     return (
         <div style={{display: 'flex', height: '100vh'}}>
             <div className="app-container"
-                 style={{flex: '1', height: 'auto', borderRight: '1px solid #ccc', flexDirection: 'column'}}>
+                 style={{flex: '1', height: 'auto', borderRight: '3px solid #ccc', flexDirection: 'column'}}>
                 <div className="input-panel" style={{display: 'flex', alignItems: 'center'}}>
                     <input
                         tabIndex={30}
@@ -615,7 +615,7 @@ const generatePlotData = () => {
                             width: '18vw',  // Ширина поля в процентах от ширины экрана
                             margin: '0',
                             border: '1px solid black',
-                            fontSize: '1.2vw',  // Размер шрифта в относительной единице измерения
+                            fontSize: '1.4vw',  // Размер шрифта в относительной единице измерения
                         }}
                     />
                     <button
@@ -630,7 +630,7 @@ const generatePlotData = () => {
                             backgroundColor: '#2f4c72',
                             color: '#fff',
                             border: 'none',
-                            fontSize: '1.2vw',  // Размер шрифта в относительной единице измерения
+                            fontSize: '1.4vw',  // Размер шрифта в относительной единице измерения
                         }}
                     >
                         +
@@ -692,7 +692,7 @@ const generatePlotData = () => {
                                 cursor: 'pointer',
                                 borderRadius: '4px',
                                 marginTop: '1vw',
-                                fontSize: '1.2vw' // Размер шрифта для кнопки "Закрыть"
+                                fontSize: '1.4vw' // Размер шрифта для кнопки "Закрыть"
                             }}
                 >
                     Закрыть
@@ -768,11 +768,4 @@ function getRandomColor() {
 }
 
 export default App;
-
-
-
-
-
-
-
 
