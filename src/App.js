@@ -190,18 +190,33 @@ const App = () => {
         }
     }, [isHelpVisible]);
 
-    const addMathFunction = (func) => {
-        setFunctions((prevFunctions) => [
-            ...prevFunctions,
-            { func: func, color: getRandomColor() }
-        ]);
-    };
+    // const addMathFunction = (func) => {
+    //     setFunctions((prevFunctions) => [
+    //         ...prevFunctions,
+    //         { func: func, color: getRandomColor() }
+    //     ]);
+    // };
 
     const triggerAddFunctionButtonClick = () => {
         if (buttonRefs?.current[31]) {
             buttonRefs?.current[31].current.click();
         }
     };
+
+    // const handleAssistantData = (event) => {
+    //     console.log('handleAssistantData:', event);
+    //     const { action } = event;
+
+    //     if (action && action.parameters) {
+    //         //if (action.parameters.function) {
+    //             const func = action.parameters.function;
+    //             addMathFunction(func);
+    //             triggerAddFunctionButtonClick();
+    //         //}
+    //     } else {
+    //         console.error('Action parameters or function is undefined:', action);
+    //     }
+    // };
 
     const handleAssistantData = (event) => {
         console.log('handleAssistantData: event', event);
@@ -838,5 +853,6 @@ function getRandomColor() {
 }
 
 export default App;
+
 
 
