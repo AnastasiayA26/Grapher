@@ -180,7 +180,7 @@ const App = () => {
           if (action.parameters.function) {
             const func = action.parameters.function;
             addMathFunction(func);
-            triggerAddFunctionButtonClick();
+            //triggerAddFunctionButtonClick();
           }
         } else {
           console.error('Action parameters or function is undefined:', action);
