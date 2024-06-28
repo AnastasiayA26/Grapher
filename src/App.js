@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import Plot from 'react-plotly.js';
 import MathKeyboard from './MathKeyboard.js';
@@ -31,6 +32,7 @@ const App = () => {
     const closeButtonRef = useRef(null);
     const zoomControlsRef = useRef(null);
     const buttonRefs = useRef([]);
+    const [isErrorVisible, setIsErrorVisible] = useState(false);
     // Initialize buttonRefs
     useEffect(() => {
         buttonRefs.current = Array(37).fill(null).map((_, i) => buttonRefs.current[i] || React.createRef());
@@ -58,9 +60,21 @@ const App = () => {
             gridwidth: 1,
             color: '#ffffff',
         },
-        paper_bgcolor: '#5e7ca4', // Цвет фона за пределами графика
-        plot_bgcolor: '#5e7ca4'   // Цвет фона самой области графика
+        paper_bgcolor: '#5e7ca4',
+        plot_bgcolor: '#5e7ca4'
     });
+
+    useEffect(() => {
+        if (isErrorVisible) {
+            const timer = setTimeout(() => {
+                setIsErrorVisible(false);
+            }, 10000);
+
+            // Очистка таймера, если компонент размонтируется раньше
+            return () => clearTimeout(timer);
+        }
+    }, [isErrorVisible]);
+
     useEffect(() => {
         const handleResize = () => {
             setPlotLayout((prevLayout) => ({
@@ -147,11 +161,6 @@ const App = () => {
         const assistant = initializeAssistant(getState);
         assistant.on('data', handleAssistantData);
     }, [functions]);
-    const triggerAddFunctionButtonClick = () => {
-        if (buttonRefs?.current[31]) {
-            buttonRefs?.current[31].current.click();
-        }
-    };
     useEffect(() => {
         if (isKeyboardExpanded && functionListRef.current) {
             functionListRef.current.focus();
@@ -162,6 +171,11 @@ const App = () => {
             closeButtonRef.current.focus();
         }
     }, [isHelpVisible]);
+    const triggerAddFunctionButtonClick = () => {
+        if (buttonRefs?.current[31]) {
+            buttonRefs?.current[31].current.click();
+        }
+    };
     const handleAssistantData = (event) => {
         console.log('handleAssistantData: event', event);
         const { action } = event;
@@ -229,13 +243,29 @@ const App = () => {
     };
     const handleAddFunction = () => {
         if (functionInput.trim() !== '') {
-            setFunctionInput(prevFunctionInput => prevFunctionInput + functionInput.trim());
-            setFunctions([...functions, {func: functionInput, color: getRandomColor()}]);
-            setFunctionInput('');
-            setIsFunctionListVisible(true);
-            setErrorMessage('');
+            try {
+                const newFunction = make_function(functionInput.trim());
+                if (newFunction) {
+                    console.log('Function created successfully:', functionInput);
+                    //setFunctionInput(prevFunctionInput => prevFunctionInput + functionInput.trim());
+                    setFunctions([...functions, { func: functionInput, color: getRandomColor() }]);
+                    setFunctionInput('');
+                    setIsFunctionListVisible(true);
+                    setErrorMessage('');
+                    setIsErrorVisible(false);
+                } else {
+                    console.log('Function creation returned undefined or null.');
+                    setErrorMessage('Ошибка: функция не может быть построена.');
+                    setIsErrorVisible(true);
+                }
+            } catch (error) {
+                console.log('Error during function creation:', error);
+                setErrorMessage(``);
+                setIsErrorVisible(true);
+            }
         } else {
             setErrorMessage('Введите функцию.');
+            setIsErrorVisible(true);
         }
     };
     const handleFunctionRemove = (index) => {
@@ -415,6 +445,17 @@ const App = () => {
             }
         });
     };
+    const ErrorModalStyle = {
+        position: 'fixed',
+        top: '28%',
+        left: '27%',
+        transform: 'translateY(-50%)',
+        backgroundColor: '#f6cdd0',
+        padding: '2vw',
+        borderRadius: '8px',
+        boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)',
+        zIndex: '999'
+    };
     const handleRelayout = (event) => {
         if (event['xaxis.range[0]'] && event['xaxis.range[1]']) {
             setXRange([event['xaxis.range[0]'], event['xaxis.range[1]']]);
@@ -576,7 +617,7 @@ const App = () => {
     return (
         <div style={{display: 'flex', height: '100vh'}}>
             <div className="app-container"
-                style={{flex: '1', height: 'auto', borderRight: '1px solid #ccc', flexDirection: 'column'}}>
+                style={{flex: '1', height: 'auto', borderRight: '3px solid #ccc', flexDirection: 'column'}}>
                 <div className="input-panel" style={{display: 'flex', alignItems: 'center'}}>
                     <input
                         tabIndex={30}
@@ -612,6 +653,19 @@ const App = () => {
                     >
                         +
                     </button>
+                  {isErrorVisible && (
+                        <div className="error-message-container" style={ErrorModalStyle}>
+                            <p style={helpModalTextStyle}>{<div>
+                                <p style={helpModalTextStyle}>Ошибка: функция не может быть построена</p>
+                                <p style={helpModalTextStyle}>Проверьте правильность ввода:</p>
+                                <ul>
+                                    <li style={helpModalTextStyle}>убедитесь, что используете знак * для умножения</li>
+                                    <li style={helpModalTextStyle}>проверьте отсутствие символа "=" в выражении</li>
+                                </ul>
+                                <p style={helpModalTextStyle}>Пример записи: cos(3*x - 1)</p>
+                            </div>}</p>
+                        </div>
+                    )}
                 </div>
                 {isFunctionListVisible && (
                     <FunctionList functions={functions} hiddenFunctions={hiddenFunctions}/>
@@ -742,10 +796,3 @@ function getRandomColor() {
 }
 
 export default App;
-
-
-
-
-
-
-
