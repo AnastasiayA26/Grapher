@@ -85,10 +85,10 @@ const MathKeyboard = ({ onKeyClick, inputRef, functionInput, setFunctionInput, b
 
             console.log()
 
-              switch (key) {
+            switch (key) {
                 case 'ArrowLeft':
                     if (currentFocusIndex < 30){
-                    newIndex = (newIndex - 1 + 30) % 30; // Wrap around to end
+                        newIndex = (newIndex - 1 + 30) % 30; // Wrap around to end
                     }
                     else{
                         if (currentFocusIndex === 30){
@@ -108,15 +108,37 @@ const MathKeyboard = ({ onKeyClick, inputRef, functionInput, setFunctionInput, b
                         // newIndex = (newIndex - 10 + 38) % 38; // Move up by one row, wrapping around
                         newIndex = 31;
                     } else {
-                        newIndex = (newIndex - 10 + 30) % 30; // Move up by one row, wrapping around
+                        if(currentFocusIndex >= 40){
+                            if(currentFocusIndex === 40){
+                                newIndex = 30;
+                            }
+                            else{
+                                newIndex = newIndex -1;
+                            }
+                        }
+                        else{
+                            newIndex = (newIndex - 10 + 30) % 30;
+                        }
+                        // Move up by one row, wrapping around
                     }
                     break;
-                 case 'ArrowDown':
-                    if (currentFocusIndex < 30) {
-                        newIndex = (newIndex + 10) % 30;
-                    }// Move down by one row, wrapping around
+                case 'ArrowDown':
+                    if (currentFocusIndex <= 30) {
+                        if(currentFocusIndex === 30){
+                            newIndex = 40;
+                        }
+                        else{
+                            newIndex = (newIndex + 10) % 30;
+                        }
+
+                    }
                     else{
-                        newIndex = 0;
+                        if(currentFocusIndex === 40){
+                            newIndex = newIndex + 1;
+                        }
+                        else{
+                            newIndex = 0;
+                        }
                     }
                     break;
                 default:
@@ -409,6 +431,8 @@ const MathKeyboard = ({ onKeyClick, inputRef, functionInput, setFunctionInput, b
 
 
 export default MathKeyboard;
+
+
 
 
 
