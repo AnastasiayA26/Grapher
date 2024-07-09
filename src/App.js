@@ -672,7 +672,7 @@ const App = () => {
                 )}
             </div>
             <div style={{padding: '3px', position: 'relative', top: '1px', zIndex: '2'}}>
-    <span onClick={openHelp} style={{cursor: 'pointer'}}>
+    <span onClick={isHelpVisible ? closeHelp : openHelp} style={{ cursor: 'pointer' }}>
         <button
             tabIndex={32}
             ref={buttonRefs?.current[32]}
@@ -712,22 +712,6 @@ const App = () => {
                                 </li>
                             </ul>
                         </ol>
-                        <button
-                            ref={closeButtonRef}
-                            onClick={closeHelp}
-                            style={{
-                                padding: '1vw',
-                                backgroundColor: '#1a73e8',
-                                color: '#fff',
-                                border: 'none',
-                                cursor: 'pointer',
-                                borderRadius: '4px',
-                                marginTop: '1vw',
-                                fontSize: '1.4vw' // Размер шрифта для кнопки "Закрыть"
-                            }}
-                        >
-                            Закрыть
-                        </button>
                     </div>
                 )}
             </div>
