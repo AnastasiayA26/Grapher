@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Plot from 'react-plotly.js';
 import MathKeyboard from './MathKeyboard.js';
 import { createSmartappDebugger, createAssistant } from '@salutejs/client';
@@ -39,7 +39,7 @@ const App = () => {
     }, []);
     const [plotLayout, setPlotLayout] = useState({
         autosize: true,
-        margin: { t: 50, r: 50, b: 50, l: 50 },
+        margin: { t: 50, r: 50, b: 50, l: 80 },
         xaxis: {
             zeroline: true,
             zerolinecolor: '#000',
@@ -79,7 +79,7 @@ const App = () => {
         const handleResize = () => {
             setPlotLayout((prevLayout) => ({
                 ...prevLayout,
-                width: window.innerWidth * 0.67, // Примерное значение ширины графика
+                width: window.innerWidth * 0.65, // Примерное значение ширины графика
                 height: window.innerHeight * 0.65, // Примерное значение высоты графика
             }));
         };
@@ -136,6 +136,33 @@ const App = () => {
             },
         }));
     };
+
+    const handleDeleteFunc = useCallback(() => {
+        if (!inputRef || !inputRef.current) return;
+
+        const input = inputRef.current;
+        const selectionStart = input.selectionStart;
+        const selectionEnd = input.selectionEnd;
+        let newValue;
+
+        if (selectionEnd - 1 > 0) {
+            const currentValue = functionInput;
+            newValue = currentValue.slice(0, selectionStart - 1) + currentValue.slice(selectionEnd);
+            const newSelectionEnd = selectionEnd - 1;
+
+            input.setSelectionRange(newSelectionEnd, newSelectionEnd);
+            inputRef.current = input;
+            setFunctionInput(newValue);
+        } else if (selectionStart === input.value.length || selectionEnd === 1) {
+            newValue = '';
+            inputRef.current = input;
+            setFunctionInput(newValue);
+            input.setSelectionRange(0, 0);
+        }
+
+        return null;
+    }, [functionInput]);
+
     const initializeAssistant = (getState) => {
         if (process.env.NODE_ENV === 'development') {
             return createSmartappDebugger({
@@ -148,7 +175,14 @@ const App = () => {
     };
 
     useEffect(() => {
-        window.addMathFunction = (func, context) => {
+        if (!assistantRef.current) {
+            const getState = () => ({ functions });
+            assistantRef.current = initializeAssistant(getState);
+            assistantRef.current.on('data', handleAssistantData);
+        }
+    }, [functions]);
+    useEffect(() => {
+        window.addMathFunction = (func) => {
             setFunctionInput(prev => prev + func);
         };
         window.buildMathFunction = (func) => {
@@ -157,10 +191,10 @@ const App = () => {
                 { func: func, color: getRandomColor() }
             ]);
         };
-        const getState = () => ({ functions });
-        const assistant = initializeAssistant(getState);
-        assistant.on('data', handleAssistantData);
-    }, [functions]);
+        window.deleteMathFunction = (func) => {
+            handleDeleteFunc()
+        };
+    }, [handleDeleteFunc]);
     useEffect(() => {
         if (isKeyboardExpanded && functionListRef.current) {
             functionListRef.current.focus();
@@ -188,6 +222,13 @@ const App = () => {
             //FunctionList(func);
         } 
           triggerAddFunctionButtonClick();
+        }
+        /////////////////////////////////////////////
+        else if (action && action.type === 'delete_math_function') {
+            if (action.parameters && action.parameters.function) {
+                const func = action.parameters.function;
+                deleteMathFunction(func);
+            }
         }
         /////////////////////////////////////////////
         else if (action && action.parameters) {
@@ -333,7 +374,7 @@ const App = () => {
                         >
                             {func.func}
                         </span>
-                        <button
+                        {/* <button
                             ref={(el) => removeButtonRefs.current[index] = el}
                             onClick={() => handleFunctionRemove(index)}
                             style={{
@@ -347,7 +388,7 @@ const App = () => {
                             onKeyDown={(e) => handleRemoveButtonKeyDown(e, index)}
                         >
                             ✖
-                        </button>
+                        </button> */}
                     </div>
                 ))}
             </div>
@@ -770,6 +811,7 @@ const App = () => {
         </div>
     );
 };
+
 function getRandomColor() {
     var letters = '0123456789ABCDEF';
     var color = '#';
@@ -780,3 +822,4 @@ function getRandomColor() {
 }
 
 export default App;
+
