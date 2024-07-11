@@ -185,7 +185,8 @@ const MathKeyboard = ({ onKeyClick, inputRef, functionInput, setFunctionInput, b
         height: '0.6vh', // Высота кнопки в процентах от высоты окна
         display: 'flex', // Используем flexbox
         alignItems: 'center', // Центрируем содержимое по вертикали
-        justifyContent: 'center' // Центрируем содержимое по горизонтали
+        justifyContent: 'center', // Центрируем содержимое по горизонтали
+        outlineColor: '#e8291b',
     };
 
     return (
