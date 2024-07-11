@@ -60,6 +60,12 @@ const App = () => {
             gridwidth: 1,
             color: '#ffffff',
         },
+         legend: {
+            font: {
+                size: (window.innerWidth < 1300) ? 16 : 30,
+                color: '#ffffff'
+            }
+        },
         paper_bgcolor: '#5e7ca4',
         plot_bgcolor: '#5e7ca4'
     });
