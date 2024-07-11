@@ -455,6 +455,7 @@ const App = () => {
                                 fontSize: '1.2vw',
                                 fontWeight: 'bold',
                                 cursor: 'pointer',
+                                outlineColor: '#e8291b',
                             }}
                             tabIndex={1}
                             onClick={() => handleFunctionToggle(index)}
@@ -702,6 +703,7 @@ const App = () => {
         color: '#fff',
         border: 'none',
         fontSize: '1.2vw',  // Adjust as needed
+        outlineColor: '#e8291b',
     };
     const helpButtonStyle = {
         width: '3vw',
@@ -713,7 +715,8 @@ const App = () => {
         fontSize: '2vw',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        outlineColor: '#e8291b',
     };
     const helpModalStyle = {
         position: 'fixed',
@@ -751,6 +754,7 @@ const App = () => {
                             margin: '0',
                             border: '1px solid black',
                             fontSize: '1.4vw',  // Размер шрифта в относительной единице измерения
+                            outlineColor: '#e8291b',
                         }}
                     />
                     <button
@@ -766,6 +770,7 @@ const App = () => {
                             color: '#fff',
                             border: 'none',
                             fontSize: '1.4vw',  // Размер шрифта в относительной единице измерения
+                            outlineColor: '#e8291b',
                         }}
                     >
                         +
