@@ -318,21 +318,103 @@ const App = () => {
     const handleFunctionRemove = (index) => {
         setFunctions((prevFunctions) => prevFunctions.filter((_, i) => i !== index));
     };
-    const FunctionList = ({functions, hiddenFunctions}) => (
+    // const FunctionList = ({functions, hiddenFunctions}) => (
+    //     <div
+    //         ref={functionListRef}
+    //         style={{marginTop: '10px'}}
+    //         tabIndex={-1}
+    //     >
+    //         <div
+    //             style={{
+    //                 backgroundColor: '#fff',
+    //                 padding: '1vw',  // Используем относительную единицу измерения
+    //                 width: '23vw',  // Ширина поля в процентах от ширины экрана
+    //                 margin: '0',
+    //                 borderRadius: '5px',
+    //                 border: '1px solid black',
+    //                 fontSize: '1.4vw',  // Размер шрифта в относительной единице измерения
+    //             }}
+    //         >
+    //             {functions.map((func, index) => (
+    //                 <div
+    //                     key={index}
+    //                     tabIndex={1}
+    //                     ref={el => functionRefs.current[index] = el}
+    //                     className="focusable"
+    //                     style={{padding: '5px', display: 'flex', alignItems: 'center', cursor: 'pointer'}}
+    //                     onKeyDown={(e) => handleFunctionKeyDown(e, index)}
+    //                 >
+    //                     <div
+    //                         ref={(el) => colorRefs.current[index] = el}
+    //                         style={{
+    //                             width: '1.5vw',
+    //                             height: '1.5vw',
+    //                             color: '#fff',
+    //                             borderRadius: '50%',
+    //                             display: 'flex',
+    //                             alignItems: 'center',
+    //                             justifyContent: 'center',
+    //                             backgroundColor: func.color,
+    //                             marginRight: '0.5vw',
+    //                             border: '1px solid #ddd',
+    //                         }}
+    //                         tabIndex={1}
+    //                         onClick={() => handleFunctionToggle(index)}
+    //                         onKeyDown={(e) => handleColorKeyDown(e, index)}
+    //                     >
+    //                         {hiddenFunctions.includes(index) && (
+    //                             <span style={{color: '#ddd', fontSize: '12px'}}>•</span>
+    //                         )}
+    //                     </div>
+    //                     <span
+    //                         style={{
+    //                             flex: 1,
+    //                             fontStyle: hiddenFunctions.includes(index) ? 'italic' : 'normal',
+    //                             textDecoration: hiddenFunctions.includes(index) ? 'line-through' : 'none',
+    //                         }}
+    //                         contentEditable={!hiddenFunctions.includes(index)}
+    //                         suppressContentEditableWarning={true}
+    //                         onBlur={(e) =>
+    //                             handleFunctionEdit(index, {...func, func: e.target.textContent})
+    //                         }
+    //                     >
+    //                         {func.func}
+    //                     </span>
+    //                     {/* <button
+    //                         ref={(el) => removeButtonRefs.current[index] = el}
+    //                         onClick={() => handleFunctionRemove(index)}
+    //                         style={{
+    //                             background: 'none',
+    //                             border: 'none',
+    //                             color: 'red',
+    //                             cursor: 'pointer',
+    //                             fontSize: '1.4vw'
+    //                         }}
+    //                         tabIndex={1}
+    //                         onKeyDown={(e) => handleRemoveButtonKeyDown(e, index)}
+    //                     >
+    //                         ✖
+    //                     </button> */}
+    //                 </div>
+    //             ))}
+    //         </div>
+    //     </div>
+    // );
+    const FunctionList = ({ functions, hiddenFunctions }) => (
         <div
             ref={functionListRef}
-            style={{marginTop: '10px'}}
+            style={{ marginTop: '10px' }}
             tabIndex={-1}
         >
             <div
                 style={{
                     backgroundColor: '#fff',
-                    padding: '1vw',  // Используем относительную единицу измерения
-                    width: '23vw',  // Ширина поля в процентах от ширины экрана
+                    padding: '1vw',
+                    width: '23vw',
                     margin: '0',
                     borderRadius: '5px',
                     border: '1px solid black',
-                    fontSize: '1.4vw',  // Размер шрифта в относительной единице измерения
+                    fontSize: '1.4vw',
                 }}
             >
                 {functions.map((func, index) => (
@@ -341,60 +423,48 @@ const App = () => {
                         tabIndex={1}
                         ref={el => functionRefs.current[index] = el}
                         className="focusable"
-                        style={{padding: '5px', display: 'flex', alignItems: 'center', cursor: 'pointer'}}
+                        style={{ padding: '5px', display: 'flex', alignItems: 'center', cursor: 'pointer' }}
                         onKeyDown={(e) => handleFunctionKeyDown(e, index)}
                     >
+                    <span
+                        style={{
+                            flex: 1,
+                            fontStyle: hiddenFunctions.includes(index) ? 'italic' : 'normal',
+                            textDecoration: hiddenFunctions.includes(index) ? 'line-through' : 'none',
+                        }}
+                        contentEditable={!hiddenFunctions.includes(index)}
+                        suppressContentEditableWarning={true}
+                        onBlur={(e) =>
+                            handleFunctionEdit(index, { ...func, func: e.target.textContent })
+                        }
+                    >
+                        {func.func}
+                    </span>
                         <div
                             ref={(el) => colorRefs.current[index] = el}
                             style={{
-                                width: '1.5vw',
-                                height: '1.5vw',
+                                width: '2.5vw',
+                                height: '2.5vw',
                                 color: '#fff',
-                                borderRadius: '50%',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                backgroundColor: func.color,
-                                marginRight: '0.5vw',
+                                backgroundColor: '#2f4c72',
+                                marginLeft: '0.5vw',
                                 border: '1px solid #ddd',
+                                fontSize: '1.2vw',
+                                fontWeight: 'bold',
+                                cursor: 'pointer',
                             }}
                             tabIndex={1}
                             onClick={() => handleFunctionToggle(index)}
                             onKeyDown={(e) => handleColorKeyDown(e, index)}
                         >
+                            ✖
                             {hiddenFunctions.includes(index) && (
-                                <span style={{color: '#ddd', fontSize: '12px'}}>•</span>
+                                <span style={{ color: '#ddd', fontSize: '12px' }}></span>
                             )}
                         </div>
-                        <span
-                            style={{
-                                flex: 1,
-                                fontStyle: hiddenFunctions.includes(index) ? 'italic' : 'normal',
-                                textDecoration: hiddenFunctions.includes(index) ? 'line-through' : 'none',
-                            }}
-                            contentEditable={!hiddenFunctions.includes(index)}
-                            suppressContentEditableWarning={true}
-                            onBlur={(e) =>
-                                handleFunctionEdit(index, {...func, func: e.target.textContent})
-                            }
-                        >
-                            {func.func}
-                        </span>
-                        {/* <button
-                            ref={(el) => removeButtonRefs.current[index] = el}
-                            onClick={() => handleFunctionRemove(index)}
-                            style={{
-                                background: 'none',
-                                border: 'none',
-                                color: 'red',
-                                cursor: 'pointer',
-                                fontSize: '1.4vw'
-                            }}
-                            tabIndex={1}
-                            onKeyDown={(e) => handleRemoveButtonKeyDown(e, index)}
-                        >
-                            ✖
-                        </button> */}
                     </div>
                 ))}
             </div>
