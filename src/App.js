@@ -310,10 +310,10 @@ const App = () => {
                 setErrorMessage(``);
                 setIsErrorVisible(true);
             }
-        } else {
-            setErrorMessage('Введите функцию.');
-            setIsErrorVisible(true);
-        }
+        } //else {
+        //     setErrorMessage('Введите функцию.');
+        //     setIsErrorVisible(true);
+        // }
     };
     const handleFunctionRemove = (index) => {
         setFunctions((prevFunctions) => prevFunctions.filter((_, i) => i !== index));
