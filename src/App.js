@@ -253,7 +253,7 @@ const App = () => {
             buttonRefs?.current[0].focus();
         } else if (e.key === 'ArrowDown') {
             if (functions.length > 0) {
-                functionRefs.current[0].focus();
+                colorRefs.current[0].focus();
             }
         } else if (e.key === 'ArrowRight') {
             if (buttonRefs.current[31] && buttonRefs.current[31].current) {
